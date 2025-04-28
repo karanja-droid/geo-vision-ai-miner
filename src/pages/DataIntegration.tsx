@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Layers, Database, Image, CloudUpload, Slack, Teams } from "lucide-react";
+import { Layers, Database, Image, CloudUpload, Slack, MessageSquare } from "lucide-react";
 
 const DataIntegration: React.FC = () => {
   return (
@@ -170,7 +170,7 @@ const DataIntegration: React.FC = () => {
               <CollaborationCard
                 platform="Microsoft Teams"
                 status="Ready to connect"
-                icon={<Teams className="h-8 w-8" />}
+                icon={<MessageSquare className="h-8 w-8" />}
                 features={[
                   "Meeting scheduling based on analysis results",
                   "Shared dashboards in Teams channels",
