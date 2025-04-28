@@ -11,6 +11,9 @@ const Index: React.FC = () => {
         <Button asChild variant="outline">
           <Link to="/next-steps">View Next Steps</Link>
         </Button>
+        <Button asChild variant="outline">
+          <Link to="/data-integration">Data Integration</Link>
+        </Button>
         <Button asChild>
           <Link to="/project-details">Project Details</Link>
         </Button>
