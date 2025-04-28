@@ -7,9 +7,12 @@ import { Link } from 'react-router-dom';
 const Index: React.FC = () => {
   return (
     <div>
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 right-4 z-50 flex gap-2">
+        <Button asChild variant="outline">
+          <Link to="/next-steps">View Next Steps</Link>
+        </Button>
         <Button asChild>
-          <Link to="/project-details">View Project Details</Link>
+          <Link to="/project-details">Project Details</Link>
         </Button>
       </div>
       <Dashboard />
