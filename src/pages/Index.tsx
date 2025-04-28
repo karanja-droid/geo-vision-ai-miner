@@ -1,23 +1,20 @@
 
 import React from 'react';
 import Dashboard from '@/components/Dashboard';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index: React.FC = () => {
+  const { user, isTrialActive, daysLeftInTrial } = useAuth();
+
   return (
     <div>
-      <div className="fixed bottom-4 right-4 z-50 flex gap-2">
-        <Button asChild variant="outline">
-          <Link to="/next-steps">View Next Steps</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link to="/data-integration">Data Integration</Link>
-        </Button>
-        <Button asChild>
-          <Link to="/project-details">Project Details</Link>
-        </Button>
-      </div>
+      {isTrialActive && (
+        <div className="bg-blue-50 p-4 mb-4 rounded-lg mx-4 mt-4">
+          <p className="text-blue-800">
+            Welcome to your free trial! You have <strong>{daysLeftInTrial}</strong> day{daysLeftInTrial === 1 ? '' : 's'} left to explore all premium features.
+          </p>
+        </div>
+      )}
       <Dashboard />
     </div>
   );
