@@ -34,20 +34,44 @@ export interface DatasetInfo {
   uploadDate: string;
   description?: string;
   source?: string;
+  organization?: StakeholderOrganization;
+  validated?: boolean;
+  contributors?: string[];
 }
 
 export interface ModelInfo {
   id: string;
   name: string;
-  type: 'predictive' | 'computer-vision' | 'reinforcement';
+  type: 'predictive' | 'computer-vision' | 'reinforcement' | 'random-forest' | 'cnn' | 'geostatistical';
   target: string;
   accuracy: number;
   lastTrained: string;
   description?: string;
+  feedbackIncorporated?: boolean;
 }
 
-// New interfaces for role-based access control
-export type UserRole = 'geologist' | 'drill-team' | 'government' | 'investor' | 'admin';
+// Enhanced types for role-based access control
+export type UserRole = 
+  | 'geologist' 
+  | 'drill-team' 
+  | 'government' 
+  | 'investor' 
+  | 'admin'
+  | 'geological-survey'
+  | 'mining-company'
+  | 'remote-sensing'
+  | 'environmental'
+  | 'academic';
+
+export type StakeholderOrganization = 
+  | 'Geological Survey Department'
+  | 'Mining Company'
+  | 'Remote Sensing Agency'
+  | 'Environmental Regulator'
+  | 'Academic Institution'
+  | 'Government Agency'
+  | 'Investment Firm'
+  | 'Other';
 
 export interface User {
   id: string;
@@ -55,6 +79,7 @@ export interface User {
   email: string;
   role: UserRole;
   avatar?: string;
+  organization?: StakeholderOrganization;
 }
 
 export interface Task {
@@ -67,6 +92,10 @@ export interface Task {
   dueDate: string;
   createdAt: string;
   updatedAt: string;
+  aiTriggered?: boolean;
+  triggeredBy?: string;
+  conflictStatus?: 'none' | 'flagged' | 'resolving' | 'resolved';
+  stakeholders?: StakeholderOrganization[];
 }
 
 export interface Notification {
@@ -77,6 +106,8 @@ export interface Notification {
   read: boolean;
   createdAt: string;
   userId: string;
+  relatedTask?: string;
+  workflowTriggered?: boolean;
 }
 
 export interface Message {
@@ -97,6 +128,7 @@ export interface Channel {
   members: string[];
   createdAt: string;
   lastActivity: string;
+  stakeholderAccess?: StakeholderOrganization[];
 }
 
 export interface Document {
@@ -109,4 +141,78 @@ export interface Document {
   uploadedBy: string;
   uploadedAt: string;
   tags?: string[];
+  organization?: StakeholderOrganization;
+  accessRights?: UserRole[];
+}
+
+// New interfaces for AI/ML implementation
+export interface MineralProspectivityMap {
+  id: string;
+  name: string;
+  mineralType: 'copper' | 'cobalt' | 'gold' | 'iron' | 'zinc' | 'other';
+  confidence: number;
+  generatedAt: string;
+  features: {
+    geological: boolean;
+    geochemical: boolean;
+    remoteSensing: boolean;
+  };
+  modelType: string;
+  dataSourceIds: string[];
+}
+
+export interface DrillRecommendation {
+  id: string;
+  location: GeoPoint;
+  priority: 'low' | 'medium' | 'high';
+  expectedMineralType: 'copper' | 'cobalt' | 'gold' | 'iron' | 'zinc' | 'unknown';
+  expectedGrade: number;
+  depth: number;
+  costEstimate: number;
+  createdAt: string;
+  aiConfidence: number;
+}
+
+export interface RiskAssessment {
+  id: string;
+  type: 'environmental' | 'social' | 'regulatory' | 'operational';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  affectedArea: GeoPoint;
+  mitigationSuggestions: string[];
+  stakeholdersInvolved: StakeholderOrganization[];
+  createdAt: string;
+}
+
+export interface Workflow {
+  id: string;
+  name: string;
+  status: 'inactive' | 'active' | 'completed' | 'failed';
+  steps: WorkflowStep[];
+  createdAt: string;
+  updatedAt: string;
+  triggeredBy: 'ai' | 'user' | 'schedule';
+  stakeholdersInvolved: StakeholderOrganization[];
+}
+
+export interface WorkflowStep {
+  id: string;
+  name: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  assignedTo?: string[];
+  dueDate?: string;
+  dependsOn?: string[];
+  completedAt?: string;
+}
+
+export interface Conflict {
+  id: string;
+  type: 'claim-overlap' | 'regulatory' | 'environmental' | 'stakeholder';
+  severity: 'low' | 'medium' | 'high';
+  description: string;
+  partiesInvolved: StakeholderOrganization[];
+  status: 'identified' | 'reviewing' | 'resolving' | 'resolved';
+  resolutionSuggestions?: string[];
+  createdAt: string;
+  updatedAt: string;
 }

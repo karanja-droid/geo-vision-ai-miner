@@ -8,25 +8,114 @@ import ResultsVisualization from './ResultsVisualization';
 import RoleSelector from './RoleSelector';
 import TasksPanel from './TasksPanel';
 import CommunicationPanel from './CommunicationPanel';
+import StakeholderDataPanel from './StakeholderDataPanel';
+import WorkflowPanel from './WorkflowPanel';
+import ConflictResolutionPanel from './ConflictResolutionPanel';
+import AIModelPanel from './AIModelPanel';
 import { UserRole } from '@/types';
 
 const Dashboard: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole>('geologist');
 
-  // Function to determine which panels to show based on role
+  // Enhanced function to determine which panels to show based on role
   const getPanelVisibility = (role: UserRole) => {
+    const baseVisibility = {
+      map: true,
+      upload: false,
+      aiAnalysis: false,
+      results: false,
+      tasks: false,
+      communication: false,
+      stakeholderData: false,
+      workflow: false,
+      conflictResolution: false,
+      aiModel: false
+    };
+
     switch(role) {
       case 'geologist':
-        return { map: true, upload: true, analysis: true, results: true, tasks: true, communication: true };
+        return { 
+          ...baseVisibility, 
+          upload: true, 
+          aiAnalysis: true, 
+          results: true, 
+          tasks: true, 
+          communication: true, 
+          aiModel: true 
+        };
       case 'drill-team':
-        return { map: true, upload: false, analysis: false, results: true, tasks: true, communication: true };
+        return { 
+          ...baseVisibility,
+          results: true, 
+          tasks: true, 
+          communication: true,
+          workflow: true
+        };
       case 'government':
-        return { map: true, upload: false, analysis: false, results: true, tasks: false, communication: false };
+        return { 
+          ...baseVisibility,
+          results: true, 
+          conflictResolution: true, 
+          stakeholderData: true
+        };
       case 'investor':
-        return { map: true, upload: false, analysis: false, results: true, tasks: false, communication: false };
+        return { 
+          ...baseVisibility,
+          results: true,
+          aiModel: true
+        };
       case 'admin':
+        return { 
+          ...baseVisibility,
+          upload: true, 
+          aiAnalysis: true, 
+          results: true, 
+          tasks: true, 
+          communication: true,
+          stakeholderData: true,
+          workflow: true,
+          conflictResolution: true,
+          aiModel: true
+        };
+      case 'geological-survey':
+        return { 
+          ...baseVisibility,
+          results: true,
+          stakeholderData: true,
+          communication: true,
+          aiModel: true
+        };
+      case 'mining-company':
+        return { 
+          ...baseVisibility,
+          results: true,
+          tasks: true,
+          workflow: true,
+          conflictResolution: true
+        };
+      case 'remote-sensing':
+        return { 
+          ...baseVisibility,
+          upload: true,
+          stakeholderData: true,
+          aiModel: true
+        };
+      case 'environmental':
+        return { 
+          ...baseVisibility,
+          results: true,
+          conflictResolution: true,
+          aiModel: true
+        };
+      case 'academic':
+        return { 
+          ...baseVisibility,
+          stakeholderData: true,
+          aiModel: true,
+          results: true
+        };
       default:
-        return { map: true, upload: true, analysis: true, results: true, tasks: true, communication: true };
+        return baseVisibility;
     }
   };
 
@@ -43,15 +132,19 @@ const Dashboard: React.FC = () => {
           {/* Main Content Area */}
           <div className="col-span-12 lg:col-span-8">
             {panelVisibility.map && <Map className="mb-6" />}
-            {panelVisibility.results && <ResultsVisualization />}
+            {panelVisibility.results && <ResultsVisualization className="mb-6" />}
+            {panelVisibility.workflow && <WorkflowPanel className="mb-6" />}
+            {panelVisibility.aiModel && <AIModelPanel className="mb-6" />}
           </div>
           
           {/* Side Panels */}
           <div className="col-span-12 lg:col-span-4 space-y-6">
             {panelVisibility.upload && <UploadPanel />}
-            {panelVisibility.analysis && <AIAnalysisPanel />}
+            {panelVisibility.aiAnalysis && <AIAnalysisPanel />}
             {panelVisibility.tasks && <TasksPanel role={selectedRole} />}
             {panelVisibility.communication && <CommunicationPanel role={selectedRole} />}
+            {panelVisibility.stakeholderData && <StakeholderDataPanel />}
+            {panelVisibility.conflictResolution && <ConflictResolutionPanel />}
           </div>
         </div>
       </div>
