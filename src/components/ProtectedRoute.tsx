@@ -31,7 +31,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
   
   // Role-based access control
-  if (allowedRoles.length > 0 && user?.role && !allowedRoles.includes(user.role)) {
+  if (allowedRoles.length > 0 && user?.role && !allowedRoles.includes(user.role as UserRole)) {
     return (
       <div className="flex flex-col items-center justify-center h-screen p-4">
         <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-6 max-w-md text-center">
