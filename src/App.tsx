@@ -48,12 +48,15 @@ const App = () => (
                   </ProtectedRoute>
                 } />
                 <Route path="/next-steps" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['admin', 'geologist', 'drill-team']}>
                     <NextSteps />
                   </ProtectedRoute>
                 } />
                 <Route path="/data-integration" element={
-                  <ProtectedRoute requireSubscription={true}>
+                  <ProtectedRoute 
+                    requireSubscription={true} 
+                    allowedRoles={['admin', 'geologist', 'remote-sensing', 'academic']}
+                  >
                     <DataIntegration />
                   </ProtectedRoute>
                 } />
