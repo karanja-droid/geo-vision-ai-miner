@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { UserCheck, Shield, Check, X, Mail } from 'lucide-react';
+import { Shield, Check } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import ReCAPTCHA from 'react-google-recaptcha';
 
@@ -145,7 +146,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden p-4">
+    <div className="h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background image gallery with animation */}
       <div className="absolute inset-0 z-0">
         {backgroundImages.map((image, index) => (
@@ -159,55 +160,55 @@ const Login: React.FC = () => {
           />
         ))}
         {/* Overlay with caption */}
-        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-36">
-          <div className="text-white/80 text-lg font-light animate-fade-in max-w-md text-center px-4">
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-12">
+          <div className="text-white/80 text-sm font-light animate-fade-in max-w-md text-center px-4">
             {backgroundImages[currentBgIndex].caption}
           </div>
         </div>
       </div>
       
       {/* App name/branding */}
-      <div className="absolute top-10 left-0 right-0 text-center z-10">
-        <h1 className="text-3xl font-bold text-white drop-shadow-md">GeoVision AI Miner</h1>
-        <p className="text-white/80 mt-1">Advanced geological data analysis platform</p>
+      <div className="absolute top-6 left-0 right-0 text-center z-10">
+        <h1 className="text-2xl font-bold text-white drop-shadow-md">GeoVision AI Miner</h1>
+        <p className="text-white/80 text-xs mt-1">Advanced geological data analysis platform</p>
       </div>
       
       {/* Login Card */}
-      <Card className="w-full max-w-md relative z-10 bg-white/90 backdrop-blur-md shadow-2xl border-white/20">
-        <CardHeader className="space-y-1 flex flex-col items-center text-center">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
-            <Shield className="h-6 w-6 text-primary" />
+      <Card className="w-full max-w-sm mx-4 relative z-10 bg-white/90 backdrop-blur-md shadow-2xl border-white/20">
+        <CardHeader className="space-y-1 flex flex-col items-center text-center py-4">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 mb-2">
+            <Shield className="h-5 w-5 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-xl font-bold">
             {showForgotPassword ? "Reset Password" : "Welcome back"}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs">
             {showForgotPassword 
-              ? "Enter your email and we'll send you instructions to reset your password" 
-              : "Enter your email and password to access your account"}
+              ? "Enter your email for password reset instructions" 
+              : "Sign in to access your account"}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="py-2">
           {authError && !showForgotPassword && (
-            <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-3 mb-4 text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-2 mb-3 text-xs">
               {authError}
             </div>
           )}
           
           {showForgotPassword ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {resetEmailSent ? (
-                <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4 flex items-start">
-                  <Check className="h-5 w-5 mr-2 mt-0.5 text-green-500" />
+                <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 flex items-start text-xs">
+                  <Check className="h-4 w-4 mr-2 mt-0.5 text-green-500" />
                   <div>
                     <p className="font-medium">Password reset email sent!</p>
-                    <p className="text-sm mt-1">Please check your inbox and follow the instructions.</p>
+                    <p className="mt-1">Please check your inbox.</p>
                   </div>
                 </div>
               ) : (
                 <>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="forgot-email">Email</FormLabel>
+                  <div className="space-y-1">
+                    <FormLabel htmlFor="forgot-email" className="text-xs">Email</FormLabel>
                     <Input 
                       id="forgot-email"
                       type="email"
@@ -215,25 +216,26 @@ const Login: React.FC = () => {
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       disabled={isSubmitting}
+                      className="h-8 text-sm"
                     />
                   </div>
                   <Button 
                     onClick={handleForgotPassword} 
-                    className="w-full"
+                    className="w-full h-8 text-xs"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Sending..." : "Send reset link"}
                   </Button>
                 </>
               )}
-              <div className="text-center mt-4">
+              <div className="text-center mt-2">
                 <button
                   type="button" 
                   onClick={() => {
                     setShowForgotPassword(false);
                     setResetEmailSent(false);
                   }}
-                  className="text-sm text-primary hover:underline"
+                  className="text-xs text-primary hover:underline"
                   disabled={isSubmitting}
                 >
                   Back to login
@@ -242,21 +244,22 @@ const Login: React.FC = () => {
             </div>
           ) : (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
+                    <FormItem className="space-y-1">
+                      <FormLabel className="text-xs">Email</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="example@example.com" 
                           {...field} 
                           disabled={isSubmitting}
+                          className="h-8 text-sm"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -264,17 +267,18 @@ const Login: React.FC = () => {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
+                    <FormItem className="space-y-1">
+                      <FormLabel className="text-xs">Password</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
                           placeholder="******" 
                           {...field} 
                           disabled={isSubmitting}
+                          className="h-8 text-sm"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -283,23 +287,24 @@ const Login: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowForgotPassword(true)}
-                    className="text-sm text-primary hover:underline"
+                    className="text-xs text-primary hover:underline"
                   >
                     Forgot password?
                   </button>
                 </div>
                 
-                <div className="flex justify-center my-4">
+                <div className="flex justify-center my-2">
                   <ReCAPTCHA
                     ref={recaptchaRef}
                     sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // This is a Google-provided test key
                     onChange={onCaptchaChange}
+                    size="compact"
                   />
                 </div>
                 
                 <Button 
                   type="submit" 
-                  className="w-full"
+                  className="w-full h-8 text-xs"
                   disabled={isSubmitting || !captchaVerified}
                 >
                   {isSubmitting ? "Signing in..." : "Sign in"}
@@ -308,26 +313,24 @@ const Login: React.FC = () => {
             </Form>
           )}
         </CardContent>
-        <CardFooter className="flex flex-col space-y-2 text-center">
-          <div className="text-sm text-muted-foreground">
-            Demo credentials: admin@example.com / password123 (Premium account)
+        <CardFooter className="flex flex-col space-y-1 text-center py-3">
+          <div className="text-xs text-muted-foreground">
+            Demo: admin@example.com / password123
           </div>
-          <div className="text-sm">
+          <div className="text-xs">
             Don't have an account?{" "}
             <Link to="/signup" className="text-primary hover:underline">
-              Sign up for a free trial
+              Sign up for free
             </Link>
           </div>
         </CardFooter>
       </Card>
       
       {/* Industry keywords floating in the background */}
-      <div className="absolute bottom-4 left-4 right-4 flex justify-center flex-wrap gap-2 z-10">
-        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Geological Surveys</span>
-        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Remote Sensing</span>
-        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Mineral Detection</span>
-        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">AI Analysis</span>
-        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Exploration Data</span>
+      <div className="absolute bottom-2 left-0 right-0 flex justify-center flex-wrap gap-1 z-10">
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-2 py-0.5 rounded-full text-[10px]">Geological Surveys</span>
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-2 py-0.5 rounded-full text-[10px]">Remote Sensing</span>
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-2 py-0.5 rounded-full text-[10px]">Mineral Detection</span>
       </div>
     </div>
   );
