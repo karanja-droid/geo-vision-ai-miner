@@ -1,5 +1,4 @@
-
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,6 +19,30 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+// Background images for the rotating gallery
+const backgroundImages = [
+  {
+    url: "https://images.unsplash.com/photo-1624355851366-8c1dc2736c6e?q=80&w=1800",
+    alt: "Mining machinery in operation",
+    caption: "Advanced mining operations"
+  },
+  {
+    url: "https://images.unsplash.com/photo-1629873981360-17a8f031075c?q=80&w=1800",
+    alt: "Geological survey team",
+    caption: "Field survey teams collecting data"
+  },
+  {
+    url: "https://images.unsplash.com/photo-1578146055250-a64e7a4382a6?q=80&w=1800",
+    alt: "Drone survey equipment",
+    caption: "Remote sensing technology"
+  },
+  {
+    url: "https://images.unsplash.com/photo-1614108831136-f8b5d49c10f8?q=80&w=1800",
+    alt: "Mining data visualization",
+    caption: "AI-powered data analysis"
+  }
+];
+
 const Login: React.FC = () => {
   const { signIn, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +53,16 @@ const Login: React.FC = () => {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const { toast } = useToast();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+
+  React.useEffect(() => {
+    // Rotate background images every 8 seconds
+    const intervalId = setInterval(() => {
+      setCurrentBgIndex(prev => (prev + 1) % backgroundImages.length);
+    }, 8000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -112,8 +145,35 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden p-4">
+      {/* Background image gallery with animation */}
+      <div className="absolute inset-0 z-0">
+        {backgroundImages.map((image, index) => (
+          <div 
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-2000 bg-cover bg-center ${
+              index === currentBgIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{ backgroundImage: `url(${image.url})` }}
+            aria-hidden="true"
+          />
+        ))}
+        {/* Overlay with caption */}
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-36">
+          <div className="text-white/80 text-lg font-light animate-fade-in max-w-md text-center px-4">
+            {backgroundImages[currentBgIndex].caption}
+          </div>
+        </div>
+      </div>
+      
+      {/* App name/branding */}
+      <div className="absolute top-10 left-0 right-0 text-center z-10">
+        <h1 className="text-3xl font-bold text-white drop-shadow-md">GeoVision AI Miner</h1>
+        <p className="text-white/80 mt-1">Advanced geological data analysis platform</p>
+      </div>
+      
+      {/* Login Card */}
+      <Card className="w-full max-w-md relative z-10 bg-white/90 backdrop-blur-md shadow-2xl border-white/20">
         <CardHeader className="space-y-1 flex flex-col items-center text-center">
           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
             <Shield className="h-6 w-6 text-primary" />
@@ -260,6 +320,15 @@ const Login: React.FC = () => {
           </div>
         </CardFooter>
       </Card>
+      
+      {/* Industry keywords floating in the background */}
+      <div className="absolute bottom-4 left-4 right-4 flex justify-center flex-wrap gap-2 z-10">
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Geological Surveys</span>
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Remote Sensing</span>
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Mineral Detection</span>
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">AI Analysis</span>
+        <span className="bg-white/10 backdrop-blur-sm text-white/70 px-3 py-1 rounded-full text-xs">Exploration Data</span>
+      </div>
     </div>
   );
 };
