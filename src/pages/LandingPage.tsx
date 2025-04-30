@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -187,6 +186,9 @@ const LandingPage: React.FC = () => {
           <div className="border-t border-slate-800 mt-8 pt-8 text-center">
             <p className="text-slate-400">
               &copy; 2025 GeoVision AI Miner. All rights reserved.
+            </p>
+            <p className="text-slate-500 text-sm mt-2">
+              All content, code, data, and materials on this site are the exclusive property of Big Box Investment Limited. Unauthorized use is prohibited.
             </p>
           </div>
         </div>

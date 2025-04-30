@@ -1,4 +1,11 @@
+
 # Welcome to your Lovable project
+
+## License and Copyright
+
+**© 2025 Big Box Investment Limited. All rights reserved.**
+
+This project and all its contents including but not limited to source code, documentation, designs, and assets are the exclusive property of Big Box Investment Limited. Unauthorized use, reproduction, modification, distribution, or display is strictly prohibited.
 
 ## Project info
 
