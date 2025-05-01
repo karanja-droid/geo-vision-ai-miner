@@ -68,7 +68,7 @@ const Signup: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert variant="warning" className="mb-4">
+          <Alert variant="destructive" className="mb-4">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               This is a demo app with mock authentication. Do not enter real passwords.

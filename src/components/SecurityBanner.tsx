@@ -5,7 +5,7 @@ import { ShieldAlert } from 'lucide-react';
 
 const SecurityBanner: React.FC = () => {
   return (
-    <Alert variant="warning" className="mb-4">
+    <Alert variant="destructive" className="mb-4">
       <ShieldAlert className="h-4 w-4" />
       <AlertTitle>Development Environment</AlertTitle>
       <AlertDescription>
