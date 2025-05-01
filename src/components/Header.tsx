@@ -22,6 +22,13 @@ const Header: React.FC = () => {
         </div>
 
         <div className="flex items-center">
+          {/* Public navigation */}
+          <nav className="hidden md:flex items-center space-x-2 mr-4">
+            <Button variant="ghost" className="text-muted-foreground" asChild>
+              <Link to="/about">About Us</Link>
+            </Button>
+          </nav>
+
           {isAuthenticated && (
             <>
               <div className="relative mr-4 w-64">

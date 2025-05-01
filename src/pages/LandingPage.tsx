@@ -182,7 +182,7 @@ const LandingPage: React.FC = () => {
             <div>
               <h3 className="font-bold text-lg mb-4">Company</h3>
               <ul className="space-y-2">
-                <li><Link to="/" className="text-slate-400 hover:text-white">About Us</Link></li>
+                <li><Link to="/about" className="text-slate-400 hover:text-white">About Us</Link></li>
                 <li><Link to="/" className="text-slate-400 hover:text-white">Careers</Link></li>
                 <li><Link to="/" className="text-slate-400 hover:text-white">Contact</Link></li>
                 <li><Link to="/" className="text-slate-400 hover:text-white">Blog</Link></li>
@@ -204,7 +204,7 @@ const LandingPage: React.FC = () => {
               &copy; 2025 GeoVision AI Miner. All rights reserved.
             </p>
             <p className="text-slate-500 text-sm mt-2">
-              All content, code, data, and materials on this site are the exclusive property of Big Box Investment Limited. Unauthorized use is prohibited.
+              GeoVision AI Miner is a subsidiary of Big Box Investment Limited. All content, code, data, and materials on this site are the exclusive property of Big Box Investment Limited. Unauthorized use is prohibited.
             </p>
           </div>
         </div>

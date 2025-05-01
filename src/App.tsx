@@ -14,6 +14,7 @@ import Signup from "./pages/Signup";
 import Upgrade from "./pages/Upgrade";
 import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AboutUs from "./pages/AboutUs";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SubscriptionBanner from "./components/SubscriptionBanner";
@@ -53,6 +54,7 @@ const App = () => {
                       <Route path="/" element={<LandingPage />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
+                      <Route path="/about" element={<AboutUs />} />
                       <Route path="*" element={<Navigate to="/" />} />
                     </>
                   ) : (
@@ -62,6 +64,7 @@ const App = () => {
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/upgrade" element={<Upgrade />} />
+                      <Route path="/about" element={<AboutUs />} />
                       
                       {/* Protected routes */}
                       <Route path="/dashboard" element={
