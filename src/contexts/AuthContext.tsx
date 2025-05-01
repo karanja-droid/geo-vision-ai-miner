@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import { Session, User } from '@supabase/supabase-js';
 
 export type SubscriptionTier = 'free' | 'basic' | 'premium';
 
@@ -31,44 +33,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// WARNING: This is a mock implementation for demo purposes only.
-// In a production environment, you should:
-// 1. Never store passwords in plaintext
-// 2. Use a secure authentication service
-// 3. Implement proper encryption and token-based authentication
-// 4. Use HTTPS for all API requests
-// 5. Add CSRF protection
-
-// Mock user data for demonstration purposes
-const MOCK_USERS = [
-  {
-    id: '1',
-    email: 'admin@example.com',
-    // In a real implementation, this would be a hashed password
-    password: 'password123',
-    name: 'Admin User',
-    role: 'admin',
-    subscription: {
-      tier: 'premium' as SubscriptionTier,
-      trialEnd: null,
-      isActive: true
-    }
-  },
-  {
-    id: '2',
-    email: 'user@example.com',
-    // In a real implementation, this would be a hashed password
-    password: 'password123',
-    name: 'Regular User',
-    role: 'geologist',
-    subscription: {
-      tier: 'free' as SubscriptionTier,
-      trialEnd: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
-      isActive: true
-    }
-  }
-];
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,29 +41,81 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check for existing session on initial load
   useEffect(() => {
-    const checkSession = () => {
+    const checkSession = async () => {
       try {
-        const storedUser = localStorage.getItem('geoUser');
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          // Convert string date back to Date object if it exists
-          if (parsedUser.subscription?.trialEnd) {
-            parsedUser.subscription.trialEnd = new Date(parsedUser.subscription.trialEnd);
-          }
-          setUser(parsedUser);
+        setLoading(true);
+        
+        // Get session from Supabase
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          await handleUserSession(session);
         }
       } catch (error) {
-        console.error("Failed to parse stored user:", error);
-        localStorage.removeItem('geoUser');
+        console.error("Auth session error:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    // Add a small delay to prevent immediate loading flash
-    const timer = setTimeout(checkSession, 100);
-    return () => clearTimeout(timer);
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          await handleUserSession(session);
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  // Extract user data from session and get profile data from database
+  const handleUserSession = async (session: Session) => {
+    try {
+      const authUser = session.user;
+      
+      // Get additional user data from profiles table
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('name, role, subscription_tier, trial_end_date')
+        .eq('id', authUser.id)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      // Create user object with combined auth and profile data
+      const userData: AuthUser = {
+        id: authUser.id,
+        email: authUser.email || '',
+        name: profile?.name || authUser.email?.split('@')[0] || 'User',
+        role: profile?.role || 'user',
+        subscription: {
+          tier: (profile?.subscription_tier as SubscriptionTier) || 'free',
+          trialEnd: profile?.trial_end_date ? new Date(profile.trial_end_date) : null,
+          isActive: true
+        }
+      };
+
+      setUser(userData);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      toast({
+        title: "Error loading profile",
+        description: "There was a problem loading your profile data",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Calculate days left in trial
   const daysLeftInTrial = user?.subscription.trialEnd 
@@ -115,29 +131,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      // Simulate API request delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
       
-      // Find user in mock data - in a real app, this would be an API call
-      // with proper password hashing and validation
-      const foundUser = MOCK_USERS.find(u => u.email === email.trim().toLowerCase() && u.password === password);
-      
-      if (!foundUser) {
-        throw new Error('Invalid email or password');
+      if (error) {
+        throw new Error(error.message);
       }
-      
-      // Create a user object without the password
-      const { password: _, ...userWithoutPassword } = foundUser;
-      
-      // Store in local storage - in a real app, this would be a secure token
-      localStorage.setItem('geoUser', JSON.stringify(userWithoutPassword));
-      
-      // Update state
-      setUser(userWithoutPassword);
-      
+
       toast({
         title: "Login successful",
-        description: `Welcome back, ${userWithoutPassword.name}!`,
+        description: `Welcome back, ${user?.name || email.split('@')[0] || 'User'}!`,
       });
       
       navigate('/');
@@ -148,6 +153,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -156,43 +162,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, name: string) => {
     setLoading(true);
     try {
-      // Simulate API request delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 1. Create the user in Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password
+      });
       
-      // Normalize and validate email
-      const normalizedEmail = email.trim().toLowerCase();
-      if (!normalizedEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        throw new Error('Please enter a valid email address');
+      if (authError) {
+        throw new Error(authError.message);
       }
-      
-      // Validate password strength
-      if (password.length < 8) {
-        throw new Error('Password must be at least 8 characters long');
+
+      if (!authData.user) {
+        throw new Error('User registration failed');
       }
-      
-      // Check if user already exists
-      if (MOCK_USERS.some(u => u.email === normalizedEmail)) {
-        throw new Error('User with this email already exists');
+
+      // 2. Create a profile record for the new user
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          name,
+          role: 'geologist',
+          subscription_tier: 'free',
+          trial_end_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days from now
+        });
+
+      if (profileError) {
+        // If profile creation fails, we should ideally delete the auth user,
+        // but Supabase doesn't offer this API publicly, so we'll log the error
+        console.error("Failed to create user profile:", profileError);
+        throw new Error('Failed to set up your account');
       }
-      
-      // Create new user with trial subscription
-      const newUser = {
-        id: `user-${Date.now()}`,
-        email: normalizedEmail,
-        name,
-        role: 'geologist',
-        subscription: {
-          tier: 'free' as SubscriptionTier,
-          trialEnd: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
-          isActive: true
-        }
-      };
-      
-      // Store in local storage - in a real app, this would be handled securely on the server
-      localStorage.setItem('geoUser', JSON.stringify(newUser));
-      
-      // Update state
-      setUser(newUser);
       
       toast({
         title: "Account created",
@@ -207,6 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -214,10 +215,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      // Remove from local storage
-      localStorage.removeItem('geoUser');
+      const { error } = await supabase.auth.signOut();
       
-      // Update state
+      if (error) {
+        throw new Error(error.message);
+      }
+      
       setUser(null);
       
       toast({

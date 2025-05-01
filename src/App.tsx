@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Upgrade from "./pages/Upgrade";
 import LandingPage from "./pages/LandingPage";
+import AdminDashboard from "./pages/AdminDashboard";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SubscriptionBanner from "./components/SubscriptionBanner";
@@ -84,6 +85,13 @@ const App = () => {
                           allowedRoles={['admin', 'geologist', 'remote-sensing', 'academic']}
                         >
                           <DataIntegration />
+                        </ProtectedRoute>
+                      } />
+                      
+                      {/* Admin Dashboard */}
+                      <Route path="/admin" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <AdminDashboard />
                         </ProtectedRoute>
                       } />
                       

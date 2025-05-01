@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Link } from 'react-router-dom';
-import { UserRound, Settings, LogOut } from 'lucide-react';
+import { UserRound, Settings, LogOut, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const UserMenu: React.FC = () => {
@@ -56,6 +56,9 @@ const UserMenu: React.FC = () => {
             <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
             <div className="flex items-center mt-1.5">
               {getPlanBadge()}
+              {user.role === 'admin' && (
+                <Badge variant="outline" className="ml-2 border-primary text-primary">Admin</Badge>
+              )}
             </div>
           </div>
         </DropdownMenuLabel>
@@ -73,6 +76,14 @@ const UserMenu: React.FC = () => {
               <span>Subscription</span>
             </Link>
           </DropdownMenuItem>
+          {user.role === 'admin' && (
+            <DropdownMenuItem asChild>
+              <Link to="/admin">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>Admin Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>
