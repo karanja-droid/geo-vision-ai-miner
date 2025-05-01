@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Search, Database, Settings, Brain } from "lucide-react";
+import { Search, Database, Settings, Brain, Home } from "lucide-react";
 import UserMenu from './UserMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
@@ -22,8 +22,14 @@ const Header: React.FC = () => {
         </div>
 
         <div className="flex items-center">
-          {/* Public navigation */}
-          <nav className="hidden md:flex items-center space-x-2 mr-4">
+          {/* Public navigation - available to all users */}
+          <nav className="flex items-center space-x-2 mr-4">
+            <Button variant="ghost" className="text-muted-foreground" asChild>
+              <Link to="/">
+                <Home size={16} className="mr-2" />
+                Home
+              </Link>
+            </Button>
             <Button variant="ghost" className="text-muted-foreground" asChild>
               <Link to="/about">About Us</Link>
             </Button>
