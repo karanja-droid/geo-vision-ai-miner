@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
 
 export type SubscriptionTier = 'free' | 'basic' | 'premium';
@@ -44,6 +44,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const checkSession = async () => {
       try {
         setLoading(true);
+        
+        // Check if Supabase is properly configured
+        if (!isSupabaseConfigured()) {
+          console.warn('Supabase is not properly configured. Using demo mode.');
+          setLoading(false);
+          return;
+        }
         
         // Get session from Supabase
         const { data: { session } } = await supabase.auth.getSession();
@@ -131,6 +138,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
+      // Check if Supabase is properly configured
+      if (!isSupabaseConfigured()) {
+        // Demo mode - simulate successful login
+        setTimeout(() => {
+          const demoUser: AuthUser = {
+            id: 'demo-user-id',
+            email: email,
+            name: email.split('@')[0] || 'Demo User',
+            role: 'geologist',
+            subscription: {
+              tier: 'free',
+              trialEnd: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+              isActive: true
+            }
+          };
+          setUser(demoUser);
+          
+          toast({
+            title: "Demo login successful",
+            description: `Welcome, ${demoUser.name}! (Demo Mode)`,
+          });
+          
+          navigate('/');
+        }, 800);
+        return;
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -162,6 +196,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, name: string) => {
     setLoading(true);
     try {
+      // Check if Supabase is properly configured
+      if (!isSupabaseConfigured()) {
+        // Demo mode - simulate successful sign up
+        setTimeout(() => {
+          const demoUser: AuthUser = {
+            id: 'demo-user-id',
+            email: email,
+            name: name,
+            role: 'geologist',
+            subscription: {
+              tier: 'free',
+              trialEnd: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+              isActive: true
+            }
+          };
+          setUser(demoUser);
+          
+          toast({
+            title: "Demo account created",
+            description: "Your 10-day free trial has started! (Demo Mode)",
+          });
+          
+          navigate('/');
+        }, 800);
+        return;
+      }
+      
       // 1. Create the user in Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -215,6 +276,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
+      if (!isSupabaseConfigured()) {
+        // Demo mode - simulate successful logout
+        setUser(null);
+        toast({
+          title: "Logged out",
+          description: "You have been logged out successfully. (Demo Mode)",
+        });
+        navigate('/login');
+        return;
+      }
+      
       const { error } = await supabase.auth.signOut();
       
       if (error) {
