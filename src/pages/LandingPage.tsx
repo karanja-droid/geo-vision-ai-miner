@@ -131,10 +131,26 @@ const LandingPage: React.FC = () => {
           </p>
           
           <div className="flex flex-wrap justify-center gap-8 items-center">
-            <ComplianceBadge name="JORC Code" description="Australia/International" />
-            <ComplianceBadge name="NI 43-101" description="Canada/International" />
-            <ComplianceBadge name="SAMREC" description="South Africa" />
-            <ComplianceBadge name="UNFC" description="United Nations" />
+            <ComplianceBadge 
+              name="JORC Code" 
+              description="Australia/International" 
+              url="https://www.jorc.org/codes.asp"
+            />
+            <ComplianceBadge 
+              name="NI 43-101" 
+              description="Canada/International" 
+              url="https://www.osc.ca/en/industry/companies-and-investment-funds/mining-companies/ni-43-101-standards-disclosure-mineral-projects"
+            />
+            <ComplianceBadge 
+              name="SAMREC" 
+              description="South Africa" 
+              url="https://www.samcode.co.za/samcode-ssc/samrec"
+            />
+            <ComplianceBadge 
+              name="UNFC" 
+              description="United Nations" 
+              url="https://unece.org/sustainable-energy/unfc-and-sustainable-resource-management"
+            />
           </div>
         </div>
       </div>
@@ -218,14 +234,23 @@ const FeatureCard: React.FC<{
 const ComplianceBadge: React.FC<{
   name: string;
   description: string;
-}> = ({ name, description }) => {
+  url: string;
+}> = ({ name, description, url }) => {
   return (
     <div className="flex flex-col items-center">
-      <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center border-2 border-slate-200 mb-2">
-        <Shield className="h-12 w-12 text-geo-blue" />
-      </div>
-      <h3 className="font-semibold">{name}</h3>
-      <p className="text-sm text-slate-500">{description}</p>
+      <a 
+        href={url} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="group"
+        aria-label={`Learn more about ${name}`}
+      >
+        <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center border-2 border-slate-200 mb-2 transition-all group-hover:border-geo-blue group-hover:shadow-md">
+          <Shield className="h-12 w-12 text-geo-blue" />
+        </div>
+        <h3 className="font-semibold text-center">{name}</h3>
+        <p className="text-sm text-slate-500 text-center">{description}</p>
+      </a>
     </div>
   );
 };
