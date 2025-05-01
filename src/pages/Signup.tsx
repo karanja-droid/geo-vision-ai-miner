@@ -9,12 +9,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  password: z.string().min(8, { message: 'Password must be at least 8 characters.' })
+    .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter.' })
+    .regex(/[0-9]/, { message: 'Password must contain at least one number.' }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -38,6 +41,12 @@ const Signup: React.FC = () => {
   });
 
   const onSubmit = async (values: SignupFormValues) => {
+    // Check for insecure connection
+    if (process.env.NODE_ENV === "production" && window.location.protocol !== "https:") {
+      alert("Warning: Submitting sensitive information over an insecure connection.");
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
       await signUp(values.email, values.password, values.name);
@@ -59,6 +68,13 @@ const Signup: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <Alert variant="warning" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              This is a demo app with mock authentication. Do not enter real passwords.
+            </AlertDescription>
+          </Alert>
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -72,6 +88,7 @@ const Signup: React.FC = () => {
                         placeholder="John Doe" 
                         {...field} 
                         disabled={isSubmitting}
+                        autoComplete="name"
                       />
                     </FormControl>
                     <FormMessage />
@@ -86,9 +103,11 @@ const Signup: React.FC = () => {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input 
+                        type="email"
                         placeholder="example@example.com" 
                         {...field} 
                         disabled={isSubmitting}
+                        autoComplete="email"
                       />
                     </FormControl>
                     <FormMessage />
@@ -104,9 +123,10 @@ const Signup: React.FC = () => {
                     <FormControl>
                       <Input 
                         type="password" 
-                        placeholder="******" 
+                        placeholder="••••••••" 
                         {...field} 
                         disabled={isSubmitting}
+                        autoComplete="new-password"
                       />
                     </FormControl>
                     <FormMessage />
@@ -122,9 +142,10 @@ const Signup: React.FC = () => {
                     <FormControl>
                       <Input 
                         type="password" 
-                        placeholder="******" 
+                        placeholder="••••••••" 
                         {...field} 
                         disabled={isSubmitting}
+                        autoComplete="new-password"
                       />
                     </FormControl>
                     <FormMessage />

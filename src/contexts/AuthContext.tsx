@@ -31,11 +31,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// WARNING: This is a mock implementation for demo purposes only.
+// In a production environment, you should:
+// 1. Never store passwords in plaintext
+// 2. Use a secure authentication service
+// 3. Implement proper encryption and token-based authentication
+// 4. Use HTTPS for all API requests
+// 5. Add CSRF protection
+
 // Mock user data for demonstration purposes
 const MOCK_USERS = [
   {
     id: '1',
     email: 'admin@example.com',
+    // In a real implementation, this would be a hashed password
     password: 'password123',
     name: 'Admin User',
     role: 'admin',
@@ -48,6 +57,7 @@ const MOCK_USERS = [
   {
     id: '2',
     email: 'user@example.com',
+    // In a real implementation, this would be a hashed password
     password: 'password123',
     name: 'Regular User',
     role: 'geologist',
@@ -68,24 +78,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Check for existing session on initial load
   useEffect(() => {
     const checkSession = () => {
-      const storedUser = localStorage.getItem('geoUser');
-      if (storedUser) {
-        try {
+      try {
+        const storedUser = localStorage.getItem('geoUser');
+        if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           // Convert string date back to Date object if it exists
           if (parsedUser.subscription?.trialEnd) {
             parsedUser.subscription.trialEnd = new Date(parsedUser.subscription.trialEnd);
           }
           setUser(parsedUser);
-        } catch (error) {
-          console.error("Failed to parse stored user:", error);
-          localStorage.removeItem('geoUser');
         }
+      } catch (error) {
+        console.error("Failed to parse stored user:", error);
+        localStorage.removeItem('geoUser');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    checkSession();
+    // Add a small delay to prevent immediate loading flash
+    const timer = setTimeout(checkSession, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   // Calculate days left in trial
@@ -105,8 +118,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Simulate API request delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Find user in mock data
-      const foundUser = MOCK_USERS.find(u => u.email === email && u.password === password);
+      // Find user in mock data - in a real app, this would be an API call
+      // with proper password hashing and validation
+      const foundUser = MOCK_USERS.find(u => u.email === email.trim().toLowerCase() && u.password === password);
       
       if (!foundUser) {
         throw new Error('Invalid email or password');
@@ -115,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Create a user object without the password
       const { password: _, ...userWithoutPassword } = foundUser;
       
-      // Store in local storage
+      // Store in local storage - in a real app, this would be a secure token
       localStorage.setItem('geoUser', JSON.stringify(userWithoutPassword));
       
       // Update state
@@ -145,15 +159,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Simulate API request delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Normalize and validate email
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        throw new Error('Please enter a valid email address');
+      }
+      
+      // Validate password strength
+      if (password.length < 8) {
+        throw new Error('Password must be at least 8 characters long');
+      }
+      
       // Check if user already exists
-      if (MOCK_USERS.some(u => u.email === email)) {
+      if (MOCK_USERS.some(u => u.email === normalizedEmail)) {
         throw new Error('User with this email already exists');
       }
       
       // Create new user with trial subscription
       const newUser = {
         id: `user-${Date.now()}`,
-        email,
+        email: normalizedEmail,
         name,
         role: 'geologist',
         subscription: {
@@ -163,7 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       };
       
-      // Store in local storage
+      // Store in local storage - in a real app, this would be handled securely on the server
       localStorage.setItem('geoUser', JSON.stringify(newUser));
       
       // Update state

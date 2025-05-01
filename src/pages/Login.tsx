@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -81,6 +80,15 @@ const Login: React.FC = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // Security warning
+    if (process.env.NODE_ENV === "production" && window.location.protocol !== "https:") {
+      toast({
+        title: "Security Warning",
+        description: "This form should only be submitted over HTTPS.",
+        variant: "destructive",
+      });
     }
 
     setIsSubmitting(true);
