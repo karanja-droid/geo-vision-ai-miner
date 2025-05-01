@@ -9,7 +9,7 @@ This project and all its contents including but not limited to source code, docu
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/6efbb647-1347-49fa-bcb1-0ba62fe9a3d5
+**GeoVision AI Miner**: AI-Powered Geological Exploration Platform
 
 ## How can I edit this code?
 
@@ -17,7 +17,7 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6efbb647-1347-49fa-bcb1-0ba62fe9a3d5) and start prompting.
+Visit the Lovable platform and start prompting.
 
 Changes made via Lovable will be committed automatically to this repo.
 
@@ -69,7 +69,7 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/6efbb647-1347-49fa-bcb1-0ba62fe9a3d5) and click on Share -> Publish.
+Simply open the Lovable platform and click on Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
