@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
 import { Database, Download, Eye, Trash2, MapPin, FileText } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 
@@ -21,6 +22,19 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
   onDeleteDataset,
   onViewDocuments
 }) => {
+  const { toast } = useToast();
+  
+  const handleDownload = () => {
+    // Call the passed download handler
+    onDownloadDataset(dataset.id);
+    
+    // Show toast notification
+    toast({
+      title: "Download started",
+      description: `Downloading ${dataset.name} (${dataset.size})`,
+    });
+  };
+  
   return (
     <Card key={dataset.id} className="flex flex-col">
       <CardHeader className="pb-2">
@@ -82,7 +96,7 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => onDownloadDataset(dataset.id)}
+            onClick={handleDownload}
           >
             <Download className="h-4 w-4 mr-1" /> Download
           </Button>

@@ -3,6 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useToast } from "@/components/ui/use-toast";
 import { Download, File } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 
@@ -17,7 +18,52 @@ export const RelatedDocsDialog: React.FC<RelatedDocsDialogProps> = ({
   open, 
   onOpenChange 
 }) => {
+  const { toast } = useToast();
+  
   if (!dataset) return null;
+  
+  const handleDownloadDocument = (doc: any) => {
+    try {
+      // In a real app, this would fetch the actual file from a server
+      // For this demo, we'll create a simple JSON file with document metadata
+      
+      const documentData = {
+        id: doc.id,
+        name: doc.name,
+        type: doc.type,
+        size: doc.size,
+        metadata: {
+          downloadedAt: new Date().toISOString(),
+          relatedDataset: dataset.name
+        }
+      };
+      
+      // Convert to JSON and create download
+      const jsonString = JSON.stringify(documentData, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${doc.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download started",
+        description: `Downloading ${doc.name}`,
+      });
+    } catch (error) {
+      console.error("Failed to download document:", error);
+      toast({
+        title: "Download failed",
+        description: "There was a problem downloading the document.",
+        variant: "destructive",
+      });
+    }
+  };
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -47,7 +93,11 @@ export const RelatedDocsDialog: React.FC<RelatedDocsDialogProps> = ({
                   <TableCell>{doc.type}</TableCell>
                   <TableCell>{doc.size}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleDownloadDocument(doc)}
+                    >
                       <Download className="h-4 w-4 mr-1" /> Download
                     </Button>
                   </TableCell>

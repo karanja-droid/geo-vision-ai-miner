@@ -27,3 +27,17 @@ export interface Document {
   organization?: StakeholderOrganization;
   accessRights?: import('./users').UserRole[];
 }
+
+export interface ExportFormat {
+  type: 'csv' | 'json' | 'geojson' | 'shapefile' | 'kml' | 'geotiff';
+  mimeType: string;
+  extension: string;
+  description: string;
+}
+
+export interface ExportOptions {
+  includeMetadata: boolean;
+  includeAnalysis: boolean;
+  includeRawData: boolean;
+  format: string;
+}

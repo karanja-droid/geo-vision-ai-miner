@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useToast } from "@/components/ui/use-toast";
 import { Download, File } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 
@@ -18,7 +18,87 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   open, 
   onOpenChange 
 }) => {
+  const { toast } = useToast();
+  
   if (!dataset) return null;
+  
+  const handleDownloadDocument = (doc: any) => {
+    try {
+      // In a real app, this would fetch the actual file from a server
+      // For this demo, we'll create a simple JSON file with document metadata
+      
+      const documentData = {
+        id: doc.id,
+        name: doc.name,
+        type: doc.type,
+        size: doc.size,
+        metadata: {
+          downloadedAt: new Date().toISOString(),
+          relatedDataset: dataset.name
+        }
+      };
+      
+      // Convert to JSON and create download
+      const jsonString = JSON.stringify(documentData, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${doc.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download started",
+        description: `Downloading ${doc.name}`,
+      });
+    } catch (error) {
+      console.error("Failed to download document:", error);
+      toast({
+        title: "Download failed",
+        description: "There was a problem downloading the document.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleExportData = () => {
+    try {
+      // Create a dataset export with all info
+      const exportData = {
+        ...dataset,
+        exportedAt: new Date().toISOString()
+      };
+      
+      // Convert to JSON and download
+      const jsonString = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${dataset.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export successful",
+        description: `Dataset ${dataset.name} has been exported`,
+      });
+    } catch (error) {
+      console.error("Failed to export dataset:", error);
+      toast({
+        title: "Export failed",
+        description: "There was a problem exporting the dataset.",
+        variant: "destructive",
+      });
+    }
+  };
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -86,7 +166,11 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
                       <TableCell>{doc.type}</TableCell>
                       <TableCell>{doc.size}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDownloadDocument(doc)}
+                        >
                           <Download className="h-4 w-4 mr-1" /> Download
                         </Button>
                       </TableCell>
@@ -100,7 +184,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-          <Button>Export Data</Button>
+          <Button onClick={handleExportData}>Export Data</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

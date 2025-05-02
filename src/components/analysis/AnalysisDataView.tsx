@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/components/ui/use-toast";
 import { Download } from "lucide-react";
 import { AnalysisResult } from '@/types/analysis';
 
@@ -10,6 +12,8 @@ interface AnalysisDataViewProps {
 }
 
 const AnalysisDataView: React.FC<AnalysisDataViewProps> = ({ results }) => {
+  const { toast } = useToast();
+
   // Function to format timestamp
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleString('en-US', {
@@ -33,15 +37,109 @@ const AnalysisDataView: React.FC<AnalysisDataViewProps> = ({ results }) => {
     }
   };
 
-  // Handle exporting data
+  // Handle exporting data as CSV
   const handleExportCSV = () => {
-    console.log('Exporting data as CSV');
-    // Implementation would go here
+    try {
+      // Create CSV header
+      let csvContent = "data:text/csv;charset=utf-8,ID,Layer,Type,Mineral,Confidence,Timestamp,Anomalies\n";
+      
+      // Add data rows
+      results.forEach(result => {
+        const row = [
+          result.id,
+          result.layerId,
+          result.modelType,
+          result.mineralType,
+          (Number(result.confidence) * 100).toFixed(1) + "%",
+          new Date(result.timestamp).toISOString(),
+          result.data.anomalies
+        ];
+        csvContent += row.join(",") + "\n";
+      });
+      
+      // Create download link
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `analysis-data-${new Date().getTime()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Export successful",
+        description: "Data has been exported as CSV.",
+      });
+    } catch (error) {
+      console.error("Failed to export as CSV:", error);
+      toast({
+        title: "Export failed",
+        description: "There was a problem exporting the data as CSV.",
+        variant: "destructive",
+      });
+    }
   };
-
+  
+  // Handle exporting data as GeoJSON
   const handleExportGeoJSON = () => {
-    console.log('Exporting data as GeoJSON');
-    // Implementation would go here
+    try {
+      // Create GeoJSON structure
+      const geoJSON = {
+        type: "FeatureCollection",
+        features: results.flatMap(result => {
+          // Create a feature for each hotspot in the result
+          if (result.data?.hotspots) {
+            return result.data.hotspots.map((hotspot: any) => ({
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [hotspot.lng, hotspot.lat]
+              },
+              properties: {
+                id: result.id,
+                layerId: result.layerId,
+                modelType: result.modelType,
+                mineralType: result.mineralType,
+                confidence: result.confidence,
+                timestamp: result.timestamp,
+                hotspotId: hotspot.id,
+                strength: hotspot.strength
+              }
+            }));
+          }
+          // If no hotspots, return an empty array
+          return [];
+        }),
+        metadata: {
+          generated: new Date().toISOString(),
+          count: results.length
+        }
+      };
+      
+      // Create download link for GeoJSON
+      const jsonString = JSON.stringify(geoJSON, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `analysis-geojson-${new Date().getTime()}.geojson`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export successful",
+        description: "Data has been exported as GeoJSON.",
+      });
+    } catch (error) {
+      console.error("Failed to export as GeoJSON:", error);
+      toast({
+        title: "Export failed",
+        description: "There was a problem exporting the data as GeoJSON.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
