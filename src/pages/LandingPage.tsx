@@ -175,7 +175,7 @@ const LandingPage: React.FC = () => {
                 <li><Link to="/" className="text-slate-400 hover:text-white">Features</Link></li>
                 <li><Link to="/" className="text-slate-400 hover:text-white">Plans & Pricing</Link></li>
                 <li><Link to="/" className="text-slate-400 hover:text-white">Case Studies</Link></li>
-                <li><Link to="/" className="text-slate-400 hover:text-white">Documentation</Link></li>
+                <li><Link to="/documentation" className="text-slate-400 hover:text-white">Documentation</Link></li>
               </ul>
             </div>
             
