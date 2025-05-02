@@ -58,7 +58,7 @@ export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = (
 
   const confidenceData = results.map(result => ({
     name: result.id,
-    confidence: parseFloat((result.confidence * 100).toFixed(1)),
+    confidence: parseFloat((Number(result.confidence) * 100).toFixed(1)),
     mineral: result.mineralType,
     timestamp: new Date(result.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric' })
   }));
@@ -216,7 +216,7 @@ export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = (
                         </div>
                         <div>
                           <span className="text-sm text-muted-foreground">Confidence:</span>
-                          <span className="ml-2">{(results[0].confidence * 100).toFixed(1)}%</span>
+                          <span className="ml-2">{(Number(results[0].confidence) * 100).toFixed(1)}%</span>
                         </div>
                       </>
                     )}
@@ -243,9 +243,9 @@ export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = (
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">High Confidence ({'>'}80%):</span>
+                      <span className="text-sm">High Confidence (&gt;80%):</span>
                       <Badge variant="outline">
-                        {results.filter(r => r.confidence > 0.8).length}
+                        {results.filter(r => Number(r.confidence) > 0.8).length}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
@@ -374,7 +374,7 @@ export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = (
                           <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Confidence:</span>
-                              <span>{(result.confidence * 100).toFixed(1)}%</span>
+                              <span>{(Number(result.confidence) * 100).toFixed(1)}%</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Anomalies:</span>
