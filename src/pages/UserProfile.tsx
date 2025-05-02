@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -45,7 +44,8 @@ const UserProfile: React.FC = () => {
       setUserForm({
         name: user.name || '',
         email: user.email || '',
-        organization: user.organization || '',
+        // Since 'organization' is not in the AuthUser type, use a safe fallback
+        organization: user.organization ?? '',
       });
     }
   }, [user]);
