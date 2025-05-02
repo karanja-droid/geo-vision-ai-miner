@@ -86,12 +86,10 @@ const MainNavigation: React.FC = () => {
             </NavigationMenuContent>
           </NavigationMenuItem>
           
-          {/* Direct Link */}
+          {/* Direct Link - Fixed to remove Next.js specific props */}
           <NavigationMenuItem>
-            <Link to="/" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Dashboard
-              </NavigationMenuLink>
+            <Link to="/" className={navigationMenuTriggerStyle()}>
+              Dashboard
             </Link>
           </NavigationMenuItem>
         </NavigationMenuList>
