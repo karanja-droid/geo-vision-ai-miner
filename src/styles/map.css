@@ -76,3 +76,30 @@
   left: 0;
   right: 0;
 }
+
+/* Africa Countries Layer styling */
+.country-highlight {
+  animation: highlight-pulse 2s infinite;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.country-popup {
+  font-weight: bold;
+}
+
+.country-popup-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}

@@ -12,7 +12,8 @@ import {
   ZoomOut, 
   MapPin, 
   Navigation,
-  Database
+  Database,
+  Globe
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import mapboxgl from 'mapbox-gl';
@@ -38,9 +39,99 @@ const InteractiveMap: React.FC = () => {
     { id: 'satellite', name: 'Satellite Imagery', type: 'raster', source: 'mapbox://mapbox.satellite', visible: true, opacity: 1 },
     { id: 'terrain', name: 'Terrain', type: 'raster', source: 'mapbox://mapbox.terrain-rgb', visible: false, opacity: 0.7 },
     { id: 'streets', name: 'Streets', type: 'vector', source: 'mapbox://mapbox.mapbox-streets-v8', visible: false, opacity: 0.8 },
+    { id: 'africa-countries', name: 'Africa Countries', type: 'vector', source: 'arcgis', visible: false, opacity: 0.8 },
   ]);
   const [activeTab, setActiveTab] = useState<string>('layers');
+  const [arcgisDataLoaded, setArcgisDataLoaded] = useState<boolean>(false);
   const { toast } = useToast();
+
+  // Function to load ArcGIS Africa Countries data
+  const loadAfricaCountriesData = async () => {
+    if (!map.current || arcgisDataLoaded) return;
+
+    try {
+      // Fetch GeoJSON data from ArcGIS Hub
+      const response = await fetch('https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Countries/FeatureServer/0/query?where=CONTINENT%3D%27Africa%27&outFields=*&outSR=4326&f=geojson');
+      const data = await response.json();
+      
+      // Add the source to the map
+      map.current.addSource('africa-countries-source', {
+        type: 'geojson',
+        data: data
+      });
+      
+      // Add the layer to the map
+      map.current.addLayer({
+        id: 'africa-countries',
+        type: 'fill',
+        source: 'africa-countries-source',
+        layout: {
+          visibility: 'none'
+        },
+        paint: {
+          'fill-color': [
+            'case',
+            ['==', ['get', 'COUNTRY'], 'Zambia'], '#ff9900',
+            ['==', ['get', 'COUNTRY'], 'Congo, DRC'], '#e31a1c',
+            '#3388ff'
+          ],
+          'fill-opacity': 0.8,
+          'fill-outline-color': '#000'
+        }
+      });
+
+      // Add outline layer
+      map.current.addLayer({
+        id: 'africa-countries-outline',
+        type: 'line',
+        source: 'africa-countries-source',
+        layout: {
+          visibility: 'none'
+        },
+        paint: {
+          'line-color': '#000',
+          'line-width': 1
+        }
+      });
+
+      // Add popup on hover
+      map.current.on('mouseenter', 'africa-countries', (e) => {
+        if (e.features && e.features[0]) {
+          map.current!.getCanvas().style.cursor = 'pointer';
+          
+          const coordinates = e.lngLat;
+          const countryName = e.features[0].properties?.COUNTRY || 'Unknown';
+          const region = e.features[0].properties?.REGION || 'Unknown';
+          
+          new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`<h3>${countryName}</h3><p>Region: ${region}</p>`)
+            .addTo(map.current!);
+        }
+      });
+      
+      map.current.on('mouseleave', 'africa-countries', () => {
+        map.current!.getCanvas().style.cursor = '';
+        const popups = document.getElementsByClassName('mapboxgl-popup');
+        if (popups.length) {
+          popups[0].remove();
+        }
+      });
+
+      setArcgisDataLoaded(true);
+      toast({
+        title: "Africa Countries Data Loaded",
+        description: "ArcGIS Africa Countries dataset has been integrated"
+      });
+    } catch (error) {
+      console.error("Error loading Africa Countries data:", error);
+      toast({
+        title: "Error Loading Data",
+        description: "Failed to load Africa Countries dataset from ArcGIS",
+        variant: "destructive"
+      });
+    }
+  };
 
   useEffect(() => {
     if (!apiKeySet || !mapContainer.current) return;
@@ -52,8 +143,8 @@ const InteractiveMap: React.FC = () => {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
-        center: [0, 20], // Center on global view
-        zoom: 1.5,
+        center: [19.4326, 5.7832], // Center on Africa
+        zoom: 2.5,
         pitch: 30,
       });
 
@@ -92,6 +183,9 @@ const InteractiveMap: React.FC = () => {
 
         // Add sample geological marker
         addSampleMarkers();
+        
+        // Load ArcGIS Africa Countries data
+        loadAfricaCountriesData();
       });
 
       return () => {
@@ -146,9 +240,13 @@ const InteractiveMap: React.FC = () => {
     if (map.current && mapReady) {
       const layer = layers.find(l => l.id === id);
       if (layer) {
-        const visibility = !layer.visible ? 'visible' : 'none';
         try {
-          if (map.current.getLayer(id)) {
+          if (id === 'africa-countries' && map.current.getLayer('africa-countries')) {
+            const visibility = !layer.visible ? 'visible' : 'none';
+            map.current.setLayoutProperty('africa-countries', 'visibility', visibility);
+            map.current.setLayoutProperty('africa-countries-outline', 'visibility', visibility);
+          } else if (map.current.getLayer(id)) {
+            const visibility = !layer.visible ? 'visible' : 'none';
             map.current.setLayoutProperty(id, 'visibility', visibility);
           }
         } catch (e) {
@@ -168,8 +266,12 @@ const InteractiveMap: React.FC = () => {
       const layer = layers.find(l => l.id === id);
       if (layer) {
         try {
-          if (map.current.getLayer(id)) {
-            map.current.setPaintProperty(id, 'raster-opacity', layer.opacity);
+          if (id === 'africa-countries' && map.current.getLayer('africa-countries')) {
+            map.current.setPaintProperty('africa-countries', 'fill-opacity', layer.opacity);
+          } else if (map.current.getLayer(id)) {
+            if (layer.type === 'raster') {
+              map.current.setPaintProperty(id, 'raster-opacity', layer.opacity);
+            }
           }
         } catch (e) {
           console.log('Layer may not be added to map yet:', e);
@@ -239,12 +341,45 @@ const InteractiveMap: React.FC = () => {
     }
   };
 
+  // Function to highlight a specific country
+  const highlightCountry = (country: string) => {
+    if (!map.current || !arcgisDataLoaded) return;
+
+    try {
+      map.current.setPaintProperty('africa-countries', 'fill-color', [
+        'case',
+        ['==', ['get', 'COUNTRY'], country], '#ff0000',
+        ['==', ['get', 'COUNTRY'], 'Zambia'], '#ff9900',
+        ['==', ['get', 'COUNTRY'], 'Congo, DRC'], '#e31a1c',
+        '#3388ff'
+      ]);
+
+      // Find coordinates for the country and fly to it
+      map.current.flyTo({
+        center: 
+          country === 'Zambia' ? [27.8493, -13.1339] : 
+          country === 'Congo, DRC' ? [23.6566, -2.8766] : 
+          [19.4326, 5.7832],
+        essential: true,
+        zoom: country ? 5 : 3,
+        duration: 2000
+      });
+
+      toast({
+        title: "Country Highlighted",
+        description: `Viewing geological data for ${country}`
+      });
+    } catch (e) {
+      console.error('Error highlighting country:', e);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-center mb-2">Interactive Geological Map</h1>
         <p className="text-center text-muted-foreground mb-6">
-          Explore geological features and mineral deposits around the world
+          Explore geological features and mineral deposits across Africa
         </p>
       </div>
 
@@ -371,6 +506,18 @@ const InteractiveMap: React.FC = () => {
                   </CardHeader>
                   <CardContent className="py-2 space-y-2">
                     <Button variant="outline" size="sm" className="w-full text-left flex items-center justify-start" 
+                      onClick={() => flyToLocation('africa')}>
+                      <Globe className="h-4 w-4 mr-2" /> All Africa
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full text-left flex items-center justify-start" 
+                      onClick={() => highlightCountry('Zambia')}>
+                      <MapPin className="h-4 w-4 mr-2" /> Zambia
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full text-left flex items-center justify-start" 
+                      onClick={() => highlightCountry('Congo, DRC')}>
+                      <MapPin className="h-4 w-4 mr-2" /> Democratic Republic of Congo
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full text-left flex items-center justify-start" 
                       onClick={() => flyToLocation('usa')}>
                       <MapPin className="h-4 w-4 mr-2" /> North America
                     </Button>
@@ -379,19 +526,42 @@ const InteractiveMap: React.FC = () => {
                       <MapPin className="h-4 w-4 mr-2" /> Europe
                     </Button>
                     <Button variant="outline" size="sm" className="w-full text-left flex items-center justify-start" 
-                      onClick={() => flyToLocation('africa')}>
-                      <MapPin className="h-4 w-4 mr-2" /> Africa
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full text-left flex items-center justify-start" 
-                      onClick={() => flyToLocation('asia')}>
-                      <MapPin className="h-4 w-4 mr-2" /> Asia
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full text-left flex items-center justify-start" 
                       onClick={() => flyToLocation('australia')}>
                       <MapPin className="h-4 w-4 mr-2" /> Australia
                     </Button>
                   </CardContent>
                 </Card>
+
+                {arcgisDataLoaded && (
+                  <Card>
+                    <CardHeader className="py-3">
+                      <CardTitle className="text-sm font-medium flex items-center">
+                        <Globe className="h-4 w-4 mr-2" />
+                        ArcGIS Dataset
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="py-2">
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Africa Countries dataset has been integrated from ArcGIS Hub.
+                      </p>
+                      <Button 
+                        variant="default" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => {
+                          // Enable Africa Countries layer if not already visible
+                          if (!layers.find(l => l.id === 'africa-countries')?.visible) {
+                            handleLayerToggle('africa-countries');
+                          }
+                          // Fly to Africa
+                          flyToLocation('africa');
+                        }}
+                      >
+                        <Globe className="h-4 w-4 mr-2" /> Show Africa Countries
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
             </Tabs>
           </div>
