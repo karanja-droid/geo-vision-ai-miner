@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -27,10 +26,8 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   const handleDownloadDocument = (doc: any) => {
     try {
-      // In a real app, this would fetch the actual PDF file from a server
-      // For this demo, we'll create a simple text representation of PDF content
-      
-      const pdfContent = `
+      // Create text content for the document
+      const textContent = `
         DOCUMENT: ${doc.name}
         TYPE: ${doc.type}
         SIZE: ${doc.size}
@@ -43,8 +40,8 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         This is a simulated PDF document for demonstration purposes.
       `;
       
-      // Create a blob with PDF MIME type
-      const blob = new Blob([pdfContent], { type: "application/pdf" });
+      // Use text/plain MIME type to ensure the file can be opened
+      const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       
       // Create download link
@@ -72,8 +69,8 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   const handleExportData = () => {
     try {
-      // Create a formatted PDF content for the dataset
-      const pdfContent = `
+      // Create text content for the dataset export
+      const textContent = `
         DATASET EXPORT: ${dataset.name}
         =======================${new Array(dataset.name.length).fill('=').join('')}
         
@@ -98,8 +95,8 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         Exported on: ${new Date().toLocaleString()}
       `;
       
-      // Create a blob with PDF MIME type
-      const blob = new Blob([pdfContent], { type: "application/pdf" });
+      // Use text/plain MIME type to ensure the file can be opened
+      const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       
       // Create download link

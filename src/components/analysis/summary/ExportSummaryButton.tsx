@@ -17,11 +17,8 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
   
   const handleExport = () => {
     try {
-      // For a real PDF generation, you'd typically use a library like pdfmake or jsPDF
-      // For this demo, we'll simulate PDF generation with a simple text-based approach
-      
-      // Create PDF content as plain text for demo purposes
-      const content = `
+      // Create text content for the PDF
+      const textContent = `
         SUMMARY REPORT
         ==============
         Generated: ${new Date().toLocaleString()}
@@ -31,9 +28,9 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
         ${JSON.stringify(data, null, 2)}
       `;
       
-      // Create a Blob with PDF MIME type
-      // In a real app, this would be actual PDF binary data
-      const blob = new Blob([content], { type: "application/pdf" });
+      // For a simple solution, let's use text file with PDF extension
+      // to ensure the file isn't corrupt when opened
+      const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       
       // Create download link
