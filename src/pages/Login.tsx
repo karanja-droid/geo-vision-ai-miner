@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,6 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { Shield, Check } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -48,12 +47,10 @@ const Login: React.FC = () => {
   const { signIn, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [captchaVerified, setCaptchaVerified] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const { toast } = useToast();
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
 
   React.useEffect(() => {
@@ -74,15 +71,6 @@ const Login: React.FC = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    if (!captchaVerified) {
-      toast({
-        title: "Verification required",
-        description: "Please complete the reCAPTCHA verification first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     // Security warning
     if (process.env.NODE_ENV === "production" && window.location.protocol !== "https:") {
       toast({
@@ -109,10 +97,6 @@ const Login: React.FC = () => {
         description: errorMessage,
         variant: "destructive",
       });
-
-      // Reset reCAPTCHA on failed login attempt
-      recaptchaRef.current?.reset();
-      setCaptchaVerified(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -148,10 +132,6 @@ const Login: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const onCaptchaChange = (token: string | null) => {
-    setCaptchaVerified(!!token);
   };
 
   return (
@@ -302,19 +282,10 @@ const Login: React.FC = () => {
                   </button>
                 </div>
                 
-                <div className="flex justify-center my-2">
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // This is a Google-provided test key
-                    onChange={onCaptchaChange}
-                    size="compact"
-                  />
-                </div>
-                
                 <Button 
                   type="submit" 
                   className="w-full h-8 text-xs"
-                  disabled={isSubmitting || !captchaVerified}
+                  disabled={isSubmitting}
                 >
                   {isSubmitting ? "Signing in..." : "Sign in"}
                 </Button>
