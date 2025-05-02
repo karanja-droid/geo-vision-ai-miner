@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
-import { Download, File } from "lucide-react";
+import { Download, FilePdf } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 import DatasetVisualization from './DatasetVisualization';
 
@@ -27,28 +27,30 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   const handleDownloadDocument = (doc: any) => {
     try {
-      // In a real app, this would fetch the actual file from a server
-      // For this demo, we'll create a simple JSON file with document metadata
+      // In a real app, this would fetch the actual PDF file from a server
+      // For this demo, we'll create a simple text representation of PDF content
       
-      const documentData = {
-        id: doc.id,
-        name: doc.name,
-        type: doc.type,
-        size: doc.size,
-        metadata: {
-          downloadedAt: new Date().toISOString(),
-          relatedDataset: dataset.name
-        }
-      };
+      const pdfContent = `
+        DOCUMENT: ${doc.name}
+        TYPE: ${doc.type}
+        SIZE: ${doc.size}
+        RELATED DATASET: ${dataset.name}
+        
+        METADATA:
+        Downloaded: ${new Date().toLocaleString()}
+        Document ID: ${doc.id}
+        
+        This is a simulated PDF document for demonstration purposes.
+      `;
       
-      // Convert to JSON and create download
-      const jsonString = JSON.stringify(documentData, null, 2);
-      const blob = new Blob([jsonString], { type: "application/json" });
+      // Create a blob with PDF MIME type
+      const blob = new Blob([pdfContent], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       
+      // Create download link
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${doc.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.json`;
+      link.download = `${doc.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -70,20 +72,40 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   const handleExportData = () => {
     try {
-      // Create a dataset export with all info
-      const exportData = {
-        ...dataset,
-        exportedAt: new Date().toISOString()
-      };
+      // Create a formatted PDF content for the dataset
+      const pdfContent = `
+        DATASET EXPORT: ${dataset.name}
+        =======================${new Array(dataset.name.length).fill('=').join('')}
+        
+        METADATA:
+        ID: ${dataset.id}
+        Format: ${dataset.format}
+        Source: ${dataset.source}
+        Size: ${dataset.size}
+        Date: ${dataset.date}
+        Country: ${dataset.country}
+        Coordinates: ${dataset.coordinates[0]}, ${dataset.coordinates[1]}
+        
+        DESCRIPTION:
+        ${dataset.description}
+        
+        TAGS:
+        ${dataset.tags.join(', ')}
+        
+        RELATED DOCUMENTS:
+        ${dataset.relatedDocs.map(doc => `- ${doc.name} (${doc.type}, ${doc.size})`).join('\n')}
+        
+        Exported on: ${new Date().toLocaleString()}
+      `;
       
-      // Convert to JSON and download
-      const jsonString = JSON.stringify(exportData, null, 2);
-      const blob = new Blob([jsonString], { type: "application/json" });
+      // Create a blob with PDF MIME type
+      const blob = new Blob([pdfContent], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       
+      // Create download link
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${dataset.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.json`;
+      link.download = `${dataset.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -91,7 +113,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
       
       toast({
         title: "Export successful",
-        description: `Dataset ${dataset.name} has been exported`,
+        description: `Dataset ${dataset.name} has been exported as PDF`,
       });
     } catch (error) {
       console.error("Failed to export dataset:", error);
@@ -132,7 +154,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
                       {dataset.relatedDocs.map((doc) => (
                         <TableRow key={doc.id}>
                           <TableCell className="flex items-center">
-                            <File className="h-4 w-4 mr-2" />
+                            <FilePdf className="h-4 w-4 mr-2" />
                             {doc.name}
                           </TableCell>
                           <TableCell>{doc.type}</TableCell>

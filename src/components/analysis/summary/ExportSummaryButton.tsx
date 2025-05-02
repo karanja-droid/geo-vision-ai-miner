@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { FilePdf } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ExportSummaryButtonProps {
@@ -17,22 +17,29 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
   
   const handleExport = () => {
     try {
-      // Create the export data
-      const exportData = {
-        generatedAt: new Date().toISOString(),
-        summary: data,
-      };
+      // For a real PDF generation, you'd typically use a library like pdfmake or jsPDF
+      // For this demo, we'll simulate PDF generation with a simple text-based approach
       
-      // Convert to JSON string
-      const jsonString = JSON.stringify(exportData, null, 2);
+      // Create PDF content as plain text for demo purposes
+      const content = `
+        SUMMARY REPORT
+        ==============
+        Generated: ${new Date().toLocaleString()}
+        
+        ANALYSIS SUMMARY
+        ----------------
+        ${JSON.stringify(data, null, 2)}
+      `;
       
-      // Create a blob and download
-      const blob = new Blob([jsonString], { type: "application/json" });
+      // Create a Blob with PDF MIME type
+      // In a real app, this would be actual PDF binary data
+      const blob = new Blob([content], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
       
+      // Create download link
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `${filename}-${new Date().getTime()}.json`;
+      link.download = `${filename}-${new Date().getTime()}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -40,7 +47,7 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
       
       toast({
         title: "Export successful",
-        description: "Summary report has been downloaded.",
+        description: "Summary report has been downloaded as PDF.",
       });
     } catch (error) {
       console.error("Failed to export summary:", error);
@@ -55,7 +62,7 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
   return (
     <div className="flex justify-end">
       <Button variant="outline" size="sm" onClick={handleExport}>
-        <Download className="h-4 w-4 mr-2" />
+        <FilePdf className="h-4 w-4 mr-2" />
         Export Summary Report
       </Button>
     </div>
