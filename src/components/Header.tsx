@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Search, Database, Settings, Brain, Home } from "lucide-react";
+import { Search, Database } from "lucide-react";
 import UserMenu from './UserMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import MainNavigation from './MainNavigation';
 
 const Header: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -12,29 +13,18 @@ const Header: React.FC = () => {
   return (
     <header className="border-b bg-card">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-geo-blue text-white">
               <Database size={18} />
             </div>
             <h1 className="text-xl font-bold text-geo-blue">GeoVision AI Miner</h1>
           </Link>
+          
+          <MainNavigation />
         </div>
 
         <div className="flex items-center">
-          {/* Public navigation - available to all users */}
-          <nav className="flex items-center space-x-2 mr-4">
-            <Button variant="ghost" className="text-muted-foreground" asChild>
-              <Link to="/">
-                <Home size={16} className="mr-2" />
-                Home
-              </Link>
-            </Button>
-            <Button variant="ghost" className="text-muted-foreground" asChild>
-              <Link to="/about">About Us</Link>
-            </Button>
-          </nav>
-
           {isAuthenticated && (
             <>
               <div className="relative mr-4 w-64">
@@ -48,24 +38,8 @@ const Header: React.FC = () => {
                 />
               </div>
 
-              <nav className="hidden md:flex items-center space-x-2 mr-4">
-                <Button variant="ghost" className="text-muted-foreground" asChild>
-                  <Link to="/data-integration">Datasets</Link>
-                </Button>
-                <Button variant="ghost" className="text-muted-foreground">
-                  Models
-                </Button>
-                <Button variant="ghost" className="text-muted-foreground">
-                  Analysis
-                </Button>
-              </nav>
-
               <div className="flex items-center gap-2 mr-4">
-                <Button variant="outline" size="icon">
-                  <Settings size={18} />
-                </Button>
                 <Button className="bg-geo-blue hover:bg-blue-800">
-                  <Brain size={16} className="mr-2" />
                   Run AI Analysis
                 </Button>
               </div>

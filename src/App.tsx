@@ -19,6 +19,8 @@ import NotFound from './pages/NotFound';
 import Header from './components/Header';
 import GlobalDataIntegration from './pages/GlobalDataIntegration';
 import { AuthProvider } from './contexts/AuthContext';
+import LandingPage from './pages/LandingPage';
+import Index from './pages/Index';
 
 function App() {
   return (
@@ -26,22 +28,26 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <Header />
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/interactive-map" element={<InteractiveMap />} />
-            <Route path="/data-integration" element={<DataIntegration />} />
-            <Route path="/dataset-management" element={<DatasetManagement />} />
-            <Route path="/global-data-integration" element={<GlobalDataIntegration />} /> 
-            <Route path="/project/:id" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
-            <Route path="/next-steps" element={<ProtectedRoute><NextSteps /></ProtectedRoute>} />
-            <Route path="/upgrade" element={<Upgrade />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/docs" element={<Documentation />} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <main className="container mx-auto px-4 py-6">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/interactive-map" element={<InteractiveMap />} />
+              <Route path="/data-integration" element={<DataIntegration />} />
+              <Route path="/dataset-management" element={<DatasetManagement />} />
+              <Route path="/global-data-integration" element={<GlobalDataIntegration />} /> 
+              <Route path="/project/:id" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
+              <Route path="/next-steps" element={<ProtectedRoute><NextSteps /></ProtectedRoute>} />
+              <Route path="/upgrade" element={<Upgrade />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/docs" element={<Documentation />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/landing" element={<LandingPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
           <Toaster />
         </AuthProvider>
       </BrowserRouter>
