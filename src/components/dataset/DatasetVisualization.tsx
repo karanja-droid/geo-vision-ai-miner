@@ -3,6 +3,7 @@ import React from 'react';
 import { Dataset } from '@/data/datasetLibraryData';
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Database, FileBadge } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DatasetVisualizationProps {
   dataset: Dataset;
@@ -80,29 +81,31 @@ export const DatasetVisualization: React.FC<DatasetVisualizationProps> = ({
           <span className="text-sm font-medium">Tabular Data Preview</span>
         </div>
         
-        {/* Simulated table visualization */}
-        <div className="border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden">
-          <div className="bg-slate-200 dark:bg-slate-700 p-2">
-            <div className="grid grid-cols-4">
-              {['ID', 'Name', 'Type', 'Value'].map((header, i) => (
-                <div key={i} className="text-xs font-medium">{header}</div>
+        <ScrollArea className="h-[calc(100%-2rem)]">
+          {/* Simulated table visualization */}
+          <div className="border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden min-w-[500px]">
+            <div className="bg-slate-200 dark:bg-slate-700 p-2">
+              <div className="grid grid-cols-4">
+                {['ID', 'Name', 'Type', 'Value'].map((header, i) => (
+                  <div key={i} className="text-xs font-medium">{header}</div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-slate-800">
+              {Array(15).fill(0).map((_, i) => (
+                <div key={i} className="grid grid-cols-4 p-2 border-b border-slate-100 dark:border-slate-700">
+                  {[`${i+1}`, `Sample ${i+1}`, i % 2 === 0 ? 'Primary' : 'Secondary', ((i+1) * 15.7).toFixed(1)].map((cell, j) => (
+                    <div key={j} className="text-xs truncate">{cell}</div>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
-          
-          <div className="bg-white dark:bg-slate-800">
-            {Array(5).fill(0).map((_, i) => (
-              <div key={i} className="grid grid-cols-4 p-2 border-b border-slate-100 dark:border-slate-700">
-                {[`${i+1}`, `Sample ${i+1}`, i % 2 === 0 ? 'Primary' : 'Secondary', ((i+1) * 15.7).toFixed(1)].map((cell, j) => (
-                  <div key={j} className="text-xs truncate">{cell}</div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
+        </ScrollArea>
         
         <div className="mt-2 text-xs text-muted-foreground">
-          Showing 5 of 1,000+ records
+          Showing 15 of 1,000+ records
         </div>
       </div>
     );

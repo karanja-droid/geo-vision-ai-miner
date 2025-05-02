@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { Download, FileText } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface RelatedDocsDialogProps {
   dataset: Dataset | null;
@@ -67,51 +68,53 @@ export const RelatedDocsDialog: React.FC<RelatedDocsDialogProps> = ({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Documents Related to {dataset.name}</DialogTitle>
           <DialogDescription>Technical reports and supplementary data</DialogDescription>
         </DialogHeader>
         
-        {dataset.relatedDocs && dataset.relatedDocs.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Document Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {dataset.relatedDocs.map((doc) => (
-                <TableRow key={doc.id}>
-                  <TableCell className="flex items-center">
-                    <FileText className="h-4 w-4 mr-2" />
-                    {doc.name}
-                  </TableCell>
-                  <TableCell>{doc.type}</TableCell>
-                  <TableCell>{doc.size}</TableCell>
-                  <TableCell className="text-right">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleDownloadDocument(doc)}
-                    >
-                      <Download className="h-4 w-4 mr-1" /> Download
-                    </Button>
-                  </TableCell>
+        <ScrollArea className="h-[calc(90vh-180px)]">
+          {dataset.relatedDocs && dataset.relatedDocs.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Document Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Size</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <p className="text-center py-4 text-muted-foreground">
-            No related documents available for this dataset.
-          </p>
-        )}
+              </TableHeader>
+              <TableBody>
+                {dataset.relatedDocs.map((doc) => (
+                  <TableRow key={doc.id}>
+                    <TableCell className="flex items-center">
+                      <FileText className="h-4 w-4 mr-2" />
+                      {doc.name}
+                    </TableCell>
+                    <TableCell>{doc.type}</TableCell>
+                    <TableCell>{doc.size}</TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleDownloadDocument(doc)}
+                      >
+                        <Download className="h-4 w-4 mr-1" /> Download
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-center py-4 text-muted-foreground">
+              No related documents available for this dataset.
+            </p>
+          )}
+        </ScrollArea>
         
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>

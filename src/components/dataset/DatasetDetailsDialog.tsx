@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Download, FileText, MapPin } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 import { DatasetVisualization } from './DatasetVisualization';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DatasetDetailsDialogProps {
   dataset: Dataset | null;
@@ -77,7 +78,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{dataset.name}</DialogTitle>
           <DialogDescription>
@@ -92,54 +93,56 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <div className="aspect-video bg-muted rounded-md overflow-hidden">
-            <DatasetVisualization dataset={dataset} />
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-2">Description</h3>
-            <p className="text-sm text-muted-foreground">{dataset.description}</p>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-2">Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {dataset.tags.map((tag, index) => (
-                <Badge key={index} variant="secondary">{tag}</Badge>
-              ))}
+        <ScrollArea className="flex-grow pr-4 h-[calc(90vh-180px)]">
+          <div className="space-y-4">
+            <div className="aspect-video bg-muted rounded-md overflow-hidden">
+              <DatasetVisualization dataset={dataset} />
             </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
+            
             <div>
-              <h3 className="font-medium mb-2">Source</h3>
-              <p className="text-sm text-muted-foreground">{dataset.source}</p>
+              <h3 className="font-medium mb-2">Description</h3>
+              <p className="text-sm text-muted-foreground">{dataset.description}</p>
             </div>
+            
             <div>
-              <h3 className="font-medium mb-2">Date</h3>
-              <p className="text-sm text-muted-foreground">{dataset.date}</p>
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-2">Related Documents</h3>
-            {dataset.relatedDocs && dataset.relatedDocs.length > 0 ? (
-              <ul className="text-sm space-y-1">
-                {dataset.relatedDocs.map((doc) => (
-                  <li key={doc.id} className="flex items-center">
-                    <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {doc.name} ({doc.type}, {doc.size})
-                  </li>
+              <h3 className="font-medium mb-2">Tags</h3>
+              <div className="flex flex-wrap gap-2">
+                {dataset.tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary">{tag}</Badge>
                 ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-muted-foreground">No related documents available</p>
-            )}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="font-medium mb-2">Source</h3>
+                <p className="text-sm text-muted-foreground">{dataset.source}</p>
+              </div>
+              <div>
+                <h3 className="font-medium mb-2">Date</h3>
+                <p className="text-sm text-muted-foreground">{dataset.date}</p>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-2">Related Documents</h3>
+              {dataset.relatedDocs && dataset.relatedDocs.length > 0 ? (
+                <ul className="text-sm space-y-1">
+                  {dataset.relatedDocs.map((doc) => (
+                    <li key={doc.id} className="flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                      {doc.name} ({doc.type}, {doc.size})
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No related documents available</p>
+              )}
+            </div>
           </div>
-        </div>
+        </ScrollArea>
         
-        <DialogFooter className="flex items-center justify-between flex-row">
+        <DialogFooter className="flex items-center justify-between flex-row mt-4">
           <div className="text-xs text-muted-foreground">
             Dataset ID: {dataset.id}
           </div>
