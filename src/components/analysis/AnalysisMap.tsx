@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AnalysisResult } from '@/types';
+import { Link } from 'react-router-dom';
 
 interface AnalysisMapProps {
   results: AnalysisResult[];
@@ -51,7 +52,9 @@ const AnalysisMap: React.FC<AnalysisMapProps> = ({ results }) => {
               
               {/* Interactive Map Notice */}
               <div className="absolute bottom-4 right-4">
-                <Button>Open Interactive Map</Button>
+                <Button asChild>
+                  <Link to="/interactive-map">Open Interactive Map</Link>
+                </Button>
               </div>
             </div>
           </div>

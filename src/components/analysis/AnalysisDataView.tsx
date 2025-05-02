@@ -34,16 +34,27 @@ const AnalysisDataView: React.FC<AnalysisDataViewProps> = ({ results }) => {
     }
   };
 
+  // Handle exporting data
+  const handleExportCSV = () => {
+    console.log('Exporting data as CSV');
+    // Implementation would go here
+  };
+
+  const handleExportGeoJSON = () => {
+    console.log('Exporting data as GeoJSON');
+    // Implementation would go here
+  };
+
   return (
     <div className="mt-4 space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="font-medium">Raw Analysis Data</h3>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportGeoJSON}>
             <Download className="h-4 w-4 mr-2" />
             Export GeoJSON
           </Button>
