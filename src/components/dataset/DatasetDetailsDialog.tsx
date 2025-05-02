@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
-import { Download, FilePdf } from "lucide-react";
+import { Download, File } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 import DatasetVisualization from './DatasetVisualization';
 
@@ -154,7 +154,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
                       {dataset.relatedDocs.map((doc) => (
                         <TableRow key={doc.id}>
                           <TableCell className="flex items-center">
-                            <FilePdf className="h-4 w-4 mr-2" />
+                            <File className="h-4 w-4 mr-2" />
                             {doc.name}
                           </TableCell>
                           <TableCell>{doc.type}</TableCell>

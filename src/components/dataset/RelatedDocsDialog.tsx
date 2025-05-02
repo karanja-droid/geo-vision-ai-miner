@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { Download, FilePdf } from "lucide-react";
+import { Download, File } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 
 interface RelatedDocsDialogProps {
@@ -89,7 +89,7 @@ export const RelatedDocsDialog: React.FC<RelatedDocsDialogProps> = ({
               {dataset.relatedDocs.map((doc) => (
                 <TableRow key={doc.id}>
                   <TableCell className="flex items-center">
-                    <FilePdf className="h-4 w-4 mr-2" />
+                    <File className="h-4 w-4 mr-2" />
                     {doc.name}
                   </TableCell>
                   <TableCell>{doc.type}</TableCell>

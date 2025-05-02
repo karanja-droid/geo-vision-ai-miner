@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { FilePdf } from "lucide-react";
+import { File } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ExportSummaryButtonProps {
@@ -62,7 +62,7 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
   return (
     <div className="flex justify-end">
       <Button variant="outline" size="sm" onClick={handleExport}>
-        <FilePdf className="h-4 w-4 mr-2" />
+        <File className="h-4 w-4 mr-2" />
         Export Summary Report
       </Button>
     </div>
