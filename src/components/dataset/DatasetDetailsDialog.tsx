@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
-import { Download, File } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 import DatasetVisualization from './DatasetVisualization';
 
@@ -37,17 +38,17 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         Downloaded: ${new Date().toLocaleString()}
         Document ID: ${doc.id}
         
-        This is a simulated PDF document for demonstration purposes.
+        This is a simulated document for demonstration purposes.
       `;
       
-      // Use text/plain MIME type to ensure the file can be opened
+      // Use text/plain MIME type with matching .txt extension
       const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       
-      // Create download link
+      // Create download link with .txt extension
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${doc.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.pdf`;
+      link.download = `${doc.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.txt`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -55,7 +56,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
       
       toast({
         title: "Download started",
-        description: `Downloading ${doc.name}`,
+        description: `Downloading ${doc.name} as a text file`,
       });
     } catch (error) {
       console.error("Failed to download document:", error);
@@ -95,14 +96,14 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         Exported on: ${new Date().toLocaleString()}
       `;
       
-      // Use text/plain MIME type to ensure the file can be opened
+      // Use text/plain MIME type with matching .txt extension
       const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       
-      // Create download link
+      // Create download link with .txt extension
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${dataset.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.pdf`;
+      link.download = `${dataset.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.txt`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -110,7 +111,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
       
       toast({
         title: "Export successful",
-        description: `Dataset ${dataset.name} has been exported as PDF`,
+        description: `Dataset ${dataset.name} has been exported as a text file`,
       });
     } catch (error) {
       console.error("Failed to export dataset:", error);
@@ -151,7 +152,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
                       {dataset.relatedDocs.map((doc) => (
                         <TableRow key={doc.id}>
                           <TableCell className="flex items-center">
-                            <File className="h-4 w-4 mr-2" />
+                            <FileText className="h-4 w-4 mr-2" />
                             {doc.name}
                           </TableCell>
                           <TableCell>{doc.type}</TableCell>

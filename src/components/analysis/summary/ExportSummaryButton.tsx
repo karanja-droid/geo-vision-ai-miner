@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { File } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ExportSummaryButtonProps {
@@ -17,7 +17,7 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
   
   const handleExport = () => {
     try {
-      // Create text content for the PDF
+      // Create text content for the export
       const textContent = `
         SUMMARY REPORT
         ==============
@@ -28,15 +28,14 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
         ${JSON.stringify(data, null, 2)}
       `;
       
-      // For a simple solution, let's use text file with PDF extension
-      // to ensure the file isn't corrupt when opened
+      // Create a proper text file
       const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       
-      // Create download link
+      // Create download link with .txt extension
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${filename}-${new Date().getTime()}.pdf`;
+      link.download = `${filename}-${new Date().getTime()}.txt`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -44,7 +43,7 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
       
       toast({
         title: "Export successful",
-        description: "Summary report has been downloaded as PDF.",
+        description: "Summary report has been downloaded as a text file.",
       });
     } catch (error) {
       console.error("Failed to export summary:", error);
@@ -59,7 +58,7 @@ const ExportSummaryButton: React.FC<ExportSummaryButtonProps> = ({
   return (
     <div className="flex justify-end">
       <Button variant="outline" size="sm" onClick={handleExport}>
-        <File className="h-4 w-4 mr-2" />
+        <FileText className="h-4 w-4 mr-2" />
         Export Summary Report
       </Button>
     </div>
