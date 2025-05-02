@@ -64,7 +64,7 @@ const MineralDistributionChart: React.FC<MineralDistributionChartProps> = ({ res
                     <div className="bg-background p-2 border rounded shadow-sm">
                       <p className="font-medium">{payload[0].name}</p>
                       <p className="text-sm">{`Count: ${payload[0].value}`}</p>
-                      <p className="text-sm">{`Percentage: ${((payload[0].value / results.length) * 100).toFixed(1)}%`}</p>
+                      <p className="text-sm">{`Percentage: ${((Number(payload[0].value) / results.length) * 100).toFixed(1)}%`}</p>
                     </div>
                   );
                 }
