@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Link } from "react-router-dom";
-import { Layers, Search, ZoomIn, ZoomOut, Upload, Database as DatabaseIcon } from "lucide-react";
+import { Layers, Search, ZoomIn, ZoomOut, Upload, Database as DatabaseIcon, MapPin } from "lucide-react";
 import { DataLayer } from '@/types';
 
 // Mock layers for demo
@@ -15,13 +15,23 @@ const initialLayers: DataLayer[] = [
   { id: '4', name: 'Mineral Prediction', type: 'heatmap', visible: true, opacity: 0.7, data: null },
 ];
 
+// African geological layers
+const africanLayers: DataLayer[] = [
+  { id: 'af1', name: 'Zambia Copperbelt', type: 'vector', visible: true, opacity: 0.9, data: null },
+  { id: 'af2', name: 'DRC Mineral Deposits', type: 'point', visible: true, opacity: 1, data: null },
+  { id: 'af3', name: 'African Lithology', type: 'raster', visible: true, opacity: 0.7, data: null },
+  { id: 'af4', name: 'Mining Concessions', type: 'vector', visible: false, opacity: 0.8, data: null },
+  { id: 'af5', name: 'Geological Faults', type: 'line', visible: true, opacity: 1, data: null },
+];
+
 interface MapProps {
   className?: string;
 }
 
 const Map: React.FC<MapProps> = ({ className }) => {
-  const [layers, setLayers] = useState<DataLayer[]>(initialLayers);
+  const [layers, setLayers] = useState<DataLayer[]>([...initialLayers, ...africanLayers]);
   const [zoom, setZoom] = useState<number>(50);
+  const [regionFocus, setRegionFocus] = useState<string>('global');
 
   const handleLayerToggle = (id: string) => {
     setLayers(layers.map(layer => 
@@ -37,6 +47,13 @@ const Map: React.FC<MapProps> = ({ className }) => {
 
   const handleZoomChange = (value: number[]) => {
     setZoom(value[0]);
+  };
+
+  const handleRegionChange = (region: string) => {
+    setRegionFocus(region);
+    
+    // In a real implementation, this would change the map view
+    // to focus on the selected region
   };
 
   return (
@@ -78,6 +95,46 @@ const Map: React.FC<MapProps> = ({ className }) => {
                 Add
               </Button>
             </div>
+            
+            {/* Region focus selector */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium mb-2 text-muted-foreground">Region Focus</h4>
+              <div className="flex flex-wrap gap-1">
+                <Button 
+                  size="sm" 
+                  variant={regionFocus === 'global' ? 'default' : 'outline'} 
+                  className="h-7 px-2 text-xs"
+                  onClick={() => handleRegionChange('global')}
+                >
+                  Global
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant={regionFocus === 'africa' ? 'default' : 'outline'} 
+                  className="h-7 px-2 text-xs"
+                  onClick={() => handleRegionChange('africa')}
+                >
+                  Africa
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant={regionFocus === 'zambia' ? 'default' : 'outline'} 
+                  className="h-7 px-2 text-xs"
+                  onClick={() => handleRegionChange('zambia')}
+                >
+                  Zambia
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant={regionFocus === 'drc' ? 'default' : 'outline'} 
+                  className="h-7 px-2 text-xs"
+                  onClick={() => handleRegionChange('drc')}
+                >
+                  DRC
+                </Button>
+              </div>
+            </div>
+            
             <div className="space-y-3">
               {layers.map((layer) => (
                 <div key={layer.id} className="space-y-1">
@@ -132,9 +189,15 @@ const Map: React.FC<MapProps> = ({ className }) => {
                   <div className="w-12 h-12 rounded-full bg-geo-blue text-white flex items-center justify-center mx-auto mb-3">
                     <DatabaseIcon size={24} />
                   </div>
-                  <h3 className="text-lg font-medium text-geo-blue mb-1">Map Preview</h3>
+                  <h3 className="text-lg font-medium text-geo-blue mb-1">
+                    {regionFocus === 'global' ? 'Global Map Preview' : 
+                     regionFocus === 'africa' ? 'Africa Map Preview' : 
+                     regionFocus === 'zambia' ? 'Zambia Map Preview' : 
+                     'DRC Map Preview'}
+                  </h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Upload geological data to visualize on the map
+                    {regionFocus === 'global' ? 'Upload geological data to visualize on the map' :
+                     `Explore ${regionFocus === 'africa' ? 'African' : regionFocus} geological datasets`}
                   </p>
                   <div className="space-x-2">
                     <Button size="sm" asChild>
@@ -155,6 +218,14 @@ const Map: React.FC<MapProps> = ({ className }) => {
               <div className="absolute bottom-8 left-8 w-32 h-32 gradient-anomaly animate-pulse-slow opacity-60"></div>
               <div className="absolute top-20 right-24 w-24 h-24 gradient-anomaly animate-pulse-slow opacity-50"></div>
               <div className="absolute bottom-36 right-40 w-40 h-40 gradient-anomaly animate-pulse-slow opacity-70"></div>
+              
+              {/* African geological features visualization */}
+              {regionFocus !== 'global' && (
+                <>
+                  <div className="absolute top-40 left-60 w-48 h-48 gradient-copper animate-pulse-slow opacity-60"></div>
+                  <div className="absolute bottom-60 right-60 w-36 h-36 gradient-gold animate-pulse-slow opacity-70"></div>
+                </>
+              )}
             </div>
 
             {/* Map Controls */}
@@ -174,4 +245,3 @@ const Map: React.FC<MapProps> = ({ className }) => {
 };
 
 export default Map;
-

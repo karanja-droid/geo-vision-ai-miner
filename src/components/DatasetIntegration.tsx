@@ -1,215 +1,344 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowRightLeft, Settings, Link as LinkIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Link, ArrowRightLeft, Database, MapPin } from "lucide-react";
 
-// Mock datasets for demonstration
-const AVAILABLE_DATASETS = [
-  { id: '1', name: 'Sierra Nevada Survey', format: 'GeoJSON', selected: false },
-  { id: '2', name: 'Satellite Images 2023', format: 'GeoTIFF', selected: false },
-  { id: '3', name: 'Historical Mining Data', format: 'CSV', selected: false },
-  { id: '4', name: 'Fault Line Analysis', format: 'Shapefile', selected: false },
-  { id: '5', name: 'Mineral Distribution Map', format: 'GeoJSON', selected: false }
-];
-
-// Integration methods
-const INTEGRATION_METHODS = [
-  { id: 'join', name: 'Spatial Join', description: 'Join datasets based on spatial relationships' },
-  { id: 'overlay', name: 'Overlay Analysis', description: 'Overlay multiple layers for visual or computational analysis' },
-  { id: 'merge', name: 'Attribute Merge', description: 'Combine datasets by matching attribute fields' },
-  { id: 'interpolate', name: 'Interpolation', description: 'Create continuous surfaces from point data' },
-  { id: 'extract', name: 'Extraction', description: 'Extract features based on spatial or attribute criteria' }
+// African Geological Data Sources
+const AFRICAN_DATASOURCES = [
+  {
+    id: 'agds1',
+    name: 'African Minerals Geoscience Initiative',
+    description: 'Continental-scale geological, geophysical, and geochemical datasets',
+    url: 'https://amgi.africamuseum.be/',
+    countries: ['Pan-African'],
+    dataTypes: ['Geological Maps', 'Geochemical Data', 'Mineral Resources']
+  },
+  {
+    id: 'agds2',
+    name: 'Zambia Geological Survey Department',
+    description: 'Official geological data repository for Zambia',
+    url: 'https://www.gsd.gov.zm/',
+    countries: ['Zambia'],
+    dataTypes: ['Geological Maps', 'Mineral Resources', 'Mining Records']
+  },
+  {
+    id: 'agds3',
+    name: 'DRC Centre for Geological and Mining Research',
+    description: 'Research center for geological and mining data in DRC',
+    url: 'https://www.crgm-rdc.cd/',
+    countries: ['Democratic Republic of Congo'],
+    dataTypes: ['Mining Data', 'Geological Surveys', 'Mineral Resources']
+  },
+  {
+    id: 'agds4',
+    name: 'South African Council for Geoscience',
+    description: 'National geological survey organization of South Africa',
+    url: 'https://www.geoscience.org.za/',
+    countries: ['South Africa'],
+    dataTypes: ['Geological Maps', 'Geophysical Data', 'Mineral Resources']
+  },
+  {
+    id: 'agds5',
+    name: 'African Mineral Resource Data System',
+    description: 'Comprehensive database of mineral resources across Africa',
+    url: 'https://www.amd.gov/',
+    countries: ['Pan-African'],
+    dataTypes: ['Mineral Resources', 'Mining Records']
+  }
 ];
 
 export const DatasetIntegration: React.FC = () => {
-  const [datasets, setDatasets] = useState(AVAILABLE_DATASETS);
-  const [selectedMethod, setSelectedMethod] = useState<string>("");
-  const [outputName, setOutputName] = useState<string>("Integrated Dataset");
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>('connect');
+  const [selectedDataset, setSelectedDataset] = useState<string>("");
+  const [selectedSource, setSelectedSource] = useState<string>("");
+  const [apiKey, setApiKey] = useState<string>("");
+  const [connectionUrl, setConnectionUrl] = useState<string>("");
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+  const [integrationProgress, setIntegrationProgress] = useState<number>(0);
   const { toast } = useToast();
-  
-  const toggleDatasetSelection = (id: string) => {
-    setDatasets(datasets.map(dataset => 
-      dataset.id === id ? { ...dataset, selected: !dataset.selected } : dataset
-    ));
-  };
-  
-  const selectedDatasetCount = datasets.filter(d => d.selected).length;
-  
-  const handleIntegration = () => {
-    const selectedDatasets = datasets.filter(d => d.selected);
-    
-    if (selectedDatasets.length < 2) {
+
+  const handleConnect = () => {
+    if (!selectedSource) {
       toast({
-        title: "Selection Error",
-        description: "Please select at least two datasets to integrate",
+        title: "Source Required",
+        description: "Please select a data source to connect to",
         variant: "destructive"
       });
       return;
     }
     
-    if (!selectedMethod) {
+    if (!connectionUrl && !apiKey) {
       toast({
-        title: "Method Required",
-        description: "Please select an integration method",
+        title: "Connection Details Required",
+        description: "Please enter a connection URL or API key",
         variant: "destructive"
       });
       return;
     }
     
-    setIsProcessing(true);
+    setIsConnecting(true);
+    setIntegrationProgress(0);
     
-    // Simulate processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      toast({
-        title: "Integration Complete",
-        description: `${outputName} has been created and added to your library`,
+    // Simulate connection progress
+    const interval = setInterval(() => {
+      setIntegrationProgress((prev) => {
+        const newValue = prev + 15;
+        if (newValue >= 100) {
+          clearInterval(interval);
+          setIsConnecting(false);
+          setTimeout(() => {
+            toast({
+              title: "Connection Established",
+              description: "Successfully connected to the data source",
+            });
+          }, 500);
+          return 100;
+        }
+        return newValue;
       });
-      
-      // Reset selections
-      setDatasets(datasets.map(dataset => ({ ...dataset, selected: false })));
-      setSelectedMethod("");
-    }, 3000);
+    }, 600);
   };
-  
-  const selectedMethodData = INTEGRATION_METHODS.find(method => method.id === selectedMethod);
+
+  const handleIntegrate = () => {
+    if (!selectedDataset || !selectedSource) {
+      toast({
+        title: "Selection Required",
+        description: "Please select both a dataset and data source to integrate",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsConnecting(true);
+    setIntegrationProgress(0);
+    
+    // Simulate integration progress
+    const interval = setInterval(() => {
+      setIntegrationProgress((prev) => {
+        const newValue = prev + 12;
+        if (newValue >= 100) {
+          clearInterval(interval);
+          setIsConnecting(false);
+          setTimeout(() => {
+            toast({
+              title: "Integration Complete",
+              description: "The dataset has been successfully integrated",
+            });
+          }, 500);
+          return 100;
+        }
+        return newValue;
+      });
+    }, 700);
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div className="md:col-span-7">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <LinkIcon className="h-5 w-5 mr-2" />
-              Select Datasets to Integrate
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {datasets.map(dataset => (
-                <div 
-                  key={dataset.id}
-                  className={`border rounded-md p-3 flex items-start gap-3 cursor-pointer hover:bg-accent transition-colors ${
-                    dataset.selected ? 'border-primary bg-primary/5' : 'border-border'
-                  }`}
-                  onClick={() => toggleDatasetSelection(dataset.id)}
-                >
-                  <Checkbox 
-                    checked={dataset.selected}
-                    onCheckedChange={() => toggleDatasetSelection(dataset.id)}
-                    className="mt-1"
-                  />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card className="md:col-span-1">
+        <CardHeader>
+          <CardTitle>African Geological Data Sources</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {AFRICAN_DATASOURCES.map((source) => (
+              <div key={source.id} className="border rounded-md p-4">
+                <div className="flex items-start justify-between">
                   <div>
-                    <div className="font-medium">{dataset.name}</div>
-                    <div className="text-xs text-muted-foreground">{dataset.format}</div>
+                    <h3 className="font-medium flex items-center">
+                      <Database className="h-4 w-4 mr-2" />
+                      {source.name}
+                    </h3>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {source.countries.map((country, i) => (
+                        <Badge key={i} variant="outline" className="flex items-center">
+                          <MapPin className="h-3 w-3 mr-1" /> {country}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedSource(source.id)}
+                  >
+                    Connect
+                  </Button>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-sm text-muted-foreground">
-              {selectedDatasetCount} datasets selected
-            </p>
-          </CardFooter>
-        </Card>
-      </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {source.description}
+                </p>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {source.dataTypes.map((type, i) => (
+                    <Badge key={i} variant="secondary" className="text-xs">
+                      {type}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       
-      <div className="md:col-span-5">
-        <Card className="h-full flex flex-col">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Settings className="h-5 w-5 mr-2" />
-              Integration Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="integration-method">Integration Method</Label>
-                <Select 
-                  value={selectedMethod} 
-                  onValueChange={setSelectedMethod}
-                  disabled={isProcessing}
-                >
-                  <SelectTrigger id="integration-method">
-                    <SelectValue placeholder="Select method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INTEGRATION_METHODS.map(method => (
-                      <SelectItem key={method.id} value={method.id}>
-                        {method.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                {selectedMethodData && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {selectedMethodData.description}
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="output-name">Output Dataset Name</Label>
-                <input
-                  id="output-name"
-                  className="w-full px-3 py-2 border rounded-md text-sm"
-                  value={outputName}
-                  onChange={(e) => setOutputName(e.target.value)}
-                  disabled={isProcessing}
-                />
-              </div>
-              
-              <div className="space-y-2 pt-4 border-t">
-                <div className="flex justify-between items-center">
-                  <Label className="text-sm">Advanced Options</Label>
+      <Card className="md:col-span-1">
+        <CardHeader>
+          <CardTitle>Data Integration Tools</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="connect" disabled={isConnecting}>Connect</TabsTrigger>
+              <TabsTrigger value="integrate" disabled={isConnecting}>Integrate</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="connect" className="space-y-4">
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="data-source">Data Source</Label>
+                  <Select 
+                    value={selectedSource} 
+                    onValueChange={setSelectedSource}
+                    disabled={isConnecting}
+                  >
+                    <SelectTrigger id="data-source">
+                      <SelectValue placeholder="Select data source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AFRICAN_DATASOURCES.map((source) => (
+                        <SelectItem key={source.id} value={source.id}>
+                          {source.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="auto-project" />
-                    <Label htmlFor="auto-project" className="text-sm">
-                      Auto-project to common coordinate system
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="validate-geometries" defaultChecked />
-                    <Label htmlFor="validate-geometries" className="text-sm">
-                      Validate and repair geometries
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="optimize-output" />
-                    <Label htmlFor="optimize-output" className="text-sm">
-                      Optimize output for visualization
-                    </Label>
-                  </div>
+                  <Label htmlFor="connection-url">Connection URL</Label>
+                  <Input 
+                    id="connection-url" 
+                    placeholder="https://api.example.com/data" 
+                    value={connectionUrl}
+                    onChange={(e) => setConnectionUrl(e.target.value)}
+                    disabled={isConnecting}
+                  />
                 </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="api-key">API Key (if required)</Label>
+                  <Input 
+                    id="api-key" 
+                    placeholder="Enter API key" 
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    disabled={isConnecting}
+                    type="password"
+                  />
+                </div>
+                
+                {isConnecting && integrationProgress > 0 && (
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary rounded-full transition-all duration-300 ease-in-out"
+                      style={{ width: `${integrationProgress}%` }}
+                    />
+                  </div>
+                )}
+                
+                <Button 
+                  className="w-full" 
+                  onClick={handleConnect} 
+                  disabled={isConnecting}
+                >
+                  <Link className="h-4 w-4 mr-2" />
+                  {isConnecting ? 'Connecting...' : 'Connect to Data Source'}
+                </Button>
               </div>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button 
-              className="w-full" 
-              onClick={handleIntegration}
-              disabled={isProcessing || selectedDatasetCount < 2}
-            >
-              <ArrowRightLeft className="h-4 w-4 mr-2" />
-              {isProcessing ? 'Processing...' : 'Integrate Datasets'}
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+            </TabsContent>
+            
+            <TabsContent value="integrate" className="space-y-4">
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="local-dataset">Local Dataset</Label>
+                  <Select 
+                    value={selectedDataset} 
+                    onValueChange={setSelectedDataset}
+                    disabled={isConnecting}
+                  >
+                    <SelectTrigger id="local-dataset">
+                      <SelectValue placeholder="Select local dataset" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="zm1">Copperbelt Mineral Survey</SelectItem>
+                      <SelectItem value="zm2">Lusaka Basin Lithology</SelectItem>
+                      <SelectItem value="drc1">Katanga Copper Deposits</SelectItem>
+                      <SelectItem value="drc2">Kivu Tin and Coltan Survey</SelectItem>
+                      <SelectItem value="za1">Witwatersrand Gold Basin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex items-center justify-center py-4">
+                  <ArrowRightLeft className="h-8 w-8 text-muted-foreground" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="remote-source">Remote Data Source</Label>
+                  <Select 
+                    value={selectedSource} 
+                    onValueChange={setSelectedSource}
+                    disabled={isConnecting}
+                  >
+                    <SelectTrigger id="remote-source">
+                      <SelectValue placeholder="Select remote source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AFRICAN_DATASOURCES.map((source) => (
+                        <SelectItem key={source.id} value={source.id}>
+                          {source.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {isConnecting && integrationProgress > 0 && (
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary rounded-full transition-all duration-300 ease-in-out"
+                      style={{ width: `${integrationProgress}%` }}
+                    />
+                  </div>
+                )}
+                
+                <Button 
+                  className="w-full" 
+                  onClick={handleIntegrate} 
+                  disabled={isConnecting}
+                >
+                  <ArrowRightLeft className="h-4 w-4 mr-2" />
+                  {isConnecting ? 'Integrating...' : 'Integrate Data'}
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <Alert className="mt-4">
+            <AlertDescription className="text-xs">
+              Data integration enables merging datasets from different sources.
+              Connect to external data providers or import data directly.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
     </div>
   );
 };
