@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +12,7 @@ export interface AuthUser {
   email: string;
   name: string;
   role: string;
+  organization?: string; // Added organization field
   subscription: {
     tier: SubscriptionTier;
     trialEnd: Date | null;
