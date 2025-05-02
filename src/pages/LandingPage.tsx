@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -9,7 +10,8 @@ import {
   Brain, 
   Shield, 
   Users,
-  ChevronRight
+  ChevronRight,
+  Map as MapIcon
 } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
@@ -81,6 +83,13 @@ const LandingPage: React.FC = () => {
               description="Machine learning algorithms that identify patterns and anomalies humans might miss."
             />
             <FeatureCard 
+              icon={<MapIcon className="h-8 w-8 text-geo-blue" />}
+              title="Interactive Map"
+              description="Explore our interactive geological map with multiple layers and visualization tools."
+              linkTo="/interactive-map"
+              linkText="Try the Map"
+            />
+            <FeatureCard 
               icon={<Layers className="h-8 w-8 text-geo-blue" />}
               title="Advanced Visualization"
               description="Interactive 3D models and cross-sectional views of geological formations."
@@ -95,11 +104,6 @@ const LandingPage: React.FC = () => {
               title="Collaborative Workspace"
               description="Real-time collaboration tools for geologists, engineers, and stakeholders."
             />
-            <FeatureCard 
-              icon={<Shield className="h-8 w-8 text-geo-blue" />}
-              title="Compliance Ready"
-              description="Built-in compliance with JORC, NI 43-101, SAMREC, and UNFC standards."
-            />
           </div>
         </div>
       </div>
@@ -112,12 +116,20 @@ const LandingPage: React.FC = () => {
             <p className="text-lg mb-8 text-slate-700">
               Join leading mining companies and geological survey organizations that are already using GeoVision AI Miner to discover new resources more efficiently.
             </p>
-            <Button size="lg" className="bg-geo-blue hover:bg-blue-700" asChild>
-              <Link to="/signup">
-                Get Started Today
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button size="lg" className="bg-geo-blue hover:bg-blue-700" asChild>
+                <Link to="/signup">
+                  Get Started Today
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/interactive-map">
+                  Try Interactive Map
+                  <MapIcon className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -174,7 +186,7 @@ const LandingPage: React.FC = () => {
               <ul className="space-y-2">
                 <li><Link to="/" className="text-slate-400 hover:text-white">Features</Link></li>
                 <li><Link to="/" className="text-slate-400 hover:text-white">Plans & Pricing</Link></li>
-                <li><Link to="/" className="text-slate-400 hover:text-white">Case Studies</Link></li>
+                <li><Link to="/interactive-map" className="text-slate-400 hover:text-white">Interactive Map</Link></li>
                 <li><Link to="/documentation" className="text-slate-400 hover:text-white">Documentation</Link></li>
               </ul>
             </div>
@@ -218,14 +230,22 @@ const FeatureCard: React.FC<{
   icon: React.ReactNode;
   title: string;
   description: string;
-}> = ({ icon, title, description }) => {
+  linkTo?: string;
+  linkText?: string;
+}> = ({ icon, title, description, linkTo, linkText }) => {
   return (
     <div className="p-6 border border-slate-200 rounded-lg hover:shadow-md transition-shadow">
       <div className="mb-4">
         {icon}
       </div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-slate-600">{description}</p>
+      <p className="text-slate-600 mb-3">{description}</p>
+      {linkTo && linkText && (
+        <Link to={linkTo} className="text-geo-blue hover:underline flex items-center text-sm font-medium">
+          {linkText}
+          <ChevronRight className="ml-1 h-3 w-3" />
+        </Link>
+      )}
     </div>
   );
 };

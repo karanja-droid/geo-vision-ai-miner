@@ -16,6 +16,7 @@ import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AboutUs from "./pages/AboutUs";
 import Documentation from "./pages/Documentation";
+import InteractiveMap from "./pages/InteractiveMap";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SubscriptionBanner from "./components/SubscriptionBanner";
@@ -57,6 +58,7 @@ const App = () => {
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/about" element={<AboutUs />} />
                       <Route path="/documentation" element={<Documentation />} />
+                      <Route path="/interactive-map" element={<InteractiveMap />} />
                       <Route path="*" element={<Navigate to="/" />} />
                     </>
                   ) : (
@@ -68,6 +70,7 @@ const App = () => {
                       <Route path="/upgrade" element={<Upgrade />} />
                       <Route path="/about" element={<AboutUs />} />
                       <Route path="/documentation" element={<Documentation />} />
+                      <Route path="/interactive-map" element={<InteractiveMap />} />
                       
                       {/* Protected routes */}
                       <Route path="/dashboard" element={

@@ -5,7 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Shield, Globe, Database, Brain, Map, BarChart4, Users, Layers, Search } from 'lucide-react';
+import { Shield, Globe, Database, Brain, Map, BarChart4, Users, Layers, Search, Navigation, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Documentation: React.FC = () => {
   return (
@@ -40,6 +42,7 @@ const Documentation: React.FC = () => {
                     icon={<Map className="h-8 w-8 text-geo-blue" />}
                     title="Interactive Map"
                     description="The central visualization component for geological data exploration."
+                    link="/interactive-map"
                   />
                   <ModuleCard 
                     icon={<Brain className="h-8 w-8 text-geo-blue" />}
@@ -81,12 +84,23 @@ const Documentation: React.FC = () => {
                           allowing users to view, manipulate, and analyze geological data in a spatial context.
                         </p>
                         
+                        <div className="my-4 flex justify-center">
+                          <Button asChild variant="outline">
+                            <Link to="/interactive-map" className="flex items-center">
+                              <MapPin className="mr-2 h-4 w-4" />
+                              Try Interactive Map
+                            </Link>
+                          </Button>
+                        </div>
+                        
                         <h4 className="font-medium text-foreground">Key Features</h4>
                         <ul className="list-disc pl-6 space-y-1">
                           <li>Multiple layer support with adjustable opacity settings</li>
                           <li>Support for various data types (raster, vector, point, heatmap)</li>
-                          <li>Interactive zooming and panning capabilities</li>
-                          <li>Location search functionality</li>
+                          <li>Interactive zooming, panning, and 3D terrain visualization</li>
+                          <li>Location search functionality and navigation to key regions</li>
+                          <li>Geological marker display with detailed information</li>
+                          <li>Satellite imagery and terrain visualization</li>
                           <li>Custom layer import and management</li>
                         </ul>
                         
@@ -94,16 +108,29 @@ const Documentation: React.FC = () => {
                         <ul className="list-disc pl-6 space-y-1">
                           <li>Visualize complex geological data in an intuitive spatial interface</li>
                           <li>Overlay multiple data sources to identify correlations and patterns</li>
+                          <li>Navigate to regions of interest with predefined locations</li>
+                          <li>View potential mineral deposits with interactive markers</li>
+                          <li>Toggle between different visualization layers for comprehensive analysis</li>
                           <li>Seamless integration with other modules like AI Analysis and Results Visualization</li>
                           <li>Export map views for reports and presentations</li>
                         </ul>
                         
+                        <h4 className="font-medium text-foreground">How to Use</h4>
+                        <ol className="list-decimal pl-6 space-y-1">
+                          <li>Enter your Mapbox API key to initialize the map (get a free key at mapbox.com)</li>
+                          <li>Use the layers tab to toggle visibility and adjust opacity of different data layers</li>
+                          <li>Navigate to regions of interest using the locations tab</li>
+                          <li>Click on markers to view detailed information about geological points of interest</li>
+                          <li>Use map controls for zooming, panning, and enabling fullscreen mode</li>
+                          <li>Toggle 3D terrain for enhanced topographical visualization</li>
+                        </ol>
+                        
                         <Alert className="bg-blue-50 border-blue-200 text-blue-800">
-                          <Search className="h-4 w-4" />
+                          <Navigation className="h-4 w-4" />
                           <AlertTitle>Pro Tip</AlertTitle>
                           <AlertDescription>
-                            Use the layer opacity controls to overlay AI prediction heatmaps on top of your geological maps 
-                            for better insights into potential resource locations.
+                            Use the layer opacity controls to overlay satellite imagery with terrain data for a better understanding 
+                            of how geological features relate to the physical landscape.
                           </AlertDescription>
                         </Alert>
                       </AccordionContent>
@@ -463,9 +490,10 @@ const ModuleCard: React.FC<{
   icon: React.ReactNode;
   title: string;
   description: string;
-}> = ({ icon, title, description }) => {
-  return (
-    <Card className="overflow-hidden border-2">
+  link?: string;
+}> = ({ icon, title, description, link }) => {
+  const cardContent = (
+    <Card className="overflow-hidden border-2 h-full">
       <CardHeader className="bg-slate-50 p-4 flex flex-row items-center space-y-0 gap-3">
         <div className="bg-white p-2 rounded-md border">
           {icon}
@@ -476,6 +504,14 @@ const ModuleCard: React.FC<{
         <p className="text-sm text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
+  );
+
+  return link ? (
+    <Link to={link} className="block h-full hover:no-underline">
+      {cardContent}
+    </Link>
+  ) : (
+    cardContent
   );
 };
 
