@@ -2,6 +2,7 @@
 import React from 'react';
 import PasswordChangeForm from './PasswordChangeForm';
 import AccountActions from './AccountActions';
+import AdminRequestButton from './AdminRequestButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
@@ -23,6 +24,10 @@ const SecurityTab: React.FC = () => {
       )}
       
       <AccountActions />
+      
+      {user && user.role !== 'admin' && (
+        <AdminRequestButton />
+      )}
     </>
   );
 };
