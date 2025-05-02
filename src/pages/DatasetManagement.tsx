@@ -13,7 +13,7 @@ import { Database, Upload, Link } from "lucide-react";
 
 const DatasetManagement: React.FC = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<string>('upload');
+  const [activeTab, setActiveTab] = useState<string>('library'); // Changed default tab to 'library'
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -48,7 +48,7 @@ const DatasetManagement: React.FC = () => {
             <Database className="h-5 w-5" />
             <AlertTitle>Dataset Library</AlertTitle>
             <AlertDescription>
-              Access, manage, and explore your geological datasets
+              Access, manage, and explore your geological datasets with emphasis on African mineral resources
             </AlertDescription>
           </Alert>
           

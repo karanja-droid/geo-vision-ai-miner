@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Users } from 'lucide-react';
+import { Users, Shield } from 'lucide-react';
 import SecurityBanner from '@/components/SecurityBanner';
 
 const AdminHeader: React.FC = () => {
