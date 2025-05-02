@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { Download, File } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
+import DatasetVisualization from './DatasetVisualization';
 
 interface DatasetDetailsDialogProps {
   dataset: Dataset | null;
@@ -109,40 +111,7 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-4">
-          <div className="bg-muted aspect-video rounded-md flex items-center justify-center">
-            <p className="text-muted-foreground">Dataset visualization would appear here</p>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="font-medium mb-2">Dataset Information</h4>
-              <div className="space-y-1 text-sm">
-                <p><span className="font-medium">Source:</span> {dataset.source}</p>
-                <p><span className="font-medium">Format:</span> {dataset.format}</p>
-                <p><span className="font-medium">Size:</span> {dataset.size}</p>
-                <p><span className="font-medium">Date Added:</span> {dataset.date}</p>
-                <p><span className="font-medium">Country:</span> {dataset.country}</p>
-                <p>
-                  <span className="font-medium">Coordinates:</span> 
-                  {dataset.coordinates[0]}, {dataset.coordinates[1]}
-                </p>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium mb-2">Description</h4>
-              <p className="text-sm">{dataset.description}</p>
-              
-              <h4 className="font-medium mt-4 mb-2">Tags</h4>
-              <div className="flex flex-wrap gap-1">
-                {dataset.tags.map((tag, i) => (
-                  <Badge key={i} variant="secondary">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
+          <DatasetVisualization dataset={dataset} />
           
           {dataset.relatedDocs && dataset.relatedDocs.length > 0 && (
             <div>

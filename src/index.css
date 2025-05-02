@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,66 +6,47 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
- 
+    --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
- 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
- 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
- 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
- 
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
- 
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262.1 83.3% 57.8%;
     --radius: 0.5rem;
-    
-    --geo-blue: 220 70% 50%;
   }
  
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
- 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
- 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
- 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
- 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
- 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
- 
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
- 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263.4 70% 50.4%;
   }
 }
  
@@ -77,79 +59,60 @@
   }
 }
 
-/* Custom utility classes */
+/* Dataset visualization styles */
 .grid-pattern {
-  background-color: #ffffff;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-image: 
+    linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
   background-size: 20px 20px;
-}
-
-.gradient-heatmap {
-  background: linear-gradient(90deg, rgba(255, 0, 0, 0.5), rgba(255, 255, 0, 0.5), rgba(0, 255, 0, 0.5));
-}
-
-.gradient-anomaly {
-  background: radial-gradient(circle, rgba(255, 0, 0, 0.3) 0%, rgba(255, 100, 0, 0.2) 40%, rgba(255, 200, 0, 0.1) 70%, transparent 100%);
 }
 
 .animate-pulse-slow {
   animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Mineral-specific colors */
-.bg-mineral-copper {
-  background-color: #b87333;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
-.bg-mineral-cobalt {
-  background-color: #3349b8;
+/* Mineral color classes */
+.bg-mineral-copper {
+  background-color: #d97706;
 }
 
 .bg-mineral-gold {
-  background-color: #ffd700;
+  background-color: #fbbf24;
+}
+
+.bg-mineral-cobalt {
+  background-color: #2563eb;
 }
 
 .bg-mineral-iron {
-  background-color: #8b4513;
+  background-color: #7f1d1d;
 }
 
 .bg-mineral-zinc {
-  background-color: #bbbbbb;
+  background-color: #64748b;
 }
 
-/* Mineral gradients for maps */
+.gradient-anomaly {
+  background: radial-gradient(circle, rgba(239,68,68,0.6) 0%, rgba(239,68,68,0.1) 70%, rgba(239,68,68,0) 100%);
+}
+
 .gradient-copper {
-  background: radial-gradient(circle, rgba(184, 115, 51, 0.8) 0%, rgba(184, 115, 51, 0.4) 50%, transparent 100%);
-}
-
-.gradient-cobalt {
-  background: radial-gradient(circle, rgba(51, 73, 184, 0.8) 0%, rgba(51, 73, 184, 0.4) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(217,119,6,0.6) 0%, rgba(217,119,6,0.1) 70%, rgba(217,119,6,0) 100%);
 }
 
 .gradient-gold {
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, rgba(255, 215, 0, 0.4) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(251,191,36,0.6) 0%, rgba(251,191,36,0.1) 70%, rgba(251,191,36,0) 100%);
 }
 
-/* Analysis card styling */
-.analysis-card {
-  @apply rounded-md border p-3 bg-card hover:bg-accent/50 transition-colors;
-}
-
-/* Animation for background transitions */
-.duration-2000 {
-  transition-duration: 2000ms;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 1s ease-in-out forwards;
+.gradient-heatmap {
+  background: linear-gradient(to right, rgba(59,130,246,0.5), rgba(139,92,246,0.5), rgba(249,115,22,0.5), rgba(239,68,68,0.5));
 }

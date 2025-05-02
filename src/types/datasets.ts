@@ -29,7 +29,7 @@ export interface Document {
 }
 
 export interface ExportFormat {
-  type: 'csv' | 'json' | 'geojson' | 'shapefile' | 'kml' | 'geotiff';
+  type: 'csv' | 'json' | 'geojson' | 'shapefile' | 'kml' | 'geotiff' | 'chart' | 'visualization';
   mimeType: string;
   extension: string;
   description: string;
