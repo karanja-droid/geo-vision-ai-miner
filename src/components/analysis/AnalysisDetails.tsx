@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AnalysisResult } from '@/types';
+import { AnalysisResult } from '@/types/analysis';
 
 interface AnalysisDetailsProps {
   results: AnalysisResult[];

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AnalysisResult } from '@/types';
+import { AnalysisResult } from '@/types/analysis';
 import { Link } from 'react-router-dom';
 
 interface AnalysisMapProps {

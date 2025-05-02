@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChartBar, FileSpreadsheet, Download } from "lucide-react";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { AnalysisResult } from '@/types';
+import { AnalysisResult } from '@/types/analysis';
 import { 
   AreaChart, Area, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip as RechartsTooltip, Legend, ResponsiveContainer

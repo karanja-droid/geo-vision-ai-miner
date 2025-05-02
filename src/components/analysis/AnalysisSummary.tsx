@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AnalysisResult } from '@/types';
+import { AnalysisResult } from '@/types/analysis';
 
 // Import the new components
 import SummaryStatCard from './summary/SummaryStatCard';

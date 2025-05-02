@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Download } from "lucide-react";
-import { AnalysisResult } from '@/types';
+import { AnalysisResult } from '@/types/analysis';
 
 interface AnalysisDataViewProps {
   results: AnalysisResult[];
