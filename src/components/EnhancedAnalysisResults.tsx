@@ -81,8 +81,9 @@ export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = (
 
   // Prepare summary statistics
   const totalAnomalies = results.reduce((acc, result) => acc + result.data.anomalies, 0);
+  // Fix: Ensure we're working with numbers for the avgConfidence calculation
   const avgConfidence = results.length > 0 
-    ? parseFloat((results.reduce((acc, result) => acc + result.confidence, 0) / results.length * 100).toFixed(1)) 
+    ? parseFloat((results.reduce((acc, result) => acc + Number(result.confidence), 0) / results.length * 100).toFixed(1)) 
     : 0;
   const hotspotCount = results.reduce((acc, result) => acc + (result.data.hotspots?.length || 0), 0);
   const mostRecentDate = results.length > 0 
