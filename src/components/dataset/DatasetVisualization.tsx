@@ -1,169 +1,130 @@
 
 import React from 'react';
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { MapPin, Calendar, Database, FileType, HardDrive } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Database, FileBadge } from "lucide-react";
 
 interface DatasetVisualizationProps {
   dataset: Dataset;
+  className?: string;
 }
 
-// Generate sample data based on dataset properties
-const generateVisualizationData = (dataset: Dataset) => {
-  // Create sample data points using dataset properties as seeds
-  const dataPoints = [];
-  const seedValue = dataset.name.length + dataset.description.length;
+export const DatasetVisualization: React.FC<DatasetVisualizationProps> = ({
+  dataset,
+  className = ''
+}) => {
+  // Determine what type of visualization to show based on dataset format
+  const renderVisualization = () => {
+    switch (dataset.format) {
+      case 'GeoJSON':
+      case 'GeoTIFF':
+      case 'Shapefile':
+        return renderMapVisualization();
+      case 'CSV':
+      case 'Excel':
+        return renderTabularVisualization();
+      default:
+        return renderDefaultVisualization();
+    }
+  };
   
-  for (let i = 0; i < 10; i++) {
-    const baseValue = (seedValue * (i + 1)) % 100;
-    dataPoints.push({
-      name: `Point ${i + 1}`,
-      value: baseValue + Math.floor(Math.random() * 20),
-      average: 50 + (dataset.tags.length * 5) % 20,
-    });
-  }
+  // Visualization for geospatial data
+  const renderMapVisualization = () => {
+    return (
+      <div className="relative h-full w-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+        {/* Simulated map visualization */}
+        <div className="absolute inset-0">
+          {/* Grid pattern to simulate a map */}
+          <div className="h-full w-full grid grid-cols-12 grid-rows-8">
+            {Array(96).fill(0).map((_, i) => (
+              <div 
+                key={i} 
+                className="border border-slate-200 dark:border-slate-700"
+              ></div>
+            ))}
+          </div>
+          
+          {/* Add a simulated feature at the dataset coordinates */}
+          <div 
+            className="absolute w-6 h-6 rounded-full bg-primary/20 border-2 border-primary animate-pulse"
+            style={{ 
+              left: `${(dataset.coordinates[1] + 180) / 360 * 100}%`, 
+              top: `${(90 - dataset.coordinates[0]) / 180 * 100}%`,
+              transform: 'translate(-50%, -50%)'
+            }}
+          ></div>
+        </div>
+        
+        {/* Overlay with dataset details */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
+          <div className="flex items-center text-white">
+            <MapPin className="h-4 w-4 mr-2" />
+            <span className="text-sm font-medium">
+              {dataset.coordinates[0].toFixed(4)}°, {dataset.coordinates[1].toFixed(4)}°
+            </span>
+            <Badge className="ml-2" variant="outline">
+              {dataset.country}
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
+  };
   
-  return dataPoints;
-};
-
-export const DatasetVisualization: React.FC<DatasetVisualizationProps> = ({ dataset }) => {
-  const visualizationData = generateVisualizationData(dataset);
+  // Visualization for tabular data
+  const renderTabularVisualization = () => {
+    return (
+      <div className="h-full w-full bg-slate-100 dark:bg-slate-800 p-4 overflow-hidden">
+        <div className="flex items-center mb-2">
+          <Database className="h-4 w-4 mr-2" />
+          <span className="text-sm font-medium">Tabular Data Preview</span>
+        </div>
+        
+        {/* Simulated table visualization */}
+        <div className="border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden">
+          <div className="bg-slate-200 dark:bg-slate-700 p-2">
+            <div className="grid grid-cols-4">
+              {['ID', 'Name', 'Type', 'Value'].map((header, i) => (
+                <div key={i} className="text-xs font-medium">{header}</div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-slate-800">
+            {Array(5).fill(0).map((_, i) => (
+              <div key={i} className="grid grid-cols-4 p-2 border-b border-slate-100 dark:border-slate-700">
+                {[`${i+1}`, `Sample ${i+1}`, i % 2 === 0 ? 'Primary' : 'Secondary', ((i+1) * 15.7).toFixed(1)].map((cell, j) => (
+                  <div key={j} className="text-xs truncate">{cell}</div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="mt-2 text-xs text-muted-foreground">
+          Showing 5 of 1,000+ records
+        </div>
+      </div>
+    );
+  };
+  
+  // Default visualization for other formats
+  const renderDefaultVisualization = () => {
+    return (
+      <div className="h-full w-full flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 p-4">
+        <FileBadge className="h-12 w-12 text-muted-foreground mb-2" />
+        <h3 className="text-lg font-medium">{dataset.format} Dataset</h3>
+        <p className="text-sm text-muted-foreground text-center mt-2">
+          {dataset.name}<br />
+          {dataset.size} • {dataset.date}
+        </p>
+      </div>
+    );
+  };
   
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Map Preview */}
-        <Card className="overflow-hidden">
-          <div className="h-48 bg-muted relative">
-            <div className="absolute inset-0 grid-pattern"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg text-center">
-                <MapPin className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="font-medium">{dataset.country}</div>
-                <div className="text-xs text-muted-foreground">
-                  {dataset.coordinates[0].toFixed(4)}, {dataset.coordinates[1].toFixed(4)}
-                </div>
-              </div>
-            </div>
-            
-            {/* Simulated dataset coverage area */}
-            <div className="absolute left-1/4 top-1/4 w-24 h-24 rounded-full bg-primary/20 animate-pulse-slow"></div>
-          </div>
-          <div className="p-3 border-t">
-            <h3 className="font-medium text-sm mb-1">Geographic Information</h3>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5 mr-1" /> {dataset.country} • Region {dataset.id.charAt(0).toUpperCase() + dataset.id.slice(1, 3)}
-            </div>
-          </div>
-        </Card>
-        
-        {/* Dataset Info Card */}
-        <Card className="p-4">
-          <h3 className="font-medium mb-3 flex items-center">
-            <Database className="h-4 w-4 mr-2 text-primary" /> Dataset Overview
-          </h3>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center pb-1 border-b border-muted">
-              <div className="flex items-center text-sm">
-                <FileType className="h-4 w-4 mr-2 text-muted-foreground" /> Format
-              </div>
-              <Badge>{dataset.format}</Badge>
-            </div>
-            <div className="flex justify-between items-center pb-1 border-b border-muted">
-              <div className="flex items-center text-sm">
-                <HardDrive className="h-4 w-4 mr-2 text-muted-foreground" /> Size
-              </div>
-              <span className="text-sm">{dataset.size}</span>
-            </div>
-            <div className="flex justify-between items-center pb-1 border-b border-muted">
-              <div className="flex items-center text-sm">
-                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" /> Added
-              </div>
-              <span className="text-sm">{dataset.date}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center text-sm">
-                <Database className="h-4 w-4 mr-2 text-muted-foreground" /> Source
-              </div>
-              <span className="text-sm">{dataset.source}</span>
-            </div>
-          </div>
-        </Card>
-      </div>
-      
-      {/* Data Visualization Chart with better horizontal scrolling */}
-      <Card className="p-4">
-        <h3 className="font-medium mb-3">Data Visualization</h3>
-        <div className="overflow-x-auto">
-          <ScrollArea className="h-64 w-full">
-            <div className="min-w-[600px] h-60 pr-4">
-              <ChartContainer
-                config={{
-                  value: {
-                    label: "Value",
-                    color: "#8B5CF6",
-                  },
-                  average: {
-                    label: "Average",
-                    color: "#94A3B8",
-                  },
-                }}
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={visualizationData}
-                    margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
-                  >
-                    <XAxis 
-                      dataKey="name" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false}
-                      tick={{ 
-                        fontSize: 10
-                      }}
-                      height={30}
-                    />
-                    <YAxis 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                      width={40}
-                    />
-                    <CartesianGrid stroke="#f5f5f5" strokeDasharray="3 3" />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="var(--color-value)"
-                      strokeWidth={2}
-                      dot={true}
-                      activeDot={{ r: 6 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="average"
-                      stroke="var(--color-average)"
-                      strokeWidth={2}
-                      strokeDasharray="3 3"
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </ScrollArea>
-        </div>
-        <div className="text-xs text-center mt-2 text-muted-foreground">
-          Visualization of {dataset.name} dataset
-        </div>
-      </Card>
+    <div className={`h-full w-full ${className}`}>
+      {renderVisualization()}
     </div>
   );
 };
-
-export default DatasetVisualization;

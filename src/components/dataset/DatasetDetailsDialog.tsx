@@ -3,12 +3,10 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, MapPin } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
-import DatasetVisualization from './DatasetVisualization';
+import { DatasetVisualization } from './DatasetVisualization';
 
 interface DatasetDetailsDialogProps {
   dataset: Dataset | null;
@@ -16,73 +14,26 @@ interface DatasetDetailsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({ 
-  dataset, 
-  open, 
-  onOpenChange 
+export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
+  dataset,
+  open,
+  onOpenChange
 }) => {
   const { toast } = useToast();
   
   if (!dataset) return null;
   
-  const handleDownloadDocument = (doc: any) => {
+  const handleDownloadDataset = () => {
     try {
-      // Create text content for the document
+      // Create text content for the dataset
       const textContent = `
-        DOCUMENT: ${doc.name}
-        TYPE: ${doc.type}
-        SIZE: ${doc.size}
-        RELATED DATASET: ${dataset.name}
-        
-        METADATA:
-        Downloaded: ${new Date().toLocaleString()}
-        Document ID: ${doc.id}
-        
-        This is a simulated document for demonstration purposes.
-      `;
-      
-      // Use text/plain MIME type with matching .txt extension
-      const blob = new Blob([textContent], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      
-      // Create download link with .txt extension
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${doc.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.txt`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "Download started",
-        description: `Downloading ${doc.name} as a text file`,
-      });
-    } catch (error) {
-      console.error("Failed to download document:", error);
-      toast({
-        title: "Download failed",
-        description: "There was a problem downloading the document.",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  const handleExportData = () => {
-    try {
-      // Create text content for the dataset export
-      const textContent = `
-        DATASET EXPORT: ${dataset.name}
-        =======================${new Array(dataset.name.length).fill('=').join('')}
-        
-        METADATA:
-        ID: ${dataset.id}
-        Format: ${dataset.format}
-        Source: ${dataset.source}
-        Size: ${dataset.size}
-        Date: ${dataset.date}
-        Country: ${dataset.country}
-        Coordinates: ${dataset.coordinates[0]}, ${dataset.coordinates[1]}
+        DATASET: ${dataset.name}
+        FORMAT: ${dataset.format}
+        SIZE: ${dataset.size}
+        SOURCE: ${dataset.source}
+        DATE: ${dataset.date}
+        COUNTRY: ${dataset.country}
+        COORDINATES: ${dataset.coordinates.join(', ')}
         
         DESCRIPTION:
         ${dataset.description}
@@ -90,10 +41,11 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         TAGS:
         ${dataset.tags.join(', ')}
         
-        RELATED DOCUMENTS:
-        ${dataset.relatedDocs.map(doc => `- ${doc.name} (${doc.type}, ${doc.size})`).join('\n')}
+        METADATA:
+        Downloaded: ${new Date().toLocaleString()}
+        Dataset ID: ${dataset.id}
         
-        Exported on: ${new Date().toLocaleString()}
+        This is a simulated dataset export for demonstration purposes.
       `;
       
       // Use text/plain MIME type with matching .txt extension
@@ -110,14 +62,14 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
       URL.revokeObjectURL(url);
       
       toast({
-        title: "Export successful",
-        description: `Dataset ${dataset.name} has been exported as a text file`,
+        title: "Download started",
+        description: `Downloading ${dataset.name} as a text file`,
       });
     } catch (error) {
-      console.error("Failed to export dataset:", error);
+      console.error("Failed to download dataset:", error);
       toast({
-        title: "Export failed",
-        description: "There was a problem exporting the dataset.",
+        title: "Download failed",
+        description: "There was a problem downloading the dataset.",
         variant: "destructive",
       });
     }
@@ -125,60 +77,81 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>{dataset.name}</DialogTitle>
-          <DialogDescription>Detailed information and visualization</DialogDescription>
+          <DialogDescription>
+            <div className="flex items-center mt-1">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span>{dataset.country}</span>
+              <span className="mx-2">•</span>
+              <span>{dataset.format}</span>
+              <span className="mx-2">•</span>
+              <span>{dataset.size}</span>
+            </div>
+          </DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[65vh] overflow-y-auto pr-4">
-          <div className="space-y-6">
+        <div className="space-y-4">
+          <div className="aspect-video bg-muted rounded-md overflow-hidden">
             <DatasetVisualization dataset={dataset} />
-            
-            {dataset.relatedDocs && dataset.relatedDocs.length > 0 && (
-              <div>
-                <h4 className="font-medium mb-2">Related Documents</h4>
-                <div className="max-w-full overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Document Name</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Size</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dataset.relatedDocs.map((doc) => (
-                        <TableRow key={doc.id}>
-                          <TableCell className="flex items-center">
-                            <FileText className="h-4 w-4 mr-2" />
-                            {doc.name}
-                          </TableCell>
-                          <TableCell>{doc.type}</TableCell>
-                          <TableCell>{doc.size}</TableCell>
-                          <TableCell className="text-right">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleDownloadDocument(doc)}
-                            >
-                              <Download className="h-4 w-4 mr-1" /> Download
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
+          </div>
+          
+          <div>
+            <h3 className="font-medium mb-2">Description</h3>
+            <p className="text-sm text-muted-foreground">{dataset.description}</p>
+          </div>
+          
+          <div>
+            <h3 className="font-medium mb-2">Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {dataset.tags.map((tag, index) => (
+                <Badge key={index} variant="secondary">{tag}</Badge>
+              ))}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h3 className="font-medium mb-2">Source</h3>
+              <p className="text-sm text-muted-foreground">{dataset.source}</p>
+            </div>
+            <div>
+              <h3 className="font-medium mb-2">Date</h3>
+              <p className="text-sm text-muted-foreground">{dataset.date}</p>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="font-medium mb-2">Related Documents</h3>
+            {dataset.relatedDocs && dataset.relatedDocs.length > 0 ? (
+              <ul className="text-sm space-y-1">
+                {dataset.relatedDocs.map((doc) => (
+                  <li key={doc.id} className="flex items-center">
+                    <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {doc.name} ({doc.type}, {doc.size})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">No related documents available</p>
             )}
           </div>
-        </ScrollArea>
+        </div>
         
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-          <Button onClick={handleExportData}>Export Data</Button>
+        <DialogFooter className="flex items-center justify-between flex-row">
+          <div className="text-xs text-muted-foreground">
+            Dataset ID: {dataset.id}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+            <Button variant="default" onClick={handleDownloadDataset}>
+              <Download className="h-4 w-4 mr-1" />
+              Download Dataset
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
