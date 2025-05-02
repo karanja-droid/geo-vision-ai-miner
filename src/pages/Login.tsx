@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -8,10 +9,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { Shield, Check, InfoIcon } from 'lucide-react';
+import { Shield, Check } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -56,12 +56,6 @@ const Login: React.FC = () => {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
 
-  // Demo credentials
-  const demoCredentials = {
-    email: "admin@example.com",
-    password: "password123"
-  };
-
   React.useEffect(() => {
     // Rotate background images every 8 seconds
     const intervalId = setInterval(() => {
@@ -78,12 +72,6 @@ const Login: React.FC = () => {
       password: '',
     },
   });
-
-  const fillDemoCredentials = () => {
-    form.setValue("email", demoCredentials.email);
-    form.setValue("password", demoCredentials.password);
-    setCaptchaVerified(true);
-  };
 
   const onSubmit = async (values: LoginFormValues) => {
     if (!captchaVerified) {
@@ -210,23 +198,6 @@ const Login: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="py-2">
-          {/* Demo credentials alert */}
-          {!showForgotPassword && (
-            <Alert className="mb-4 bg-blue-50 border-blue-200">
-              <InfoIcon className="h-4 w-4 text-blue-500" />
-              <AlertDescription className="text-sm">
-                <span className="font-medium">Demo Credentials:</span> 
-                <div className="mt-1 flex justify-between">
-                  <span>Email: <code className="bg-blue-100 px-1 py-0.5 rounded">{demoCredentials.email}</code></span>
-                  <Button variant="link" size="sm" className="p-0 h-auto text-blue-600" onClick={fillDemoCredentials}>
-                    Auto-fill
-                  </Button>
-                </div>
-                <div>Password: <code className="bg-blue-100 px-1 py-0.5 rounded">{demoCredentials.password}</code></div>
-              </AlertDescription>
-            </Alert>
-          )}
-
           {authError && !showForgotPassword && (
             <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-2 mb-3 text-xs">
               {authError}
