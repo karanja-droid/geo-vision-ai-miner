@@ -191,59 +191,61 @@ const UserProfile: React.FC = () => {
                 Manage your personal information and account settings
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleProfileUpdate} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <div className="flex">
-                    <UserRound className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
-                    <Input 
-                      id="name"
-                      value={userForm.name}
-                      onChange={(e) => setUserForm({...userForm, name: e.target.value})}
-                      placeholder="Your full name"
-                    />
+            <form onSubmit={handleProfileUpdate}>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <div className="flex">
+                      <UserRound className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
+                      <Input 
+                        id="name"
+                        value={userForm.name}
+                        onChange={(e) => setUserForm({...userForm, name: e.target.value})}
+                        placeholder="Your full name"
+                      />
+                    </div>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <div className="flex">
-                    <Mail className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
-                    <Input 
-                      id="email"
-                      type="email"
-                      value={userForm.email}
-                      onChange={(e) => setUserForm({...userForm, email: e.target.value})}
-                      placeholder="Your email address"
-                      disabled
-                    />
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <div className="flex">
+                      <Mail className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
+                      <Input 
+                        id="email"
+                        type="email"
+                        value={userForm.email}
+                        onChange={(e) => setUserForm({...userForm, email: e.target.value})}
+                        placeholder="Your email address"
+                        disabled
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Email address cannot be changed. Contact support if needed.
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Email address cannot be changed. Contact support if needed.
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="organization">Organization</Label>
-                  <div className="flex">
-                    <Building className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
-                    <Input 
-                      id="organization"
-                      value={userForm.organization}
-                      onChange={(e) => setUserForm({...userForm, organization: e.target.value})}
-                      placeholder="Your organization"
-                    />
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="organization">Organization</Label>
+                    <div className="flex">
+                      <Building className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
+                      <Input 
+                        id="organization"
+                        value={userForm.organization}
+                        onChange={(e) => setUserForm({...userForm, organization: e.target.value})}
+                        placeholder="Your organization"
+                      />
+                    </div>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <div className="flex items-center">
-                    <Shield className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <Badge variant="outline" className="text-primary">
-                      {user?.role || 'User'}
-                    </Badge>
+                  
+                  <div className="space-y-2">
+                    <Label>Role</Label>
+                    <div className="flex items-center">
+                      <Shield className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <Badge variant="outline" className="text-primary">
+                        {user?.role || 'User'}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -254,8 +256,8 @@ const UserProfile: React.FC = () => {
                 <Button type="submit" disabled={loading}>
                   {loading ? 'Saving...' : 'Save Changes'}
                 </Button>
-              </form>
-            </CardFooter>
+              </CardFooter>
+            </form>
           </Card>
         </TabsContent>
         
@@ -267,66 +269,72 @@ const UserProfile: React.FC = () => {
                 Manage your account security and password
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handlePasswordChange} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current Password</Label>
-                  <div className="flex">
-                    <Key className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
-                    <Input 
-                      id="currentPassword"
-                      type="password"
-                      value={passwordForm.currentPassword}
-                      onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
-                      placeholder="Enter your current password"
-                      required
-                    />
+            <form onSubmit={handlePasswordChange}>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <div className="flex">
+                      <Key className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
+                      <Input 
+                        id="currentPassword"
+                        type="password"
+                        value={passwordForm.currentPassword}
+                        onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                        placeholder="Enter your current password"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <div className="flex">
-                    <Key className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
-                    <Input 
-                      id="newPassword"
-                      type="password"
-                      value={passwordForm.newPassword}
-                      onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
-                      placeholder="Enter new password"
-                      required
-                    />
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <div className="flex">
+                      <Key className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
+                      <Input 
+                        id="newPassword"
+                        type="password"
+                        value={passwordForm.newPassword}
+                        onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                        placeholder="Enter new password"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <div className="flex">
-                    <Key className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
-                    <Input 
-                      id="confirmPassword"
-                      type="password"
-                      value={passwordForm.confirmPassword}
-                      onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
-                      placeholder="Confirm new password"
-                      required
-                    />
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <div className="flex">
+                      <Key className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
+                      <Input 
+                        id="confirmPassword"
+                        type="password"
+                        value={passwordForm.confirmPassword}
+                        onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                        placeholder="Confirm new password"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={() => setPasswordForm({
-                  currentPassword: '',
-                  newPassword: '',
-                  confirmPassword: '',
-                })}>
+                <Button 
+                  variant="outline" 
+                  type="button"
+                  onClick={() => setPasswordForm({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                  })}
+                >
                   Reset
                 </Button>
                 <Button type="submit" disabled={loading}>
                   {loading ? 'Updating...' : 'Update Password'}
                 </Button>
-              </form>
-            </CardFooter>
+              </CardFooter>
+            </form>
           </Card>
           
           <Card>
