@@ -98,64 +98,66 @@ export const DatasetVisualization: React.FC<DatasetVisualizationProps> = ({ data
       {/* Data Visualization Chart with better horizontal scrolling */}
       <Card className="p-4">
         <h3 className="font-medium mb-3">Data Visualization</h3>
-        <ScrollArea className="h-64 w-full" orientation="horizontal">
-          <div className="min-w-[600px] h-60 pr-4">
-            <ChartContainer
-              config={{
-                value: {
-                  label: "Value",
-                  color: "#8B5CF6",
-                },
-                average: {
-                  label: "Average",
-                  color: "#94A3B8",
-                },
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={visualizationData}
-                  margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
-                >
-                  <XAxis 
-                    dataKey="name" 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false}
-                    tick={{ 
-                      fontSize: 10
-                    }}
-                    height={30}
-                  />
-                  <YAxis 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false} 
-                    width={40}
-                  />
-                  <CartesianGrid stroke="#f5f5f5" strokeDasharray="3 3" />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="var(--color-value)"
-                    strokeWidth={2}
-                    dot={true}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="average"
-                    stroke="var(--color-average)"
-                    strokeWidth={2}
-                    strokeDasharray="3 3"
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </div>
-        </ScrollArea>
+        <div className="overflow-x-auto">
+          <ScrollArea className="h-64 w-full">
+            <div className="min-w-[600px] h-60 pr-4">
+              <ChartContainer
+                config={{
+                  value: {
+                    label: "Value",
+                    color: "#8B5CF6",
+                  },
+                  average: {
+                    label: "Average",
+                    color: "#94A3B8",
+                  },
+                }}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={visualizationData}
+                    margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+                  >
+                    <XAxis 
+                      dataKey="name" 
+                      fontSize={12} 
+                      tickLine={false} 
+                      axisLine={false}
+                      tick={{ 
+                        fontSize: 10
+                      }}
+                      height={30}
+                    />
+                    <YAxis 
+                      fontSize={12} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      width={40}
+                    />
+                    <CartesianGrid stroke="#f5f5f5" strokeDasharray="3 3" />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="var(--color-value)"
+                      strokeWidth={2}
+                      dot={true}
+                      activeDot={{ r: 6 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="average"
+                      stroke="var(--color-average)"
+                      strokeWidth={2}
+                      strokeDasharray="3 3"
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </ScrollArea>
+        </div>
         <div className="text-xs text-center mt-2 text-muted-foreground">
           Visualization of {dataset.name} dataset
         </div>
