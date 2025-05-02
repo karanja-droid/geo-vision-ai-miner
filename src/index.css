@@ -116,3 +116,26 @@
 .gradient-heatmap {
   background: linear-gradient(to right, rgba(59,130,246,0.5), rgba(139,92,246,0.5), rgba(249,115,22,0.5), rgba(239,68,68,0.5));
 }
+
+/* Chart overflow fixes */
+.recharts-wrapper {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.recharts-surface {
+  overflow: visible;
+}
+
+.recharts-tooltip-wrapper {
+  max-width: 90%;
+  overflow: visible !important;
+  z-index: 20 !important;
+}
+
+/* Dialog content scrolling */
+.dialog-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
