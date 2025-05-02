@@ -242,7 +242,7 @@ export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = (
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">High Confidence (>80%):</span>
+                      <span className="text-sm">High Confidence ({'>'}80%):</span>
                       <Badge variant="outline">
                         {results.filter(r => r.confidence > 0.8).length}
                       </Badge>
