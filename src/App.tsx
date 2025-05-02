@@ -21,6 +21,7 @@ import GlobalDataIntegration from './pages/GlobalDataIntegration';
 import { AuthProvider } from './contexts/AuthContext';
 import LandingPage from './pages/LandingPage';
 import Index from './pages/Index';
+import UserProfile from './pages/UserProfile';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
               <Route path="/docs" element={<Documentation />} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/landing" element={<LandingPage />} />
+              <Route path="/account" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
