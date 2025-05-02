@@ -138,6 +138,42 @@
   border-radius: 50%;
 }
 
+.gradient-cobalt {
+  background: radial-gradient(circle, rgba(93,107,192,0.7) 0%, rgba(93,107,192,0.1) 70%, rgba(93,107,192,0) 100%);
+  border-radius: 50%;
+}
+
+.gradient-iron {
+  background: radial-gradient(circle, rgba(121,85,72,0.7) 0%, rgba(121,85,72,0.1) 70%, rgba(121,85,72,0) 100%);
+  border-radius: 50%;
+}
+
+.gradient-zinc {
+  background: radial-gradient(circle, rgba(96,125,139,0.7) 0%, rgba(96,125,139,0.1) 70%, rgba(96,125,139,0) 100%);
+  border-radius: 50%;
+}
+
+/* Mineral color classes */
+.bg-mineral-copper {
+  background-color: #d32f2f;
+}
+
+.bg-mineral-gold {
+  background-color: #ffc107;
+}
+
+.bg-mineral-cobalt {
+  background-color: #5c6bc0;
+}
+
+.bg-mineral-iron {
+  background-color: #795548;
+}
+
+.bg-mineral-zinc {
+  background-color: #607d8b;
+}
+
 /* Mining data visualization elements */
 .mining-hotspot {
   position: absolute;
@@ -154,6 +190,16 @@
   background-size: 25px 25px;
 }
 
+/* Heatmap gradient */
+.gradient-heatmap {
+  background: linear-gradient(to right, 
+    rgba(0, 0, 255, 0.7),
+    rgba(0, 255, 0, 0.7),
+    rgba(255, 255, 0, 0.7),
+    rgba(255, 0, 0, 0.7)
+  );
+}
+
 /* Integration visualization elements */
 .data-connection-line {
   position: absolute;
@@ -161,4 +207,45 @@
   height: 2px;
   transform-origin: 0% 50%;
   animation: pulse-slow 3s infinite;
+}
+
+/* Analysis card styling */
+.analysis-card {
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: rgba(255,255,255,0.5);
+  transition: all 0.2s;
+}
+
+.analysis-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transform: translateY(-1px);
+}
+
+/* 3D visualization styling */
+.visualization-3d {
+  perspective: 1000px;
+}
+
+.visualization-3d-content {
+  transform-style: preserve-3d;
+  transform: rotateX(45deg) rotateZ(-15deg);
+}
+
+/* Chart styles */
+.chart-tooltip {
+  background-color: rgba(255,255,255,0.9);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .global-data-grid {
+    grid-template-columns: 1fr;
+  }
 }
