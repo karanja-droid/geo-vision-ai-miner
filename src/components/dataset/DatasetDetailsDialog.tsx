@@ -105,14 +105,14 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh]">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>{dataset.name}</DialogTitle>
           <DialogDescription>Detailed information and visualization</DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[65vh] pr-4">
-          <div className="space-y-4">
+        <ScrollArea className="max-h-[65vh] overflow-y-auto pr-4">
+          <div className="space-y-6">
             <DatasetVisualization dataset={dataset} />
             
             {dataset.relatedDocs && dataset.relatedDocs.length > 0 && (

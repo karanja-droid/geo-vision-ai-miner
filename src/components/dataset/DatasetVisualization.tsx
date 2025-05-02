@@ -95,11 +95,11 @@ export const DatasetVisualization: React.FC<DatasetVisualizationProps> = ({ data
         </Card>
       </div>
       
-      {/* Data Visualization Chart with ScrollArea */}
+      {/* Data Visualization Chart with better horizontal scrolling */}
       <Card className="p-4">
         <h3 className="font-medium mb-3">Data Visualization</h3>
-        <ScrollArea className="h-64 w-full">
-          <div className="min-w-[500px] h-60">
+        <ScrollArea className="h-64 w-full" orientation="horizontal">
+          <div className="min-w-[600px] h-60 pr-4">
             <ChartContainer
               config={{
                 value: {
@@ -115,7 +115,7 @@ export const DatasetVisualization: React.FC<DatasetVisualizationProps> = ({ data
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={visualizationData}
-                  margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
+                  margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
                 >
                   <XAxis 
                     dataKey="name" 
@@ -123,12 +123,16 @@ export const DatasetVisualization: React.FC<DatasetVisualizationProps> = ({ data
                     tickLine={false} 
                     axisLine={false}
                     tick={{ 
-                      fontSize: 10,
-                      width: 20,
-                      overflow: 'hidden'
+                      fontSize: 10
                     }}
+                    height={30}
                   />
-                  <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis 
+                    fontSize={12} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    width={40}
+                  />
                   <CartesianGrid stroke="#f5f5f5" strokeDasharray="3 3" />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Line

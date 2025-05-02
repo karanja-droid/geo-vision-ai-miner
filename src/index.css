@@ -138,3 +138,20 @@
   max-height: 90vh;
   overflow-y: auto;
 }
+
+/* Enhanced scrolling for charts */
+.recharts-container {
+  min-width: 500px;
+  width: 100%;
+  height: 100%;
+}
+
+/* Allow horizontal scrolling for chart containers */
+.recharts-wrapper {
+  min-width: 100%;
+}
+
+/* Ensure tooltips are visible */
+.recharts-tooltip-wrapper {
+  pointer-events: none;
+}
