@@ -14,7 +14,8 @@ import {
   BoxSelect, 
   GanttChart, 
   Network, 
-  RollingPin 
+  RollingPin,
+  FileText 
 } from './IconComponents';
 
 export const DataInsights: React.FC = () => {

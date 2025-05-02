@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Globe, Layers, ChartLine, Combine, Database, Download } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Share2 } from './IconComponents';
+import { Share2, Save, RefreshCw, Settings } from './IconComponents';
 
 export const GlobalDataVisualization: React.FC = () => {
   const [activeRegion, setActiveRegion] = useState<string>("global");

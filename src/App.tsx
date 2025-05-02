@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "@/components/ui/toaster";
 import Dashboard from './components/Dashboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
