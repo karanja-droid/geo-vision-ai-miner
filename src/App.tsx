@@ -44,7 +44,14 @@ function App() {
               <Route path="/upgrade" element={<Upgrade />} />
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/docs" element={<Documentation />} />
-              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/landing" element={<LandingPage />} />
               <Route path="/account" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -12,10 +12,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { Badge } from '@/components/ui/badge';
+import { ShieldAlert } from 'lucide-react';
 
 const AccountActions: React.FC = () => {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const [requestingSent, setRequestingSent] = useState(false);
 
   const handleSignOutEverywhere = async () => {
     try {
@@ -46,6 +49,37 @@ const AccountActions: React.FC = () => {
       description: "Please contact support to delete your account.",
     });
   };
+  
+  const handleRequestAdminAccess = async () => {
+    try {
+      if (isSupabaseConfigured()) {
+        // In production, this would create a request in the database
+        const { error } = await supabase
+          .from('admin_requests')
+          .insert([{ 
+            user_id: user?.id,
+            user_email: user?.email,
+            status: 'pending'
+          }])
+          .select();
+          
+        if (error) throw error;
+      }
+      
+      setRequestingSent(true);
+      toast({
+        title: "Request submitted",
+        description: "Your request for admin access has been submitted for review.",
+      });
+    } catch (error) {
+      console.error('Error requesting admin access:', error);
+      toast({
+        title: "Request failed",
+        description: "Could not submit your request at this time. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card>
@@ -71,6 +105,48 @@ const AccountActions: React.FC = () => {
         </div>
         
         <Separator />
+        
+        {user?.role !== 'admin' && !requestingSent && (
+          <>
+            <div>
+              <h3 className="text-lg font-medium flex items-center">
+                <ShieldAlert className="mr-2 h-5 w-5 text-blue-500" />
+                Admin Access
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Request administrative privileges for your account.
+              </p>
+              <Button 
+                variant="outline" 
+                className="mt-2"
+                onClick={handleRequestAdminAccess}
+              >
+                Request Admin Access
+              </Button>
+            </div>
+            
+            <Separator />
+          </>
+        )}
+        
+        {requestingSent && (
+          <>
+            <div>
+              <h3 className="text-lg font-medium flex items-center">
+                <ShieldAlert className="mr-2 h-5 w-5 text-blue-500" />
+                Admin Access
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="outline" className="bg-blue-50">Request Pending</Badge>
+                <p className="text-sm text-muted-foreground">
+                  Your admin access request is being reviewed.
+                </p>
+              </div>
+            </div>
+            
+            <Separator />
+          </>
+        )}
         
         <div>
           <h3 className="text-lg font-medium text-destructive">Danger Zone</h3>
