@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { Download, File } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
@@ -104,54 +105,56 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{dataset.name}</DialogTitle>
           <DialogDescription>Detailed information and visualization</DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <DatasetVisualization dataset={dataset} />
-          
-          {dataset.relatedDocs && dataset.relatedDocs.length > 0 && (
-            <div>
-              <h4 className="font-medium mb-2">Related Documents</h4>
-              <div className="max-w-full overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Document Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Size</TableHead>
-                      <TableHead className="text-right">Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {dataset.relatedDocs.map((doc) => (
-                      <TableRow key={doc.id}>
-                        <TableCell className="flex items-center">
-                          <File className="h-4 w-4 mr-2" />
-                          {doc.name}
-                        </TableCell>
-                        <TableCell>{doc.type}</TableCell>
-                        <TableCell>{doc.size}</TableCell>
-                        <TableCell className="text-right">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleDownloadDocument(doc)}
-                          >
-                            <Download className="h-4 w-4 mr-1" /> Download
-                          </Button>
-                        </TableCell>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <div className="space-y-4">
+            <DatasetVisualization dataset={dataset} />
+            
+            {dataset.relatedDocs && dataset.relatedDocs.length > 0 && (
+              <div>
+                <h4 className="font-medium mb-2">Related Documents</h4>
+                <div className="max-w-full overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Document Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Size</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {dataset.relatedDocs.map((doc) => (
+                        <TableRow key={doc.id}>
+                          <TableCell className="flex items-center">
+                            <File className="h-4 w-4 mr-2" />
+                            {doc.name}
+                          </TableCell>
+                          <TableCell>{doc.type}</TableCell>
+                          <TableCell>{doc.size}</TableCell>
+                          <TableCell className="text-right">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleDownloadDocument(doc)}
+                            >
+                              <Download className="h-4 w-4 mr-1" /> Download
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </ScrollArea>
         
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>

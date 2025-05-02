@@ -120,7 +120,7 @@
 /* Chart overflow fixes */
 .recharts-wrapper {
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .recharts-surface {
@@ -138,4 +138,3 @@
   max-height: 90vh;
   overflow-y: auto;
 }
-
