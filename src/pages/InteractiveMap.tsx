@@ -1,9 +1,9 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 import { 
   Map as MapIcon, 
   Layers, 
@@ -11,7 +11,8 @@ import {
   ZoomIn, 
   ZoomOut, 
   MapPin, 
-  Navigation 
+  Navigation,
+  Database
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import mapboxgl from 'mapbox-gl';
@@ -320,6 +321,27 @@ const InteractiveMap: React.FC = () => {
                         </div>
                       ))}
                     </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="py-3">
+                    <CardTitle className="text-sm font-medium flex items-center">
+                      <Database className="h-4 w-4 mr-2" />
+                      Dataset Tools
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-2 space-y-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full flex items-center justify-center" 
+                      asChild
+                    >
+                      <Link to="/dataset-management">
+                        <Database className="h-4 w-4 mr-2" /> Manage Datasets
+                      </Link>
+                    </Button>
                   </CardContent>
                 </Card>
 

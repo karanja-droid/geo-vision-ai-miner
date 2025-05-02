@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Layers, Search, ZoomIn, ZoomOut } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Layers, Search, ZoomIn, ZoomOut, Upload, Database } from "lucide-react";
 import { DataLayer } from '@/types';
 
 // Mock layers for demo
@@ -109,6 +110,20 @@ const Map: React.FC<MapProps> = ({ className }) => {
                 </div>
               ))}
             </div>
+            
+            {/* Dataset Management Link */}
+            <div className="mt-6 pt-4 border-t">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full flex justify-center items-center"
+                asChild
+              >
+                <Link to="/dataset-management">
+                  <Database size={14} className="mr-1" /> Manage Datasets
+                </Link>
+              </Button>
+            </div>
           </div>
           <div className="flex-grow h-[500px] relative">
             <div className="absolute inset-0 grid-pattern">
@@ -121,7 +136,18 @@ const Map: React.FC<MapProps> = ({ className }) => {
                   <p className="text-sm text-muted-foreground mb-3">
                     Upload geological data to visualize on the map
                   </p>
-                  <Button size="sm">Upload Data</Button>
+                  <div className="space-x-2">
+                    <Button size="sm" asChild>
+                      <Link to="/dataset-management">
+                        <Upload size={14} className="mr-1" /> Upload Data
+                      </Link>
+                    </Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to="/interactive-map">
+                        <Layers size={14} className="mr-1" /> Full Map
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
 

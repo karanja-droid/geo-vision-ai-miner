@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AboutUs from "./pages/AboutUs";
 import Documentation from "./pages/Documentation";
 import InteractiveMap from "./pages/InteractiveMap";
+import DatasetManagement from "./pages/DatasetManagement";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SubscriptionBanner from "./components/SubscriptionBanner";
@@ -71,6 +72,7 @@ const App = () => {
                       <Route path="/about" element={<AboutUs />} />
                       <Route path="/documentation" element={<Documentation />} />
                       <Route path="/interactive-map" element={<InteractiveMap />} />
+                      <Route path="/dataset-management" element={<DatasetManagement />} />
                       
                       {/* Protected routes */}
                       <Route path="/dashboard" element={
