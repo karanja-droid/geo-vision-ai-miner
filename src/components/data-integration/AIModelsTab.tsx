@@ -4,6 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Database } from "lucide-react";
 import { AIModelCard } from './AIModelCard';
+import { Link } from 'react-router-dom';
 
 export const AIModelsTab: React.FC = () => {
   return (
@@ -52,6 +53,7 @@ export const AIModelsTab: React.FC = () => {
             "Uncertainty quantification",
             "API for real-time inference"
           ]}
+          demoLink="/geostructure-3d"
         />
         
         <AIModelCard
