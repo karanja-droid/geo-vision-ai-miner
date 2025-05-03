@@ -10,6 +10,7 @@ interface DataSourceCardProps {
   icon: React.ReactNode;
   formats: string[];
   source: string;
+  onClick?: () => void;
 }
 
 export const DataSourceCard: React.FC<DataSourceCardProps> = ({ 
@@ -18,12 +19,13 @@ export const DataSourceCard: React.FC<DataSourceCardProps> = ({
   status, 
   icon, 
   formats, 
-  source 
+  source,
+  onClick 
 }) => {
   const isConnected = status.toLowerCase().includes('connected');
   
   return (
-    <Card>
+    <Card className={onClick ? "cursor-pointer hover:border-primary/50 transition-all" : ""} onClick={onClick}>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">

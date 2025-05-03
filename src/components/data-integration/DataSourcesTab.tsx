@@ -1,11 +1,26 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Database, Layers, Image } from "lucide-react";
 import { DataSourceCard } from './DataSourceCard';
+import GeologicalSurveyDetail from './GeologicalSurveyDetail';
 
 export const DataSourcesTab: React.FC = () => {
+  const [showGeologicalDetail, setShowGeologicalDetail] = useState(false);
+  
+  const handleGeologicalSurveyClick = () => {
+    setShowGeologicalDetail(true);
+  };
+  
+  const handleBackClick = () => {
+    setShowGeologicalDetail(false);
+  };
+
+  if (showGeologicalDetail) {
+    return <GeologicalSurveyDetail onBack={handleBackClick} />;
+  }
+
   return (
     <div className="space-y-6">
       <Alert variant="default" className="bg-primary/10 border-primary/20">
@@ -24,6 +39,7 @@ export const DataSourcesTab: React.FC = () => {
           icon={<Layers className="h-5 w-5 text-primary" />}
           formats={["Shapefile", "GeoJSON", "GeoTIFF"]}
           source="Geological Survey Department"
+          onClick={handleGeologicalSurveyClick}
         />
         
         <DataSourceCard 
