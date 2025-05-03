@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Layers, Image, Database, BarChart, Activity } from "lucide-react";
+import { Layers, Image, Database, BarChart, Activity, Download, FileText } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { ModelInfo } from '@/types/models';
 
 interface SatelliteVisionCNNProps {
@@ -37,6 +38,7 @@ const SatelliteVisionCNN: React.FC<SatelliteVisionCNNProps> = ({
   modelInfo = defaultModelInfo,
   onAnalyze 
 }) => {
+  const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [activeTab, setActiveTab] = useState("configuration");
@@ -46,6 +48,7 @@ const SatelliteVisionCNN: React.FC<SatelliteVisionCNNProps> = ({
     depth: "shallow",
     spectralBands: ["visible", "near-ir"]
   });
+  const [analysisResults, setAnalysisResults] = useState<any>(null);
 
   const handleAnalyze = () => {
     setIsAnalyzing(true);
@@ -61,6 +64,7 @@ const SatelliteVisionCNN: React.FC<SatelliteVisionCNNProps> = ({
           setTimeout(() => {
             setIsAnalyzing(false);
             setActiveTab("results");
+            generateAnalysisResults();
           }, 500);
           return 100;
         }
@@ -72,6 +76,32 @@ const SatelliteVisionCNN: React.FC<SatelliteVisionCNNProps> = ({
     if (onAnalyze) {
       onAnalyze(analysisOptions);
     }
+  };
+
+  const generateAnalysisResults = () => {
+    // Simulate generating analysis results based on the options
+    const results = {
+      timestamp: new Date().toISOString(),
+      options: { ...analysisOptions },
+      minerals: {
+        ironOxide: Math.round(60 + Math.random() * 30),
+        copperSulfide: Math.round(40 + Math.random() * 30),
+        silicates: Math.round(30 + Math.random() * 30)
+      },
+      statistics: {
+        areaAnalyzed: (10 + Math.random() * 5).toFixed(1),
+        anomaliesDetected: Math.round(5 + Math.random() * 5),
+        featurePoints: Math.round(150 + Math.random() * 100),
+        confidenceScore: (85 + Math.random() * 10).toFixed(1)
+      },
+      hotspots: [
+        { id: 1, lat: 37.7749 + (Math.random() - 0.5) / 10, lng: -122.4194 + (Math.random() - 0.5) / 10, strength: 0.7 + Math.random() * 0.25 },
+        { id: 2, lat: 37.7849 + (Math.random() - 0.5) / 10, lng: -122.4294 + (Math.random() - 0.5) / 10, strength: 0.7 + Math.random() * 0.25 },
+        { id: 3, lat: 37.7949 + (Math.random() - 0.5) / 10, lng: -122.4394 + (Math.random() - 0.5) / 10, strength: 0.7 + Math.random() * 0.25 }
+      ]
+    };
+    
+    setAnalysisResults(results);
   };
 
   const handleOptionChange = (key: keyof AnalysisOptions, value: any) => {
@@ -87,6 +117,108 @@ const SatelliteVisionCNN: React.FC<SatelliteVisionCNNProps> = ({
         return { ...prev, spectralBands: [...currentBands, band] };
       }
     });
+  };
+
+  const handleDownloadReport = () => {
+    if (!analysisResults) {
+      toast({
+        title: "No analysis results available",
+        description: "Run an analysis first to generate a downloadable report.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      // Create a formatted text report
+      const report = `
+SATELLITE VISION CNN ANALYSIS REPORT
+===================================
+Generated: ${new Date().toLocaleString()}
+
+ANALYSIS PARAMETERS
+------------------
+Data Source: ${analysisResults.options.dataSource}
+Resolution: ${analysisResults.options.resolution}
+Analysis Depth: ${analysisResults.options.depth}
+Spectral Bands: ${analysisResults.options.spectralBands.join(', ')}
+
+MINERAL DETECTION RESULTS
+------------------------
+Iron Oxide: ${analysisResults.minerals.ironOxide}%
+Copper Sulfide: ${analysisResults.minerals.copperSulfide}%
+Silicates: ${analysisResults.minerals.silicates}%
+
+STATISTICS
+---------
+Area Analyzed: ${analysisResults.statistics.areaAnalyzed} km²
+Anomalies Detected: ${analysisResults.statistics.anomaliesDetected}
+Feature Points: ${analysisResults.statistics.featurePoints}
+Confidence Score: ${analysisResults.statistics.confidenceScore}%
+
+HOTSPOTS
+-------
+${analysisResults.hotspots.map((hotspot: any) => 
+  `ID: ${hotspot.id}, Location: [${hotspot.lat.toFixed(6)}, ${hotspot.lng.toFixed(6)}], Strength: ${(hotspot.strength * 100).toFixed(1)}%`
+).join('\n')}
+
+NOTES
+-----
+This report was generated using SatelliteVision CNN model (${modelInfo.id}).
+Model accuracy: ${modelInfo.accuracy}%
+Last trained: ${new Date(modelInfo.lastTrained).toLocaleDateString()}
+`;
+      
+      // Create file and trigger download
+      const blob = new Blob([report], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `satellite-vision-report-${new Date().getTime()}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Report downloaded",
+        description: "The analysis report has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to download report:", error);
+      toast({
+        title: "Download failed",
+        description: "There was a problem generating your report. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleViewFullAnalysis = () => {
+    if (!analysisResults) {
+      toast({
+        title: "No analysis results available",
+        description: "Run an analysis first to view the full results.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Open a modal or navigate to a detailed view
+    // For now, we'll just show a toast notification with details
+    toast({
+      title: "Full Analysis View",
+      description: "Navigating to the full analysis dashboard with comprehensive results.",
+      duration: 3000,
+    });
+    
+    // In a real application, you might navigate to a detailed view page:
+    // navigate(`/satellite-vision/analysis/${analysisResults.id}`);
+    
+    // For demo purposes, we'll open a simple alert with the analysis details
+    setTimeout(() => {
+      alert(`FULL ANALYSIS DETAILS\n\nConfidence Score: ${analysisResults.statistics.confidenceScore}%\nArea Analyzed: ${analysisResults.statistics.areaAnalyzed} km²\nAnomalies: ${analysisResults.statistics.anomaliesDetected}\nFeature Points: ${analysisResults.statistics.featurePoints}\n\nPrimary Mineral: Iron Oxide (${analysisResults.minerals.ironOxide}%)\nHotspots: ${analysisResults.hotspots.length} locations identified`);
+    }, 500);
   };
 
   return (
@@ -301,8 +433,14 @@ const SatelliteVisionCNN: React.FC<SatelliteVisionCNNProps> = ({
             </div>
             
             <div className="flex justify-end space-x-2 pt-4">
-              <Button variant="outline">Download Report</Button>
-              <Button>View Full Analysis</Button>
+              <Button variant="outline" onClick={handleDownloadReport}>
+                <FileText className="h-4 w-4 mr-2" />
+                Download Report
+              </Button>
+              <Button onClick={handleViewFullAnalysis}>
+                <BarChart className="h-4 w-4 mr-2" />
+                View Full Analysis
+              </Button>
             </div>
           </TabsContent>
         </Tabs>
