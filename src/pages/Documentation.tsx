@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ModulesFeatures from '@/components/documentation/ModulesFeatures';
 import SlackIntegrationDocs from '@/components/documentation/SlackIntegrationDocs';
 import TeamsIntegrationDocs from '@/components/documentation/TeamsIntegrationDocs';
+import SatelliteVisionDocs from '@/components/documentation/SatelliteVisionDocs';
 import UserGuideTabs from '@/components/documentation/UserGuideTabs';
 import FAQSection from '@/components/documentation/FAQSection';
 
@@ -19,8 +20,9 @@ const Documentation: React.FC = () => {
         </div>
         
         <Tabs defaultValue="modules" className="w-full">
-          <TabsList className="grid grid-cols-3 mb-8">
+          <TabsList className="grid grid-cols-4 mb-8">
             <TabsTrigger value="modules">Modules & Features</TabsTrigger>
+            <TabsTrigger value="satellite-vision">SatelliteVision CNN</TabsTrigger>
             <TabsTrigger value="user-guide">User Guide</TabsTrigger>
             <TabsTrigger value="faq">FAQ</TabsTrigger>
           </TabsList>
@@ -33,6 +35,11 @@ const Documentation: React.FC = () => {
               <SlackIntegrationDocs />
               <TeamsIntegrationDocs />
             </div>
+          </TabsContent>
+          
+          {/* SatelliteVision CNN Tab */}
+          <TabsContent value="satellite-vision" className="space-y-6">
+            <SatelliteVisionDocs />
           </TabsContent>
           
           {/* User Guide Tab */}

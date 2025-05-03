@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -237,6 +236,7 @@ const DataIntegration: React.FC = () => {
                   "Transfer learning from pre-trained models",
                   "Attention mechanisms for feature importance"
                 ]}
+                demoLink="/satellite-vision"
               />
               
               <AIModelCard
@@ -475,7 +475,8 @@ const AIModelCard: React.FC<{
     lastTrained: string;
   };
   features: string[];
-}> = ({ name, type, status, description, metrics, features }) => {
+  demoLink?: string;
+}> = ({ name, type, status, description, metrics, features, demoLink }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'production ready':
@@ -532,6 +533,16 @@ const AIModelCard: React.FC<{
             ))}
           </ul>
         </div>
+        
+        {demoLink && (
+          <div className="mt-3">
+            <Button size="sm" className="w-full" asChild>
+              <Link to={demoLink}>
+                Try Demo
+              </Link>
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

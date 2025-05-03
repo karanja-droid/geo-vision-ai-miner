@@ -22,6 +22,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import LandingPage from './pages/LandingPage';
 import Index from './pages/Index';
 import UserProfile from './pages/UserProfile';
+import SatelliteVisionDemo from './pages/SatelliteVisionDemo';
 
 const App: React.FC = () => {
   return (
@@ -39,6 +40,7 @@ const App: React.FC = () => {
               <Route path="/data-integration" element={<DataIntegration />} />
               <Route path="/dataset-management" element={<DatasetManagement />} />
               <Route path="/global-data-integration" element={<GlobalDataIntegration />} /> 
+              <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
               <Route path="/project/:id" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
               <Route path="/next-steps" element={<ProtectedRoute><NextSteps /></ProtectedRoute>} />
               <Route path="/upgrade" element={<Upgrade />} />
