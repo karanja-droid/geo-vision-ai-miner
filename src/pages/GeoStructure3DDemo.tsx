@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Box, Layers3, Settings2, FileAxis3d, Download, Cube } from "lucide-react";
+import { Box, Layers3, Settings2, FileAxis3d, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import GeoStructure3DVisualization from '@/components/models/GeoStructure3DVisualization';
 import ModelControls from '@/components/models/geo-demo/ModelControls';

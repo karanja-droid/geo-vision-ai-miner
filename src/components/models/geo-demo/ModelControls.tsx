@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Cube, Download, Settings2 } from "lucide-react";
+import { Box, Download, Settings2 } from "lucide-react";
 
 interface ModelControlsProps {
   activeDataset: string;
@@ -76,7 +76,7 @@ const ModelControls: React.FC<ModelControlsProps> = ({
             disabled={isProcessing || !isModelLoaded}
             className="w-full mb-2"
           >
-            <Cube className="mr-2 h-4 w-4" />
+            <Box className="mr-2 h-4 w-4" />
             {isProcessing ? 'Processing...' : 'Run Analysis'}
           </Button>
           
