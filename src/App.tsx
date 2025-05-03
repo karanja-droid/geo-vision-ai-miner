@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
 import Index from './pages/Index';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -20,26 +22,29 @@ import GeoStructure3DDemo from './pages/GeoStructure3DDemo';
 
 function App() {
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/user-profile" element={<UserProfile />} />
-        <Route path="/dataset-management" element={<DatasetManagement />} />
-        <Route path="/documentation" element={<Documentation />} />
-        <Route path="/interactive-map" element={<InteractiveMap />} />
-        <Route path="/data-integration" element={<DataIntegration />} />
-        <Route path="/project/:id" element={<ProjectDetails />} />
-        <Route path="/next-steps" element={<NextSteps />} />
-        <Route path="/global-data-integration" element={<GlobalDataIntegration />} />
-        <Route path="/upgrade" element={<Upgrade />} />
-        <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
-        <Route path="/geostructure-3d" element={<GeoStructure3DDemo />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+    <div className="App flex flex-col min-h-screen">
+      <Header />
+      <div className="flex-1">
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/dataset-management" element={<DatasetManagement />} />
+          <Route path="/documentation" element={<Documentation />} />
+          <Route path="/interactive-map" element={<InteractiveMap />} />
+          <Route path="/data-integration" element={<DataIntegration />} />
+          <Route path="/project/:id" element={<ProjectDetails />} />
+          <Route path="/next-steps" element={<NextSteps />} />
+          <Route path="/global-data-integration" element={<GlobalDataIntegration />} />
+          <Route path="/upgrade" element={<Upgrade />} />
+          <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
+          <Route path="/geostructure-3d" element={<GeoStructure3DDemo />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </div>
   );
 }
