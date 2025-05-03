@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { UserRole } from '@/types';
 import { MessageSquare, Bell, Users, Slack } from 'lucide-react';
-import SlackIntegration from './SlackIntegration';
+import SlackIntegration from './slack/SlackIntegration';
 import MessagesList from './communication/MessagesList';
 import NotificationsList from './communication/NotificationsList';
 import ChannelsList from './communication/ChannelsList';
