@@ -58,9 +58,9 @@ const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({ confi
       case 'file_sharing':
         return 'Direct File Sharing';
       default:
-        // FIX: Instead of splitting which causes the error, 
+        // FIX: Instead of using toString() which causes an error on 'never' type,
         // provide a fallback string for unhandled types
-        return type.toString().replace(/_/g, ' ');
+        return type.replace(/_/g, ' ');
     }
   };
 
