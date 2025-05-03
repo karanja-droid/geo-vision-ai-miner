@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import Dashboard from './components/Dashboard';
 import Login from './pages/Login';
@@ -23,10 +23,10 @@ import LandingPage from './pages/LandingPage';
 import Index from './pages/Index';
 import UserProfile from './pages/UserProfile';
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="App">
-      <BrowserRouter>
+      <Router>
         <AuthProvider>
           <Header />
           <main className="container mx-auto px-4 py-6">
@@ -59,7 +59,7 @@ function App() {
           </main>
           <Toaster />
         </AuthProvider>
-      </BrowserRouter>
+      </Router>
     </div>
   );
 }
