@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { UserRole, Message, Notification, Channel, User } from '@/types';
-import { MessageSquare, Bell, Users, Send, Paperclip } from 'lucide-react';
+import { MessageSquare, Bell, Users, Send, Paperclip, Slack } from 'lucide-react';
+import SlackIntegration from './SlackIntegration';
+import { toast } from "@/hooks/use-toast";
+import { sendToSlack } from '@/utils/slackIntegration';
 
 // Mock data
 const mockUsers: User[] = [
@@ -29,9 +32,9 @@ const mockNotifications: Notification[] = [
 ];
 
 const mockChannels: Channel[] = [
-  { id: '1', name: 'Project Alpha', members: ['1', '2', '3'], createdAt: '2024-04-01T00:00:00Z', lastActivity: '2024-04-27T16:05:00Z' },
-  { id: '2', name: 'Geological Team', members: ['1', '3'], createdAt: '2024-04-05T00:00:00Z', lastActivity: '2024-04-26T11:30:00Z' },
-  { id: '3', name: 'Field Operations', members: ['2', '3'], createdAt: '2024-04-10T00:00:00Z', lastActivity: '2024-04-25T09:15:00Z' },
+  { id: '1', name: 'Project Alpha', members: ['1', '2', '3'], createdAt: '2024-04-01T00:00:00Z', lastActivity: '2024-04-27T16:05:00Z', slackChannel: 'project-alpha' },
+  { id: '2', name: 'Geological Team', members: ['1', '3'], createdAt: '2024-04-05T00:00:00Z', lastActivity: '2024-04-26T11:30:00Z', slackChannel: 'geo-team' },
+  { id: '3', name: 'Field Operations', members: ['2', '3'], createdAt: '2024-04-10T00:00:00Z', lastActivity: '2024-04-25T09:15:00Z', slackChannel: 'field-ops' },
 ];
 
 interface CommunicationPanelProps {
@@ -56,10 +59,27 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
         (role === 'drill-team' && ['Project Alpha', 'Field Operations'].includes(channel.name))
       );
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (messageInput.trim()) {
       // In a real app, would send to backend
       console.log('Sending message:', messageInput);
+
+      // For demonstration, also send to Slack if it's configured
+      const selectedChannelData = mockChannels.find(ch => ch.id === selectedChannel);
+      if (selectedChannelData?.slackChannel) {
+        const slackSent = await sendToSlack(
+          `${currentUser.name}: ${messageInput}`,
+          selectedChannelData.slackChannel
+        );
+        
+        if (slackSent) {
+          toast({
+            title: "Message Shared",
+            description: "Your message was also sent to the connected Slack channel",
+          });
+        }
+      }
+      
       setMessageInput('');
     }
   };
@@ -91,7 +111,7 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="messages">
               <div className="flex items-center gap-1">
                 <MessageSquare size={14} />
@@ -113,6 +133,12 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
               <div className="flex items-center gap-1">
                 <Users size={14} />
                 <span>Channels</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="slack">
+              <div className="flex items-center gap-1">
+                <Slack size={14} />
+                <span>Slack</span>
               </div>
             </TabsTrigger>
           </TabsList>
@@ -142,6 +168,12 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
                                   <span className="text-xs flex items-center">
                                     <Paperclip size={10} className="mr-1" />
                                     {msg.attachments[0]}
+                                  </span>
+                                )}
+                                {msg.sentToSlack && (
+                                  <span className="text-xs flex items-center text-blue-500">
+                                    <Slack size={10} className="mr-1" />
+                                    Slack
                                   </span>
                                 )}
                               </div>
@@ -194,6 +226,33 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
                       <p className="text-sm mt-1">
                         {notification.message}
                       </p>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-xs text-muted-foreground">
+                          {notification.workflowTriggered ? 'Triggered automated workflow' : ''}
+                        </span>
+                        {!notification.sentToSlack && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 text-xs"
+                            onClick={async () => {
+                              const sent = await sendToSlack(
+                                `*${notification.title}*\n${notification.message}`,
+                                'general'
+                              );
+                              if (sent) {
+                                toast({
+                                  title: "Notification Shared",
+                                  description: "Alert sent to Slack channel",
+                                });
+                              }
+                            }}
+                          >
+                            <Slack size={12} className="mr-1" />
+                            Share to Slack
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -227,9 +286,17 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
                           {new Date(channel.lastActivity).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {channel.members.length} members
-                      </p>
+                      <div className="flex justify-between mt-1">
+                        <p className="text-xs text-muted-foreground">
+                          {channel.members.length} members
+                        </p>
+                        {channel.slackChannel && (
+                          <Badge variant="outline" className="text-xs flex items-center h-5 bg-blue-50">
+                            <Slack size={10} className="mr-1" />
+                            {channel.slackChannel}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -239,6 +306,11 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
                 </div>
               )}
             </div>
+          </TabsContent>
+          
+          {/* Slack Integration Tab */}
+          <TabsContent value="slack" className="mt-4">
+            <SlackIntegration />
           </TabsContent>
         </Tabs>
         

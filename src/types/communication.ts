@@ -9,6 +9,7 @@ export interface Notification {
   userId: string;
   relatedTask?: string;
   workflowTriggered?: boolean;
+  sentToSlack?: boolean;
 }
 
 export interface Message {
@@ -20,6 +21,7 @@ export interface Message {
   attachments?: string[];
   createdAt: string;
   read: boolean;
+  sentToSlack?: boolean;
 }
 
 export interface Channel {
@@ -30,4 +32,23 @@ export interface Channel {
   createdAt: string;
   lastActivity: string;
   stakeholderAccess?: import('./organizations').StakeholderOrganization[];
+  slackChannel?: string; // ID of connected Slack channel
+}
+
+export interface SlackIntegration {
+  webhookUrl: string;
+  enabled: boolean;
+  channelMappings: SlackChannelMapping[];
+  notificationPreferences: SlackNotificationPreference[];
+}
+
+export interface SlackChannelMapping {
+  internalChannelId: string;
+  slackChannelId: string;
+}
+
+export interface SlackNotificationPreference {
+  type: 'anomaly_alerts' | 'daily_summaries' | 'task_notifications' | 'file_sharing';
+  enabled: boolean;
+  slackChannelId: string; // Where to send this type of notification
 }
