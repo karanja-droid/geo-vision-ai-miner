@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
@@ -58,9 +57,8 @@ const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({ confi
       case 'file_sharing':
         return 'Direct File Sharing';
       default:
-        // FIX: Instead of using toString() which causes an error on 'never' type,
-        // provide a fallback string for unhandled types
-        return type.replace(/_/g, ' ');
+        // Cast to string to handle the 'never' type issue
+        return String(type).replace(/_/g, ' ');
     }
   };
 
