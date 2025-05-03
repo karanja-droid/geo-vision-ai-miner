@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Box } from 'lucide-react';
 import LoadingState from './geo-visualization/LoadingState';
 import VisualizationCanvas from './geo-visualization/VisualizationCanvas';
@@ -51,6 +51,7 @@ const GeoStructure3DVisualization: React.FC<GeoStructure3DVisualizationProps> = 
   };
   
   const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault(); // Prevent page scrolling
     const newZoom = Math.max(0.5, Math.min(3, zoom - e.deltaY * 0.001));
     setZoom(newZoom);
   };

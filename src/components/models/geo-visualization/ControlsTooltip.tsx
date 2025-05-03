@@ -1,13 +1,16 @@
 
 import React from 'react';
-import { Box } from 'lucide-react';
 
 const ControlsTooltip: React.FC = () => {
   return (
-    <div className="absolute bottom-2 right-2 text-xs text-muted-foreground bg-background/80 p-1 rounded">
-      <div className="flex items-center">
-        <Box className="h-3 w-3 mr-1" />
-        Drag to rotate | Scroll to zoom
+    <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm p-3 rounded-md shadow-md text-xs max-w-[220px]">
+      <div className="font-medium mb-1">Controls:</div>
+      <div className="grid grid-cols-[auto,1fr] gap-x-2">
+        <span>Rotate:</span>
+        <span>Click + drag</span>
+        
+        <span>Zoom:</span>
+        <span>Scroll wheel</span>
       </div>
     </div>
   );

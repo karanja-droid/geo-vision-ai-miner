@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 
 interface LoadingStateProps {
   dataset: string;
@@ -8,11 +7,10 @@ interface LoadingStateProps {
 
 const LoadingState: React.FC<LoadingStateProps> = ({ dataset }) => {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-muted">
-      <div className="text-center">
-        <Loader2 className="h-10 w-10 animate-spin mx-auto mb-2" />
-        <p className="text-muted-foreground">Loading {dataset.replace('_', ' ')} model...</p>
-      </div>
+    <div className="flex flex-col items-center justify-center w-full h-full bg-background">
+      <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+      <div className="text-lg font-medium">Loading visualization</div>
+      <div className="text-sm text-muted-foreground">Preparing {dataset.replace('_', ' ')} dataset</div>
     </div>
   );
 };
