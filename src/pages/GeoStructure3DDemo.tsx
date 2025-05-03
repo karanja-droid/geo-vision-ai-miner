@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { Cube, Layers3, Settings2, FileAxis3d, Download } from "lucide-react";
+import { Box, Layers3, Settings2, FileAxis3d, Download } from "lucide-react";
 import GeoStructure3DVisualization from '@/components/models/GeoStructure3DVisualization';
 
 const GeoStructure3DDemo: React.FC = () => {
