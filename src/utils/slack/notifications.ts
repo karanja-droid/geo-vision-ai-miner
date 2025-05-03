@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 import { Task } from "@/types";
 import { getSlackConfig } from "./config";
@@ -162,3 +161,29 @@ export const shareFileViaSlack = async (
 
   return result;
 };
+
+// Documentation comments to explain the webhook integration process
+/**
+ * Slack Integration Webhook Guide:
+ * 
+ * 1. Create a Slack App:
+ *    - Go to https://api.slack.com/apps and click "Create New App"
+ *    - Choose "From scratch" and provide a name and workspace
+ * 
+ * 2. Set up Incoming Webhooks:
+ *    - In your Slack App settings, navigate to "Incoming Webhooks"
+ *    - Toggle "Activate Incoming Webhooks" to On
+ *    - Click "Add New Webhook to Workspace"
+ *    - Select the channel where messages will be posted
+ * 
+ * 3. Copy the Webhook URL:
+ *    - After authorizing, you'll see a Webhook URL generated
+ *    - Copy this URL to use in the platform's Slack integration settings
+ * 
+ * 4. Test the Connection:
+ *    - Use the "Test Connection" button in the platform to verify
+ *    - A test message should appear in your selected Slack channel
+ * 
+ * For advanced configuration, you can create different webhooks for different channels
+ * and assign specific notification types to specific channels through the platform.
+ */
