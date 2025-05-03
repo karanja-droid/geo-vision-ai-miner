@@ -13,8 +13,8 @@ interface NotificationPreferencesProps {
 
 const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({ config, onUpdateConfig }) => {
   const toggleNotificationType = (type: string) => {
-    // Fix TypeScript error by explicitly typing the parameter
-    const notificationType = type as SlackNotificationPreference['type'];
+    // Fix TypeScript error by explicitly typing the parameter and ensuring it matches allowed types
+    const notificationType = type as 'anomaly_alerts' | 'daily_summaries' | 'task_notifications' | 'file_sharing';
     
     const newConfig = { ...config };
     const index = newConfig.notificationPreferences.findIndex(p => p.type === notificationType);
@@ -24,7 +24,7 @@ const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({ confi
       onUpdateConfig(newConfig);
       
       // Format the type string for the toast message
-      const formattedType = notificationType.split('_').join(' ');
+      const formattedType = notificationType.replace('_', ' ');
       toast({
         title: "Notification Setting Updated",
         description: `${formattedType} notifications have been ${newConfig.notificationPreferences[index].enabled ? 'enabled' : 'disabled'}`,
