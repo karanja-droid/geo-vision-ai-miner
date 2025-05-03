@@ -103,7 +103,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ className }) => {
       
       toast({
         title: "Notification Setting Updated",
-        description: `${type.replace('_', ' ')} notifications have been ${newConfig.notificationPreferences[index].enabled ? 'enabled' : 'disabled'}`,
+        description: `${type.split('_').join(' ')} notifications have been ${newConfig.notificationPreferences[index].enabled ? 'enabled' : 'disabled'}`,
       });
     }
   };
@@ -134,7 +134,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ className }) => {
       case 'file_sharing':
         return 'Direct File Sharing';
       default:
-        return type.replace('_', ' ');
+        return type.split('_').join(' ');
     }
   };
 

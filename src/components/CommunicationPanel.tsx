@@ -2,40 +2,14 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { UserRole, Message, Notification, Channel, User } from '@/types';
-import { MessageSquare, Bell, Users, Send, Paperclip, Slack } from 'lucide-react';
+import { UserRole } from '@/types';
+import { MessageSquare, Bell, Users, Slack } from 'lucide-react';
 import SlackIntegration from './SlackIntegration';
-import { toast } from "@/hooks/use-toast";
-import { sendToSlack } from '@/utils/slackIntegration';
-
-// Mock data
-const mockUsers: User[] = [
-  { id: '1', name: 'Jane Smith', email: 'jane@example.com', role: 'geologist', avatar: 'https://i.pravatar.cc/100?u=1' },
-  { id: '2', name: 'Mike Johnson', email: 'mike@example.com', role: 'drill-team', avatar: 'https://i.pravatar.cc/100?u=2' },
-  { id: '3', name: 'Sarah Davis', email: 'sarah@example.com', role: 'admin', avatar: 'https://i.pravatar.cc/100?u=3' },
-];
-
-const mockMessages: Message[] = [
-  { id: '1', content: 'New mineral anomaly detected in sector A4', senderId: '3', channelId: '1', createdAt: '2024-04-27T14:30:00Z', read: true },
-  { id: '2', content: 'Can someone verify the soil sample results?', senderId: '1', channelId: '1', createdAt: '2024-04-27T14:45:00Z', read: true },
-  { id: '3', content: 'Drill team is preparing to move to new location', senderId: '2', channelId: '1', createdAt: '2024-04-27T15:10:00Z', read: false },
-  { id: '4', content: 'Updated analysis report attached', senderId: '3', channelId: '1', createdAt: '2024-04-27T16:05:00Z', read: false, attachments: ['report.pdf'] },
-];
-
-const mockNotifications: Notification[] = [
-  { id: '1', title: 'Analysis Complete', message: 'AI analysis of Site C data is ready for review', type: 'success', read: false, createdAt: '2024-04-27T13:00:00Z', userId: '1' },
-  { id: '2', title: 'New Task Assigned', message: 'You have been assigned a high-priority task', type: 'info', read: true, createdAt: '2024-04-27T10:15:00Z', userId: '1' },
-  { id: '3', title: 'System Update', message: 'System maintenance scheduled for tomorrow 2am-4am', type: 'warning', read: false, createdAt: '2024-04-26T16:30:00Z', userId: '1' },
-];
-
-const mockChannels: Channel[] = [
-  { id: '1', name: 'Project Alpha', members: ['1', '2', '3'], createdAt: '2024-04-01T00:00:00Z', lastActivity: '2024-04-27T16:05:00Z', slackChannel: 'project-alpha' },
-  { id: '2', name: 'Geological Team', members: ['1', '3'], createdAt: '2024-04-05T00:00:00Z', lastActivity: '2024-04-26T11:30:00Z', slackChannel: 'geo-team' },
-  { id: '3', name: 'Field Operations', members: ['2', '3'], createdAt: '2024-04-10T00:00:00Z', lastActivity: '2024-04-25T09:15:00Z', slackChannel: 'field-ops' },
-];
+import MessagesList from './communication/MessagesList';
+import NotificationsList from './communication/NotificationsList';
+import ChannelsList from './communication/ChannelsList';
+import { mockUsers, mockMessages, mockNotifications, mockChannels } from './communication/mockData';
 
 interface CommunicationPanelProps {
   className?: string;
@@ -45,65 +19,13 @@ interface CommunicationPanelProps {
 const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role }) => {
   const [activeTab, setActiveTab] = useState<string>('messages');
   const [messageInput, setMessageInput] = useState<string>('');
-  const [currentUser] = useState<User>(mockUsers[0]); // Default to first user
+  const [currentUser] = useState(mockUsers[0]); // Default to first user
   const [selectedChannel, setSelectedChannel] = useState<string>(mockChannels[0].id);
 
   const channelMessages = mockMessages.filter(msg => msg.channelId === selectedChannel);
   const unreadNotifications = mockNotifications.filter(n => !n.read).length;
+  const selectedChannelData = mockChannels.find(ch => ch.id === selectedChannel);
   
-  // Filter channels based on role
-  const availableChannels = role === 'admin' 
-    ? mockChannels 
-    : mockChannels.filter(channel => 
-        (role === 'geologist' && ['Project Alpha', 'Geological Team'].includes(channel.name)) ||
-        (role === 'drill-team' && ['Project Alpha', 'Field Operations'].includes(channel.name))
-      );
-
-  const handleSendMessage = async () => {
-    if (messageInput.trim()) {
-      // In a real app, would send to backend
-      console.log('Sending message:', messageInput);
-
-      // For demonstration, also send to Slack if it's configured
-      const selectedChannelData = mockChannels.find(ch => ch.id === selectedChannel);
-      if (selectedChannelData?.slackChannel) {
-        const slackSent = await sendToSlack(
-          `${currentUser.name}: ${messageInput}`,
-          selectedChannelData.slackChannel
-        );
-        
-        if (slackSent) {
-          toast({
-            title: "Message Shared",
-            description: "Your message was also sent to the connected Slack channel",
-          });
-        }
-      }
-      
-      setMessageInput('');
-    }
-  };
-
-  const formatTime = (dateString: string): string => {
-    return new Date(dateString).toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit'
-    });
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'success':
-        return <Badge className="bg-green-500">✓</Badge>;
-      case 'warning':
-        return <Badge className="bg-yellow-500">!</Badge>;
-      case 'error':
-        return <Badge className="bg-red-500">×</Badge>;
-      default:
-        return <Badge className="bg-blue-500">i</Badge>;
-    }
-  };
-
   return (
     <Card className={`h-full ${className}`}>
       <CardHeader className="pb-2">
@@ -145,167 +67,29 @@ const CommunicationPanel: React.FC<CommunicationPanelProps> = ({ className, role
           
           {/* Messages Tab */}
           <TabsContent value="messages" className="mt-4">
-            <div className="flex flex-col h-[300px]">
-              <div className="overflow-y-auto flex-grow mb-2 border rounded-md p-2">
-                {channelMessages.length > 0 ? (
-                  <div className="space-y-3">
-                    {channelMessages.map((msg) => {
-                      const sender = mockUsers.find(u => u.id === msg.senderId);
-                      const isCurrentUser = msg.senderId === currentUser.id;
-                      
-                      return (
-                        <div key={msg.id} className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[75%] ${isCurrentUser ? 'bg-primary/10 text-primary' : 'bg-muted'} rounded-lg px-3 py-2`}>
-                            {!isCurrentUser && (
-                              <div className="flex items-center gap-1 mb-1">
-                                <span className="font-medium text-xs">{sender?.name}</span>
-                              </div>
-                            )}
-                            <p className="text-sm">{msg.content}</p>
-                            <div className="flex justify-between items-center mt-1">
-                              <div className="flex items-center gap-1">
-                                {msg.attachments && msg.attachments.length > 0 && (
-                                  <span className="text-xs flex items-center">
-                                    <Paperclip size={10} className="mr-1" />
-                                    {msg.attachments[0]}
-                                  </span>
-                                )}
-                                {msg.sentToSlack && (
-                                  <span className="text-xs flex items-center text-blue-500">
-                                    <Slack size={10} className="mr-1" />
-                                    Slack
-                                  </span>
-                                )}
-                              </div>
-                              <span className="text-xs opacity-70">{formatTime(msg.createdAt)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="h-full flex items-center justify-center text-muted-foreground">
-                    <p>No messages yet</p>
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Input 
-                  placeholder="Type a message..." 
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                />
-                <Button size="icon" onClick={handleSendMessage}>
-                  <Send size={16} />
-                </Button>
-              </div>
-            </div>
+            <MessagesList 
+              messages={channelMessages} 
+              users={mockUsers} 
+              currentUser={currentUser}
+              selectedChannel={selectedChannelData!}
+              messageInput={messageInput}
+              setMessageInput={setMessageInput}
+            />
           </TabsContent>
           
           {/* Notifications Tab */}
           <TabsContent value="notifications" className="mt-4">
-            <div className="h-[300px] overflow-y-auto border rounded-md p-2">
-              {mockNotifications.length > 0 ? (
-                <div className="space-y-3">
-                  {mockNotifications.map((notification) => (
-                    <div 
-                      key={notification.id} 
-                      className={`p-3 rounded-lg border ${!notification.read ? 'bg-muted/50' : ''}`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-2">
-                          {getNotificationIcon(notification.type)}
-                          <h4 className="font-medium">{notification.title}</h4>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {formatTime(notification.createdAt)}
-                        </span>
-                      </div>
-                      <p className="text-sm mt-1">
-                        {notification.message}
-                      </p>
-                      <div className="flex justify-between items-center mt-2">
-                        <span className="text-xs text-muted-foreground">
-                          {notification.workflowTriggered ? 'Triggered automated workflow' : ''}
-                        </span>
-                        {!notification.sentToSlack && (
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-7 text-xs"
-                            onClick={async () => {
-                              const sent = await sendToSlack(
-                                `*${notification.title}*\n${notification.message}`,
-                                'general'
-                              );
-                              if (sent) {
-                                toast({
-                                  title: "Notification Shared",
-                                  description: "Alert sent to Slack channel",
-                                });
-                              }
-                            }}
-                          >
-                            <Slack size={12} className="mr-1" />
-                            Share to Slack
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground">
-                  <p>No notifications</p>
-                </div>
-              )}
-            </div>
+            <NotificationsList notifications={mockNotifications} />
           </TabsContent>
           
           {/* Channels Tab */}
           <TabsContent value="channels" className="mt-4">
-            <div className="h-[300px] overflow-y-auto border rounded-md p-2">
-              {availableChannels.length > 0 ? (
-                <div className="space-y-2">
-                  {availableChannels.map((channel) => (
-                    <div 
-                      key={channel.id} 
-                      className={`p-2.5 rounded-md cursor-pointer hover:bg-muted/50 transition-colors ${
-                        channel.id === selectedChannel ? 'bg-muted border' : ''
-                      }`}
-                      onClick={() => setSelectedChannel(channel.id)}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <Users size={16} className="text-muted-foreground" />
-                          <h4 className="font-medium">{channel.name}</h4>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(channel.lastActivity).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between mt-1">
-                        <p className="text-xs text-muted-foreground">
-                          {channel.members.length} members
-                        </p>
-                        {channel.slackChannel && (
-                          <Badge variant="outline" className="text-xs flex items-center h-5 bg-blue-50">
-                            <Slack size={10} className="mr-1" />
-                            {channel.slackChannel}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground">
-                  <p>No channels available</p>
-                </div>
-              )}
-            </div>
+            <ChannelsList 
+              channels={mockChannels}
+              selectedChannel={selectedChannel}
+              setSelectedChannel={setSelectedChannel}
+              role={role}
+            />
           </TabsContent>
           
           {/* Slack Integration Tab */}
