@@ -5,20 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Database, Layers, Image } from "lucide-react";
 import { DataSourceCard } from './DataSourceCard';
 import GeologicalSurveyDetail from './GeologicalSurveyDetail';
+import SatelliteImageryDetail from './SatelliteImageryDetail';
 
 export const DataSourcesTab: React.FC = () => {
-  const [showGeologicalDetail, setShowGeologicalDetail] = useState(false);
+  const [activeDetailView, setActiveDetailView] = useState<string | null>(null);
   
-  const handleGeologicalSurveyClick = () => {
-    setShowGeologicalDetail(true);
+  const handleDataSourceClick = (source: string) => {
+    setActiveDetailView(source);
   };
   
   const handleBackClick = () => {
-    setShowGeologicalDetail(false);
+    setActiveDetailView(null);
   };
 
-  if (showGeologicalDetail) {
+  if (activeDetailView === 'geological-survey') {
     return <GeologicalSurveyDetail onBack={handleBackClick} />;
+  }
+
+  if (activeDetailView === 'satellite-imagery') {
+    return <SatelliteImageryDetail onBack={handleBackClick} />;
   }
 
   return (
@@ -39,7 +44,7 @@ export const DataSourcesTab: React.FC = () => {
           icon={<Layers className="h-5 w-5 text-primary" />}
           formats={["Shapefile", "GeoJSON", "GeoTIFF"]}
           source="Geological Survey Department"
-          onClick={handleGeologicalSurveyClick}
+          onClick={() => handleDataSourceClick('geological-survey')}
         />
         
         <DataSourceCard 
@@ -49,6 +54,7 @@ export const DataSourcesTab: React.FC = () => {
           icon={<Image className="h-5 w-5 text-primary" />}
           formats={["Landsat 8/9", "Sentinel-2", "WorldView-3"]}
           source="Remote Sensing Agency"
+          onClick={() => handleDataSourceClick('satellite-imagery')}
         />
 
         <DataSourceCard 
