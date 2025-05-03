@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Layers, Database, Image, CloudUpload, Slack, MessageSquare } from "lucide-react";
+import SlackIntegration from '@/components/slack/SlackIntegration';
+import TeamsIntegration from '@/components/teams/TeamsIntegration';
 
 const DataIntegration: React.FC = () => {
   return (
@@ -23,11 +25,12 @@ const DataIntegration: React.FC = () => {
         </div>
 
         <Tabs defaultValue="data-sources">
-          <TabsList className="grid grid-cols-4 mb-8">
+          <TabsList className="grid grid-cols-5 mb-8">
             <TabsTrigger value="data-sources">Data Sources</TabsTrigger>
             <TabsTrigger value="cloud-deployment">Cloud Deployment</TabsTrigger>
             <TabsTrigger value="collaboration">Collaboration Tools</TabsTrigger>
             <TabsTrigger value="ai-models">Enhanced AI Models</TabsTrigger>
+            <TabsTrigger value="integrations">Integrations</TabsTrigger>
           </TabsList>
 
           {/* Data Sources Tab */}
@@ -295,6 +298,42 @@ const DataIntegration: React.FC = () => {
               <Button className="mr-2">Deploy New Model</Button>
               <Button variant="outline">Retrain Models</Button>
             </div>
+          </TabsContent>
+
+          {/* New Integrations Tab */}
+          <TabsContent value="integrations" className="space-y-6">
+            <Alert variant="default" className="bg-primary/10 border-primary/20">
+              <MessageSquare className="h-5 w-5" />
+              <AlertTitle>Communication Platform Integrations</AlertTitle>
+              <AlertDescription>
+                Connect with your team collaboration platforms to streamline workflows and notifications
+              </AlertDescription>
+            </Alert>
+
+            <Tabs defaultValue="slack" className="w-full">
+              <TabsList className="w-full grid grid-cols-2 mb-6">
+                <TabsTrigger value="slack">
+                  <div className="flex items-center gap-2">
+                    <Slack className="h-4 w-4" />
+                    <span>Slack</span>
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger value="teams">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Microsoft Teams</span>
+                  </div>
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="slack">
+                <SlackIntegration />
+              </TabsContent>
+              
+              <TabsContent value="teams">
+                <TeamsIntegration />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
       </div>

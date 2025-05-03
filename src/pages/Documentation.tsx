@@ -3,6 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ModulesFeatures from '@/components/documentation/ModulesFeatures';
 import SlackIntegrationDocs from '@/components/documentation/SlackIntegrationDocs';
+import TeamsIntegrationDocs from '@/components/documentation/TeamsIntegrationDocs';
 import UserGuideTabs from '@/components/documentation/UserGuideTabs';
 import FAQSection from '@/components/documentation/FAQSection';
 
@@ -27,7 +28,11 @@ const Documentation: React.FC = () => {
           {/* Modules & Features Tab */}
           <TabsContent value="modules" className="space-y-6">
             <ModulesFeatures />
-            <SlackIntegrationDocs />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <SlackIntegrationDocs />
+              <TeamsIntegrationDocs />
+            </div>
           </TabsContent>
           
           {/* User Guide Tab */}

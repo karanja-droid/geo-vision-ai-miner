@@ -10,6 +10,7 @@ export interface Notification {
   relatedTask?: string;
   workflowTriggered?: boolean;
   sentToSlack?: boolean;
+  sentToTeams?: boolean;
 }
 
 export interface Message {
@@ -22,6 +23,7 @@ export interface Message {
   createdAt: string;
   read: boolean;
   sentToSlack?: boolean;
+  sentToTeams?: boolean;
 }
 
 export interface Channel {
@@ -33,6 +35,7 @@ export interface Channel {
   lastActivity: string;
   stakeholderAccess?: import('./organizations').StakeholderOrganization[];
   slackChannel?: string; // ID of connected Slack channel
+  teamsChannel?: string; // ID of connected Teams channel
 }
 
 export interface SlackIntegration {
@@ -51,4 +54,22 @@ export interface SlackNotificationPreference {
   type: 'anomaly_alerts' | 'daily_summaries' | 'task_notifications' | 'file_sharing';
   enabled: boolean;
   slackChannelId: string; // Where to send this type of notification
+}
+
+export interface TeamsIntegration {
+  webhookUrl: string;
+  enabled: boolean;
+  channelMappings: TeamsChannelMapping[];
+  notificationPreferences: TeamsNotificationPreference[];
+}
+
+export interface TeamsChannelMapping {
+  internalChannelId: string;
+  teamsChannelId: string;
+}
+
+export interface TeamsNotificationPreference {
+  type: 'anomaly_alerts' | 'daily_summaries' | 'task_notifications' | 'file_sharing';
+  enabled: boolean;
+  teamsChannelId: string; // Where to send this type of notification
 }
