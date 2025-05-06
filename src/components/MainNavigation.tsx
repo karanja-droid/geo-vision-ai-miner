@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   NavigationMenu,
@@ -12,13 +12,32 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
-import { ChevronLeft } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  Map, 
+  Database, 
+  BarChart, 
+  Globe, 
+  BookOpen, 
+  Users, 
+  Settings,
+  LineChart,
+  Layers,
+  Satellite,
+  Box,
+  Rocket
+} from 'lucide-react';
 
 const MainNavigation: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   
   const handleGoBack = () => {
     navigate(-1);
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
   return (
@@ -40,13 +59,28 @@ const MainNavigation: React.FC = () => {
             <NavigationMenuTrigger>Data</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                <ListItem href="/data-integration" title="Data Integration">
+                <ListItem 
+                  href="/data-integration" 
+                  title="Data Integration"
+                  icon={<Database className="h-4 w-4 mr-2 text-blue-500" />}
+                  isActive={isActive('/data-integration')}
+                >
                   Import and connect your datasets with our system
                 </ListItem>
-                <ListItem href="/dataset-management" title="Dataset Management">
+                <ListItem 
+                  href="/dataset-management" 
+                  title="Dataset Management"
+                  icon={<Layers className="h-4 w-4 mr-2 text-amber-500" />}
+                  isActive={isActive('/dataset-management')}
+                >
                   Organize and manage your uploaded datasets
                 </ListItem>
-                <ListItem href="/global-data-integration" title="Global Data">
+                <ListItem 
+                  href="/global-data-integration" 
+                  title="Global Data"
+                  icon={<Globe className="h-4 w-4 mr-2 text-green-500" />}
+                  isActive={isActive('/global-data-integration')}
+                >
                   Access and integrate global geological datasets
                 </ListItem>
               </ul>
@@ -58,11 +92,37 @@ const MainNavigation: React.FC = () => {
             <NavigationMenuTrigger>Analysis</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                <ListItem href="/interactive-map" title="Interactive Map">
+                <ListItem 
+                  href="/interactive-map" 
+                  title="Interactive Map"
+                  icon={<Map className="h-4 w-4 mr-2 text-purple-500" />}
+                  isActive={isActive('/interactive-map')}
+                >
                   Visualize geographic data on interactive maps
                 </ListItem>
-                <ListItem href="/next-steps" title="Analysis Pipeline">
+                <ListItem 
+                  href="/next-steps" 
+                  title="Analysis Pipeline"
+                  icon={<LineChart className="h-4 w-4 mr-2 text-indigo-500" />}
+                  isActive={isActive('/next-steps')}
+                >
                   Follow the recommended analysis workflow
+                </ListItem>
+                <ListItem 
+                  href="/satellite-vision" 
+                  title="Satellite Vision"
+                  icon={<Satellite className="h-4 w-4 mr-2 text-sky-500" />}
+                  isActive={isActive('/satellite-vision')}
+                >
+                  AI-powered satellite imagery analysis
+                </ListItem>
+                <ListItem 
+                  href="/geostructure-3d" 
+                  title="3D Geostructure"
+                  icon={<Box className="h-4 w-4 mr-2 text-rose-500" />}
+                  isActive={isActive('/geostructure-3d')}
+                >
+                  3D visualization of geological structures
                 </ListItem>
               </ul>
             </NavigationMenuContent>
@@ -73,23 +133,65 @@ const MainNavigation: React.FC = () => {
             <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                <ListItem href="/docs" title="Documentation">
+                <ListItem 
+                  href="/documentation" 
+                  title="Documentation"
+                  icon={<BookOpen className="h-4 w-4 mr-2 text-orange-500" />}
+                  isActive={isActive('/documentation')}
+                >
                   Learn how to use all features effectively
                 </ListItem>
-                <ListItem href="/about-us" title="About Us">
+                <ListItem 
+                  href="/about" 
+                  title="About Us"
+                  icon={<Users className="h-4 w-4 mr-2 text-teal-500" />}
+                  isActive={isActive('/about')}
+                >
                   Learn about our mission and team
                 </ListItem>
-                <ListItem href="/upgrade" title="Plans & Pricing">
+                <ListItem 
+                  href="/product-roadmap" 
+                  title="Product Roadmap"
+                  icon={<Rocket className="h-4 w-4 mr-2 text-red-500" />}
+                  isActive={isActive('/product-roadmap')}
+                >
+                  See our future plans and developments
+                </ListItem>
+                <ListItem 
+                  href="/upgrade" 
+                  title="Plans & Pricing"
+                  icon={<BarChart className="h-4 w-4 mr-2 text-emerald-500" />}
+                  isActive={isActive('/upgrade')}
+                >
                   Upgrade your subscription for more features
                 </ListItem>
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
           
-          {/* Direct Link - Fixed to remove Next.js specific props */}
+          {/* Direct Link - Dashboard */}
           <NavigationMenuItem>
-            <Link to="/" className={navigationMenuTriggerStyle()}>
+            <Link 
+              to="/" 
+              className={cn(
+                navigationMenuTriggerStyle(),
+                isActive('/') ? "bg-accent text-accent-foreground" : ""
+              )}
+            >
               Dashboard
+            </Link>
+          </NavigationMenuItem>
+
+          {/* User Profile */}
+          <NavigationMenuItem>
+            <Link 
+              to="/user-profile" 
+              className={cn(
+                navigationMenuTriggerStyle(),
+                isActive('/user-profile') ? "bg-accent text-accent-foreground" : ""
+              )}
+            >
+              Profile
             </Link>
           </NavigationMenuItem>
         </NavigationMenuList>
@@ -98,23 +200,33 @@ const MainNavigation: React.FC = () => {
   );
 };
 
-// Helper component for menu items
+// Enhanced ListItem component with icon support
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a"> & { title: string }
->(({ className, title, children, href, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<"a"> & { 
+    title: string;
+    icon?: React.ReactNode;
+    isActive?: boolean;
+  }
+>(({ className, title, children, icon, href, isActive = false, ...props }, ref) => {
   return (
     <li>
       <Link
         to={href || "#"}
         className={cn(
-          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
+          isActive 
+            ? "bg-accent text-accent-foreground" 
+            : "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
           className
         )}
         {...props}
       >
-        <div className="text-sm font-medium leading-none">{title}</div>
-        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+        <div className="text-sm font-medium leading-none flex items-center">
+          {icon}
+          {title}
+        </div>
+        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
           {children}
         </p>
       </Link>

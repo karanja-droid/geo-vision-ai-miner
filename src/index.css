@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,6 +24,7 @@
     --input: 220 13% 91%;
     --ring: 262.1 83.3% 57.8%;
     --radius: 0.5rem;
+    --geo-blue: 214 100% 40%;
   }
  
   .dark {
@@ -154,4 +154,17 @@
 /* Ensure tooltips are visible */
 .recharts-tooltip-wrapper {
   pointer-events: none;
+}
+
+/* Custom colors */
+.bg-geo-blue {
+  background-color: hsl(214, 100%, 40%);
+}
+
+.text-geo-blue {
+  color: hsl(214, 100%, 40%);
+}
+
+.border-geo-blue {
+  border-color: hsl(214, 100%, 40%);
 }
