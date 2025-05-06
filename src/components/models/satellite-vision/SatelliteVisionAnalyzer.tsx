@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -99,11 +98,12 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
         featurePoints: Math.round(150 + Math.random() * 100),
         confidenceScore: (85 + Math.random() * 10).toFixed(1)
       },
-      hotspots: [
-        { id: 1, lat: 37.7749 + (Math.random() - 0.5) / 10, lng: -122.4194 + (Math.random() - 0.5) / 10, strength: 0.7 + Math.random() * 0.25 },
-        { id: 2, lat: 37.7849 + (Math.random() - 0.5) / 10, lng: -122.4294 + (Math.random() - 0.5) / 10, strength: 0.7 + Math.random() * 0.25 },
-        { id: 3, lat: 37.7949 + (Math.random() - 0.5) / 10, lng: -122.4394 + (Math.random() - 0.5) / 10, strength: 0.7 + Math.random() * 0.25 }
-      ]
+      hotspots: Array.from({ length: 5 + Math.floor(Math.random() * 5) }, (_, i) => ({
+        id: i + 1,
+        lat: -12.5 + (Math.random() * 25), // Southern Africa latitude range
+        lng: 20 + (Math.random() * 15),    // Southern Africa longitude range
+        strength: 0.7 + (Math.random() * 0.3)
+      }))
     };
     
     setAnalysisResults(results);
@@ -209,17 +209,8 @@ Last trained: ${new Date(modelInfo.lastTrained).toLocaleDateString()}
       return;
     }
     
-    // Open a modal or navigate to a detailed view
-    toast({
-      title: "Full Analysis View",
-      description: "Navigating to the full analysis dashboard with comprehensive results.",
-      duration: 3000,
-    });
-    
-    // For demo purposes, open a simple alert with the analysis details
-    setTimeout(() => {
-      alert(`FULL ANALYSIS DETAILS\n\nConfidence Score: ${analysisResults.statistics.confidenceScore}%\nArea Analyzed: ${analysisResults.statistics.areaAnalyzed} km²\nAnomalies: ${analysisResults.statistics.anomaliesDetected}\nFeature Points: ${analysisResults.statistics.featurePoints}\n\nPrimary Mineral: Iron Oxide (${analysisResults.minerals.ironOxide}%)\nHotspots: ${analysisResults.hotspots.length} locations identified`);
-    }, 500);
+    // This no longer opens an alert - the map visualization is shown in the component
+    console.log("Displaying full analysis with map visualization", analysisResults);
   };
 
   // If no dataset is selected, show the placeholder
