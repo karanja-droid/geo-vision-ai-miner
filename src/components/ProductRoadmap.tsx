@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +11,10 @@ import {
   ArrowRight,
   Link as LinkIcon,
   Combine,
-  Code
+  Code,
+  Shield,
+  Cloud,
+  HeadsetIcon
 } from "lucide-react";
 
 const ProductRoadmap: React.FC = () => {
@@ -29,9 +31,10 @@ const ProductRoadmap: React.FC = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="roadmap" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="roadmap">Feature Roadmap</TabsTrigger>
             <TabsTrigger value="gaps">Market Analysis</TabsTrigger>
+            <TabsTrigger value="enterprise">Enterprise Readiness</TabsTrigger>
           </TabsList>
           
           <TabsContent value="roadmap" className="pt-4">
@@ -188,6 +191,134 @@ const ProductRoadmap: React.FC = () => {
                 View complete strategic analysis
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="enterprise" className="pt-4 space-y-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Enterprise Readiness Strategy</h3>
+              <p className="text-sm text-muted-foreground">
+                Our approach to meeting the high standards required by government agencies and large mining houses,
+                particularly in African markets where security, compliance, and local support are critical decision factors.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="rounded-lg border bg-card p-5">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="rounded-full bg-blue-50 p-3">
+                    <Shield className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Security & Compliance</h3>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Achieving industry-leading security standards to protect sensitive geological data and ensure regulatory compliance.
+                  </p>
+                  <ul className="list-disc pl-5 text-sm space-y-2 text-muted-foreground">
+                    <li>
+                      <span className="font-medium text-foreground">ISO 27001 Certification</span>
+                      <p>Comprehensive information security management system certification (Q4 2025)</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">SOC 2 Type II Compliance</span>
+                      <p>Independent audit of security controls, confidentiality and availability (Q2 2026)</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">Data Encryption Standards</span>
+                      <p>End-to-end encryption for all data at rest and in transit with customer-managed keys</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">Regional Compliance Framework</span>
+                      <p>Adherence to African mining regulations and data sovereignty requirements</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="rounded-lg border bg-card p-5">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="rounded-full bg-amber-50 p-3">
+                    <Cloud className="h-6 w-6 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Deployment Flexibility</h3>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Multiple deployment options to accommodate various security requirements and IT infrastructure preferences.
+                  </p>
+                  <ul className="list-disc pl-5 text-sm space-y-2 text-muted-foreground">
+                    <li>
+                      <span className="font-medium text-foreground">Private Cloud Deployment</span>
+                      <p>Full platform functionality in client's private cloud environment with complete data isolation</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">On-Premises Solution</span>
+                      <p>Containerized deployment for sites with limited connectivity or maximum security requirements</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">Air-Gapped Operation</span>
+                      <p>Functionality in completely isolated networks for highly sensitive mining operations</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">Hybrid Processing Options</span>
+                      <p>Configurable data processing boundaries between cloud and on-premises components</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="rounded-lg border bg-card p-5">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="rounded-full bg-green-50 p-3">
+                    <HeadsetIcon className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Enterprise Support</h3>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Comprehensive support structures designed for mission-critical mining operations and government partnerships.
+                  </p>
+                  <ul className="list-disc pl-5 text-sm space-y-2 text-muted-foreground">
+                    <li>
+                      <span className="font-medium text-foreground">African Regional Support Centers</span>
+                      <p>Local technical teams with geological and mining expertise in key African regions</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">Enterprise SLA Tiers</span>
+                      <p>Guaranteed response times with 99.9% uptime commitments and financial penalties</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">Dedicated Technical Account Manager</span>
+                      <p>Assigned industry expert for each enterprise client to ensure platform optimization</p>
+                    </li>
+                    <li>
+                      <span className="font-medium text-foreground">Custom Integration Services</span>
+                      <p>Professional services team for seamless integration with existing mining systems</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div className="rounded-md bg-blue-50 p-4 mt-6">
+              <div className="flex items-start">
+                <Shield className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                <div>
+                  <p className="font-medium text-blue-800 mb-1">Strategic Priority</p>
+                  <p className="text-sm text-blue-700">
+                    Our enterprise readiness roadmap recognizes that for government agencies and large mining houses in Africa,
+                    security certification, deployment flexibility, and robust support can be as critical as the AI technology itself
+                    when selecting a platform partner.
+                  </p>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>

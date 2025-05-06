@@ -7,7 +7,8 @@ const ProductRoadmapPage: React.FC = () => {
     <div className="container mx-auto p-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Strategic Vision & Product Roadmap</h1>
       <p className="text-muted-foreground mb-8">
-        Our evolving plan to enhance GeoMiner's capabilities and address market needs.
+        Our evolving plan to enhance GeoMiner's capabilities, address market needs, 
+        and deliver an enterprise-ready platform for government and mining industry clients.
       </p>
       <ProductRoadmap />
       
@@ -29,3 +30,4 @@ const ProductRoadmapPage: React.FC = () => {
 };
 
 export default ProductRoadmapPage;
+
