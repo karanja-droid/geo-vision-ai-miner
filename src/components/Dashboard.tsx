@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Map from "@/components/Map";
 import UploadPanel from "@/components/UploadPanel";
 import AnalysisPanel from "@/components/AnalysisPanel";
+import GeoMinerInsights from "@/components/GeoMinerInsights";
 import { Link } from "react-router-dom";
 import { Map as MapIcon, Combine, Database, Globe } from "lucide-react";
 
@@ -33,6 +34,11 @@ const Dashboard: React.FC = () => {
           <UploadPanel />
           <AnalysisPanel />
         </div>
+      </div>
+
+      {/* Added the GeoMinerInsights component */}
+      <div className="mt-6">
+        <GeoMinerInsights />
       </div>
 
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
