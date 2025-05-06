@@ -25,7 +25,8 @@ import {
   Layers,
   Satellite,
   Box,
-  Rocket
+  Rocket,
+  FileText
 } from 'lucide-react';
 
 const MainNavigation: React.FC = () => {
@@ -82,6 +83,14 @@ const MainNavigation: React.FC = () => {
                   isActive={isActive('/global-data-integration')}
                 >
                   Access and integrate global geological datasets
+                </ListItem>
+                <ListItem 
+                  href="/gis-shapefile" 
+                  title="GIS Shapefiles"
+                  icon={<FileText className="h-4 w-4 mr-2 text-purple-500" />}
+                  isActive={isActive('/gis-shapefile')}
+                >
+                  Process GIS shapefiles and generate reports
                 </ListItem>
               </ul>
             </NavigationMenuContent>

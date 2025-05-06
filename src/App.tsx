@@ -21,6 +21,7 @@ import NotFound from './pages/NotFound';
 import SatelliteVisionDemo from './pages/SatelliteVisionDemo';
 import GeoStructure3DDemo from './pages/GeoStructure3DDemo';
 import ProductRoadmap from './pages/ProductRoadmap';
+import GisShapefileManagement from './pages/GisShapefileManagement';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
           <Route path="/geostructure-3d" element={<GeoStructure3DDemo />} />
           <Route path="/product-roadmap" element={<ProductRoadmap />} />
+          <Route path="/gis-shapefile" element={<GisShapefileManagement />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
