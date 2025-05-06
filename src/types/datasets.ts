@@ -29,7 +29,7 @@ export interface Document {
 }
 
 export interface ExportFormat {
-  type: 'csv' | 'json' | 'geojson' | 'shapefile' | 'kml' | 'geotiff' | 'chart' | 'visualization';
+  type: string;
   mimeType: string;
   extension: string;
   description: string;
@@ -40,4 +40,35 @@ export interface ExportOptions {
   includeAnalysis: boolean;
   includeRawData: boolean;
   format: string;
+  resolution?: 'low' | 'medium' | 'high';
+  compression?: number;
+  template?: string;
+  includeMaps?: boolean;
+  includeCharts?: boolean;
+}
+
+export interface ReportTemplate {
+  id: string;
+  name: string;
+  description: string;
+  previewUrl?: string;
+}
+
+export interface ShapefileValidationResult {
+  isValid: boolean;
+  errors?: string[];
+  warnings?: string[];
+  features: number;
+  boundingBox?: [number, number, number, number]; // [minX, minY, maxX, maxY]
+  crs?: string;
+}
+
+export interface GeoAnalysisResult {
+  type: 'buffer' | 'intersection' | 'union' | 'difference' | 'area' | 'length' | 'custom';
+  result: any;
+  metadata: {
+    executionTime: number;
+    timestamp: string;
+    parameters?: Record<string, any>;
+  };
 }

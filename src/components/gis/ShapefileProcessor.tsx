@@ -6,9 +6,11 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, FileDown, Map, AlertTriangle, Check } from "lucide-react";
+import { Upload, FileDown, Map, AlertTriangle, Check, Activity } from "lucide-react";
 import ShapefileViewer from './ShapefileViewer';
 import ShapefileReportGenerator from './ShapefileReportGenerator';
+import ShapefileAnalysis from './ShapefileAnalysis';
+import { GeoAnalysisResult, ShapefileValidationResult } from '@/types/datasets';
 
 const ShapefileProcessor: React.FC = () => {
   const { toast } = useToast();
@@ -17,6 +19,8 @@ const ShapefileProcessor: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [processedData, setProcessedData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("upload");
+  const [validationResult, setValidationResult] = useState<ShapefileValidationResult | null>(null);
+  const [analysisResults, setAnalysisResults] = useState<GeoAnalysisResult[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -25,7 +29,10 @@ const ShapefileProcessor: React.FC = () => {
         file.name.endsWith('.shp') || 
         file.name.endsWith('.dbf') || 
         file.name.endsWith('.shx') || 
-        file.name.endsWith('.prj')
+        file.name.endsWith('.prj') ||
+        file.name.endsWith('.zip') ||
+        file.name.endsWith('.json') ||
+        file.name.endsWith('.geojson')
       );
       
       setFiles(shapefiles);
@@ -34,13 +41,28 @@ const ShapefileProcessor: React.FC = () => {
         toast({
           variant: "destructive",
           title: "Invalid files",
-          description: "Please select valid shapefile components (.shp, .dbf, .shx, .prj)"
+          description: "Please select valid shapefile components (.shp, .dbf, .shx, .prj) or compressed formats (.zip, .geojson)"
         });
       }
     }
   };
 
-  const processShapefiles = () => {
+  const validateShapefiles = (files: File[]): Promise<ShapefileValidationResult> => {
+    // In a real implementation, this would perform actual validation
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          isValid: true,
+          features: 2,
+          boundingBox: [27.5, -13.5, 28.5, -12.5],
+          crs: "EPSG:4326",
+          warnings: files.some(f => f.name.endsWith('.prj')) ? [] : ["Missing projection file (.prj)"]
+        });
+      }, 1000);
+    });
+  };
+
+  const processShapefiles = async () => {
     if (files.length === 0) {
       toast({
         variant: "destructive",
@@ -56,56 +78,96 @@ const ShapefileProcessor: React.FC = () => {
     // Simulate processing with progress
     const interval = setInterval(() => {
       setProgress(prev => {
-        if (prev >= 100) {
+        if (prev >= 50) {
           clearInterval(interval);
-          setIsProcessing(false);
           
-          // Mock processed data
-          const mockProcessedData = {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Polygon",
-                  coordinates: [[[27.5, -12.5], [28.5, -12.5], [28.5, -13.5], [27.5, -13.5], [27.5, -12.5]]]
-                },
-                properties: {
-                  name: "Copperbelt Province",
-                  population: 2382895,
-                  mineralDeposits: "Copper, Cobalt",
-                  explorationStatus: "Active"
-                }
-              },
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [28.2, -12.8]
-                },
-                properties: {
-                  name: "Mining Site A",
-                  minerals: "Copper",
-                  status: "Operational",
-                  output: "450000 tons/year"
-                }
-              }
-            ]
-          };
-          
-          setProcessedData(mockProcessedData);
-          setActiveTab("view");
-          
-          toast({
-            title: "Processing complete",
-            description: "Shapefile data has been successfully processed"
+          // Validate the shapefiles
+          validateShapefiles(files).then(result => {
+            setValidationResult(result);
+            
+            if (result.isValid) {
+              // Continue processing
+              const secondInterval = setInterval(() => {
+                setProgress(prev => {
+                  if (prev >= 100) {
+                    clearInterval(secondInterval);
+                    setIsProcessing(false);
+                    
+                    // Mock processed data
+                    const mockProcessedData = {
+                      type: "FeatureCollection",
+                      features: [
+                        {
+                          type: "Feature",
+                          geometry: {
+                            type: "Polygon",
+                            coordinates: [[[27.5, -12.5], [28.5, -12.5], [28.5, -13.5], [27.5, -13.5], [27.5, -12.5]]]
+                          },
+                          properties: {
+                            name: "Copperbelt Province",
+                            population: 2382895,
+                            mineralDeposits: "Copper, Cobalt",
+                            explorationStatus: "Active"
+                          }
+                        },
+                        {
+                          type: "Feature",
+                          geometry: {
+                            type: "Point",
+                            coordinates: [28.2, -12.8]
+                          },
+                          properties: {
+                            name: "Mining Site A",
+                            minerals: "Copper",
+                            status: "Operational",
+                            output: "450000 tons/year"
+                          }
+                        }
+                      ]
+                    };
+                    
+                    setProcessedData(mockProcessedData);
+                    setActiveTab("view");
+                    
+                    toast({
+                      title: "Processing complete",
+                      description: "Shapefile data has been successfully processed"
+                    });
+                    
+                    return 100;
+                  }
+                  return prev + 5;
+                });
+              }, 100);
+            } else {
+              // Stop processing due to validation failure
+              setIsProcessing(false);
+              setProgress(0);
+              
+              toast({
+                variant: "destructive",
+                title: "Validation failed",
+                description: "Shapefile contains errors and cannot be processed"
+              });
+            }
           });
           
-          return 100;
+          return 50;
         }
-        return prev + 10;
+        return prev + 5;
       });
-    }, 300);
+    }, 100);
+  };
+
+  const handleAnalysisComplete = (result: GeoAnalysisResult) => {
+    setAnalysisResults(prev => [...prev, result]);
+    
+    // In a real implementation, we might update the processed data with the analysis results
+    // For now, we'll just show a toast notification
+    toast({
+      title: `${result.type.charAt(0).toUpperCase() + result.type.slice(1)} Analysis Complete`,
+      description: `Analysis completed in ${result.metadata.executionTime.toFixed(2)}s`
+    });
   };
 
   return (
@@ -118,9 +180,10 @@ const ShapefileProcessor: React.FC = () => {
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="upload">Upload</TabsTrigger>
             <TabsTrigger value="view" disabled={!processedData}>View</TabsTrigger>
+            <TabsTrigger value="analyze" disabled={!processedData}>Analyze</TabsTrigger>
             <TabsTrigger value="report" disabled={!processedData}>Reports</TabsTrigger>
           </TabsList>
           
@@ -129,7 +192,7 @@ const ShapefileProcessor: React.FC = () => {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Shapefile Requirements</AlertTitle>
               <AlertDescription>
-                Please upload all required shapefile components (.shp, .dbf, .shx, and .prj files)
+                Upload individual shapefile components (.shp, .dbf, .shx, .prj), a ZIP archive containing all components, or GeoJSON files
               </AlertDescription>
             </Alert>
             
@@ -171,7 +234,7 @@ const ShapefileProcessor: React.FC = () => {
                   <div className="space-y-2">
                     <Progress value={progress} className="h-2" />
                     <p className="text-sm text-center text-muted-foreground">
-                      Processing shapefiles... {progress}%
+                      {progress < 50 ? "Parsing shapefiles..." : "Validating and processing data..."} {progress}%
                     </p>
                   </div>
                 ) : (
@@ -179,12 +242,81 @@ const ShapefileProcessor: React.FC = () => {
                     Process Shapefiles
                   </Button>
                 )}
+                
+                {validationResult && (
+                  <Alert className={validationResult.isValid ? "bg-success/20" : "bg-destructive/20"}>
+                    <AlertTitle className={validationResult.isValid ? "text-success" : "text-destructive"}>
+                      {validationResult.isValid ? "Validation Successful" : "Validation Failed"}
+                    </AlertTitle>
+                    <AlertDescription>
+                      <div className="text-sm">
+                        <p>Features: {validationResult.features}</p>
+                        <p>CRS: {validationResult.crs || "Unknown"}</p>
+                        {validationResult.warnings && validationResult.warnings.length > 0 && (
+                          <div className="mt-2">
+                            <p className="font-medium text-amber-600">Warnings:</p>
+                            <ul className="list-disc pl-5">
+                              {validationResult.warnings.map((warning, i) => (
+                                <li key={i} className="text-amber-600 text-xs">{warning}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {validationResult.errors && validationResult.errors.length > 0 && (
+                          <div className="mt-2">
+                            <p className="font-medium text-destructive">Errors:</p>
+                            <ul className="list-disc pl-5">
+                              {validationResult.errors.map((error, i) => (
+                                <li key={i} className="text-destructive text-xs">{error}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
             )}
           </TabsContent>
           
           <TabsContent value="view">
             {processedData && <ShapefileViewer data={processedData} />}
+          </TabsContent>
+          
+          <TabsContent value="analyze">
+            {processedData && (
+              <div className="space-y-6">
+                <ShapefileAnalysis 
+                  data={processedData} 
+                  onAnalysisComplete={handleAnalysisComplete} 
+                />
+                
+                {analysisResults.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-medium flex items-center">
+                      <Activity className="h-5 w-5 mr-2" />
+                      Analysis History
+                    </h3>
+                    <div className="space-y-2">
+                      {analysisResults.map((result, index) => (
+                        <Card key={index} className="p-3">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h4 className="font-medium">{result.type.charAt(0).toUpperCase() + result.type.slice(1)} Analysis</h4>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(result.metadata.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                            <Button size="sm" variant="outline">View</Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
           
           <TabsContent value="report">
