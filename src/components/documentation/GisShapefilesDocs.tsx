@@ -5,6 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, FileText, Map, Calculator } from "lucide-react";
 
+// Import the missing icons
+import { CircleDot } from "lucide-react";
+import { Scissors } from "lucide-react";
+
 const GisShapefilesDocs: React.FC = () => {
   return (
     <div className="space-y-6">
