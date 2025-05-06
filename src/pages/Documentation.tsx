@@ -8,6 +8,7 @@ import SatelliteVisionDocs from '@/components/documentation/SatelliteVisionDocs'
 import UserGuideTabs from '@/components/documentation/UserGuideTabs';
 import FAQSection from '@/components/documentation/FAQSection';
 import EnterpriseReadinessDocs from '@/components/documentation/EnterpriseReadinessDocs';
+import GisShapefilesDocs from '@/components/documentation/GisShapefilesDocs';
 
 const Documentation: React.FC = () => {
   return (
@@ -21,9 +22,10 @@ const Documentation: React.FC = () => {
         </div>
         
         <Tabs defaultValue="modules" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="modules">Modules & Features</TabsTrigger>
             <TabsTrigger value="satellite-vision">SatelliteVision CNN</TabsTrigger>
+            <TabsTrigger value="gis-shapefiles">GIS Shapefiles</TabsTrigger>
             <TabsTrigger value="enterprise">Enterprise Readiness</TabsTrigger>
             <TabsTrigger value="user-guide">User Guide</TabsTrigger>
             <TabsTrigger value="faq">FAQ</TabsTrigger>
@@ -42,6 +44,11 @@ const Documentation: React.FC = () => {
           {/* SatelliteVision CNN Tab */}
           <TabsContent value="satellite-vision" className="space-y-6">
             <SatelliteVisionDocs />
+          </TabsContent>
+          
+          {/* GIS Shapefiles Tab */}
+          <TabsContent value="gis-shapefiles" className="space-y-6">
+            <GisShapefilesDocs />
           </TabsContent>
           
           {/* Enterprise Readiness Tab */}

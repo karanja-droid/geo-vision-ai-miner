@@ -151,6 +151,14 @@ const MainNavigation: React.FC = () => {
                   Learn how to use all features effectively
                 </ListItem>
                 <ListItem 
+                  href="/documentation?tab=gis-shapefiles" 
+                  title="GIS Shapefile Docs"
+                  icon={<FileText className="h-4 w-4 mr-2 text-purple-500" />}
+                  isActive={false}
+                >
+                  Documentation for GIS shapefile processing
+                </ListItem>
+                <ListItem 
                   href="/about" 
                   title="About Us"
                   icon={<Users className="h-4 w-4 mr-2 text-teal-500" />}

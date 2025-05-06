@@ -1,16 +1,27 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 import ShapefileProcessor from '@/components/gis/ShapefileProcessor';
 
 const GisShapefileManagement = () => {
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">GIS Shapefile Management</h1>
-        <p className="text-muted-foreground">
-          Process and analyze geological shapefiles and generate comprehensive reports
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">GIS Shapefile Management</h1>
+          <p className="text-muted-foreground">
+            Process and analyze geological shapefiles and generate comprehensive reports
+          </p>
+        </div>
+        <Button variant="outline" asChild className="mt-4 sm:mt-0">
+          <Link to="/documentation?tab=gis-shapefiles">
+            <BookOpen className="h-4 w-4 mr-2" />
+            View Documentation
+          </Link>
+        </Button>
       </div>
       
       <Tabs defaultValue="processor" className="space-y-4">
