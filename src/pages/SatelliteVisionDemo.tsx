@@ -9,6 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Info, ExternalLink } from "lucide-react";
 import SatelliteVisionCNN from '@/components/models/SatelliteVisionCNN';
 
+// Define type for dataset options
+interface DatasetOption {
+  name: string;
+  description: string;
+  size: string;
+  type: string;
+  date: string;
+}
+
 const SatelliteVisionDemo: React.FC = () => {
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   
