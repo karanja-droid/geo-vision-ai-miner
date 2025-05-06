@@ -7,6 +7,7 @@ import TeamsIntegrationDocs from '@/components/documentation/TeamsIntegrationDoc
 import SatelliteVisionDocs from '@/components/documentation/SatelliteVisionDocs';
 import UserGuideTabs from '@/components/documentation/UserGuideTabs';
 import FAQSection from '@/components/documentation/FAQSection';
+import EnterpriseReadinessDocs from '@/components/documentation/EnterpriseReadinessDocs';
 
 const Documentation: React.FC = () => {
   return (
@@ -20,9 +21,10 @@ const Documentation: React.FC = () => {
         </div>
         
         <Tabs defaultValue="modules" className="w-full">
-          <TabsList className="grid grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="modules">Modules & Features</TabsTrigger>
             <TabsTrigger value="satellite-vision">SatelliteVision CNN</TabsTrigger>
+            <TabsTrigger value="enterprise">Enterprise Readiness</TabsTrigger>
             <TabsTrigger value="user-guide">User Guide</TabsTrigger>
             <TabsTrigger value="faq">FAQ</TabsTrigger>
           </TabsList>
@@ -42,13 +44,18 @@ const Documentation: React.FC = () => {
             <SatelliteVisionDocs />
           </TabsContent>
           
+          {/* Enterprise Readiness Tab */}
+          <TabsContent value="enterprise" className="space-y-6" id="enterprise-readiness">
+            <EnterpriseReadinessDocs />
+          </TabsContent>
+          
           {/* User Guide Tab */}
           <TabsContent value="user-guide" className="space-y-6">
             <UserGuideTabs />
           </TabsContent>
           
           {/* FAQ Tab */}
-          <TabsContent value="faq" className="space-y-6">
+          <TabsContent value="faq" className="space-y-6" id="faq">
             <FAQSection />
           </TabsContent>
         </Tabs>
