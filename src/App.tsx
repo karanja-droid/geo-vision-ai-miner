@@ -19,6 +19,7 @@ import Upgrade from './pages/Upgrade';
 import NotFound from './pages/NotFound';
 import SatelliteVisionDemo from './pages/SatelliteVisionDemo';
 import GeoStructure3DDemo from './pages/GeoStructure3DDemo';
+import ProductRoadmap from './pages/ProductRoadmap';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/upgrade" element={<Upgrade />} />
           <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
           <Route path="/geostructure-3d" element={<GeoStructure3DDemo />} />
+          <Route path="/product-roadmap" element={<ProductRoadmap />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

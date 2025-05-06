@@ -6,9 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import Map from "@/components/Map";
 import UploadPanel from "@/components/UploadPanel";
 import AnalysisPanel from "@/components/AnalysisPanel";
-import GeoMinerInsights from "@/components/GeoMinerInsights";
 import { Link } from "react-router-dom";
-import { Map as MapIcon, Combine, Database, Globe } from "lucide-react";
+import { Map as MapIcon, Combine, Database, Globe, BarChart } from "lucide-react";
 
 const Dashboard: React.FC = () => {
   // Mock user data
@@ -36,9 +35,47 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Added the GeoMinerInsights component */}
       <div className="mt-6">
-        <GeoMinerInsights />
+        <Card>
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Strategic Vision</CardTitle>
+              <CardDescription>Our product roadmap and market analysis</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/product-roadmap">
+                View Complete Roadmap
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-lg border bg-card p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="rounded-full bg-blue-50 p-2">
+                    <Database className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <h3 className="font-medium">African Geological Data Library</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Curated regional database to enhance predictive capabilities in African mineral exploration.
+                </p>
+              </div>
+              
+              <div className="rounded-lg border bg-card p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="rounded-full bg-amber-50 p-2">
+                    <BarChart className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <h3 className="font-medium">Deep Engineering Integration</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  API connections to industry tools for seamless workflow between AI insights and engineering.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
