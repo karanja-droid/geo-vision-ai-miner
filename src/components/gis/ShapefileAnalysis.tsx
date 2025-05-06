@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,6 @@ import {
   Calculator,
   CircleDot,
   Scissors,
-  Union,
   Map,
   Ruler,
   ArrowRight,
@@ -92,7 +90,7 @@ const ShapefileAnalysis: React.FC<ShapefileAnalysisProps> = ({ data, onAnalysisC
       case 'intersect':
         return <Scissors className="h-4 w-4" />;
       case 'union':
-        return <Union className="h-4 w-4" />;
+        return <Map className="h-4 w-4" />;
       case 'measure':
         return <Ruler className="h-4 w-4" />;
       case 'query':
@@ -212,7 +210,7 @@ const ShapefileAnalysis: React.FC<ShapefileAnalysisProps> = ({ data, onAnalysisC
               <label className="text-sm font-medium">Operation Type</label>
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" className="justify-start">
-                  <Union className="h-4 w-4 mr-2" />
+                  <Map className="h-4 w-4 mr-2" />
                   Union
                 </Button>
                 <Button variant="outline" className="justify-start">
