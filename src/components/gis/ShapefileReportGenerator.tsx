@@ -12,9 +12,9 @@ import {
   Table, 
   Map as MapIcon, 
   BarChart, 
-  FileChart, 
+  FileBarChart,
   FileLineChart, 
-  FileChartColumnLine 
+  FileBarChart2
 } from "lucide-react";
 import { ExportOptions, ExportFormat } from '@/types/datasets';
 
@@ -101,11 +101,11 @@ const ShapefileReportGenerator: React.FC<ShapefileReportGeneratorProps> = ({ dat
       case 'kml':
         return <MapIcon className="h-4 w-4 mr-2" />;
       case 'geotiff':
-        return <FileChartColumnLine className="h-4 w-4 mr-2" />;
+        return <FileBarChart2 className="h-4 w-4 mr-2" />;
       case 'chart':
         return <BarChart className="h-4 w-4 mr-2" />;
       case 'visualization':
-        return <FileChart className="h-4 w-4 mr-2" />;
+        return <FileBarChart className="h-4 w-4 mr-2" />;
       default:
         return <FileText className="h-4 w-4 mr-2" />;
     }
