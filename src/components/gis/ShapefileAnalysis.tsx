@@ -263,7 +263,7 @@ const ShapefileAnalysis: React.FC<ShapefileAnalysisProps> = ({ data, onAnalysisC
                 placeholder="e.g. mineralDeposits LIKE '%Copper%'" 
               />
               <p className="text-xs text-muted-foreground">
-                Use attribute names from your data with operators like =, >, &lt;, LIKE, AND, OR
+                Use attribute names from your data with operators like =, &gt;, &lt;, LIKE, AND, OR
               </p>
             </div>
             
