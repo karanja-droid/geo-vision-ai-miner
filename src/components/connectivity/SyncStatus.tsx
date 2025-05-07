@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sync, WifiOff, CheckCircle, AlertCircle } from 'lucide-react';
+import { RefreshCw, WifiOff, CheckCircle, AlertCircle } from 'lucide-react';
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 
 export const SyncStatus: React.FC = () => {
@@ -22,7 +22,7 @@ export const SyncStatus: React.FC = () => {
   if (syncStatus === 'syncing') {
     return (
       <div className="flex items-center gap-2">
-        <Sync className="h-4 w-4 text-blue-600 animate-spin" />
+        <RefreshCw className="h-4 w-4 text-blue-600 animate-spin" />
         <Badge variant="outline" className="bg-blue-50 border-blue-200 text-blue-700">
           Syncing...
         </Badge>
@@ -39,7 +39,7 @@ export const SyncStatus: React.FC = () => {
           className="h-8 gap-1 text-blue-600 border-blue-200 hover:bg-blue-50"
           onClick={() => sync()}
         >
-          <Sync className="h-3.5 w-3.5 mr-1" />
+          <RefreshCw className="h-3.5 w-3.5 mr-1" />
           Sync ({pendingChanges})
         </Button>
       </div>
