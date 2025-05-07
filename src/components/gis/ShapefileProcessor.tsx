@@ -1,16 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, FileDown, Map, AlertTriangle, Check, Activity } from "lucide-react";
-import ShapefileViewer from './ShapefileViewer';
-import ShapefileReportGenerator from './ShapefileReportGenerator';
-import ShapefileAnalysis from './ShapefileAnalysis';
 import { GeoAnalysisResult, ShapefileValidationResult } from '@/types/datasets';
 import { validateGeoJSON } from '@/utils/gisOperations';
+import ProcessorTabs from './shapefile-processor/ProcessorTabs';
+import { validateShapefiles } from './shapefile-processor/utils';
+import AnalysisHistory from './shapefile-processor/AnalysisHistory';
 
 const ShapefileProcessor: React.FC = () => {
   console.log("Rendering ShapefileProcessor component");
@@ -80,58 +76,6 @@ const ShapefileProcessor: React.FC = () => {
         setValidationResult(null);
       }
     }
-  };
-
-  const validateShapefiles = (files: File[]): Promise<ShapefileValidationResult> => {
-    console.log("validateShapefiles called with files:", files.map(f => f.name));
-    
-    // Testing edge cases with file types
-    const hasShp = files.some(f => f.name.endsWith('.shp'));
-    const hasDbf = files.some(f => f.name.endsWith('.dbf'));
-    const hasShx = files.some(f => f.name.endsWith('.shx'));
-    const hasPrj = files.some(f => f.name.endsWith('.prj'));
-    const hasGeoJson = files.some(f => f.name.endsWith('.geojson') || f.name.endsWith('.json'));
-    const hasZip = files.some(f => f.name.endsWith('.zip'));
-    
-    console.log("File type presence:", { hasShp, hasDbf, hasShx, hasPrj, hasGeoJson, hasZip });
-    
-    // In a real implementation, this would perform actual validation
-    return new Promise((resolve) => {
-      console.log("Starting validation simulation...");
-      
-      setTimeout(() => {
-        // Generate warnings based on file types
-        const warnings: string[] = [];
-        
-        if (!hasPrj && (hasShp || hasDbf || hasShx)) {
-          warnings.push("Missing projection file (.prj)");
-        }
-        
-        if (hasShp && !hasDbf) {
-          warnings.push("Missing database file (.dbf)");
-        }
-        
-        if (hasShp && !hasShx) {
-          warnings.push("Missing index file (.shx)");
-        }
-        
-        // Handle the case where files are provided but wouldn't be valid in real-world
-        const isValid = hasGeoJson || hasZip || (hasShp && hasDbf && hasShx);
-        
-        // Show different validation results based on files
-        const result: ShapefileValidationResult = {
-          isValid,
-          features: isValid ? 2 : 0,
-          boundingBox: isValid ? [27.5, -13.5, 28.5, -12.5] : [0, 0, 0, 0],
-          crs: isValid ? "EPSG:4326" : undefined,
-          warnings,
-          errors: !isValid ? ["Incomplete or invalid shapefile components"] : undefined
-        };
-        
-        console.log("Validation result:", result);
-        resolve(result);
-      }, 1000);
-    });
   };
 
   const processShapefiles = async () => {
@@ -272,150 +216,24 @@ const ShapefileProcessor: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="upload">Upload</TabsTrigger>
-            <TabsTrigger value="view" disabled={!processedData}>View</TabsTrigger>
-            <TabsTrigger value="analyze" disabled={!processedData}>Analyze</TabsTrigger>
-            <TabsTrigger value="report" disabled={!processedData}>Reports</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="upload" className="space-y-4">
-            <Alert className="bg-muted">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Shapefile Requirements</AlertTitle>
-              <AlertDescription>
-                Upload individual shapefile components (.shp, .dbf, .shx, .prj), a ZIP archive containing all components, or GeoJSON files
-              </AlertDescription>
-            </Alert>
-            
-            <div className="border-2 border-dashed rounded-lg p-8 text-center mt-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Upload className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">Upload Shapefiles</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Drag and drop shapefile components or click to browse
-              </p>
-              <input
-                type="file"
-                id="shapefile-upload"
-                className="hidden"
-                onChange={handleFileChange}
-                multiple
-              />
-              <Button asChild>
-                <label htmlFor="shapefile-upload">Select Files</label>
-              </Button>
-            </div>
-            
-            {files.length > 0 && (
-              <div className="mt-4 space-y-4">
-                <div className="bg-muted p-4 rounded-md">
-                  <h4 className="font-medium mb-2">Selected Files ({files.length})</h4>
-                  <ul className="space-y-1">
-                    {files.map((file, index) => (
-                      <li key={index} className="text-sm flex items-center">
-                        <Check className="h-4 w-4 mr-2 text-green-500" />
-                        {file.name} ({(file.size / 1024).toFixed(1)} KB)
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {isProcessing ? (
-                  <div className="space-y-2">
-                    <Progress value={progress} className="h-2" />
-                    <p className="text-sm text-center text-muted-foreground">
-                      {progress < 50 ? "Parsing shapefiles..." : "Validating and processing data..."} {progress}%
-                    </p>
-                  </div>
-                ) : (
-                  <Button onClick={processShapefiles} className="w-full">
-                    Process Shapefiles
-                  </Button>
-                )}
-                
-                {validationResult && (
-                  <Alert className={validationResult.isValid ? "bg-success/20" : "bg-destructive/20"}>
-                    <AlertTitle className={validationResult.isValid ? "text-success" : "text-destructive"}>
-                      {validationResult.isValid ? "Validation Successful" : "Validation Failed"}
-                    </AlertTitle>
-                    <AlertDescription>
-                      <div className="text-sm">
-                        <p>Features: {validationResult.features}</p>
-                        <p>CRS: {validationResult.crs || "Unknown"}</p>
-                        {validationResult.warnings && validationResult.warnings.length > 0 && (
-                          <div className="mt-2">
-                            <p className="font-medium text-amber-600">Warnings:</p>
-                            <ul className="list-disc pl-5">
-                              {validationResult.warnings.map((warning, i) => (
-                                <li key={i} className="text-amber-600 text-xs">{warning}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        {validationResult.errors && validationResult.errors.length > 0 && (
-                          <div className="mt-2">
-                            <p className="font-medium text-destructive">Errors:</p>
-                            <ul className="list-disc pl-5">
-                              {validationResult.errors.map((error, i) => (
-                                <li key={i} className="text-destructive text-xs">{error}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="view">
-            {processedData && <ShapefileViewer data={processedData} />}
-          </TabsContent>
-          
-          <TabsContent value="analyze">
-            {processedData && (
-              <div className="space-y-6">
-                <ShapefileAnalysis 
-                  data={processedData} 
-                  onAnalysisComplete={handleAnalysisComplete} 
-                />
-                
-                {analysisResults.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-medium flex items-center">
-                      <Activity className="h-5 w-5 mr-2" />
-                      Analysis History
-                    </h3>
-                    <div className="space-y-2">
-                      {analysisResults.map((result, index) => (
-                        <Card key={index} className="p-3">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <h4 className="font-medium">{result.type.charAt(0).toUpperCase() + result.type.slice(1)} Analysis</h4>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(result.metadata.timestamp).toLocaleString()}
-                              </p>
-                            </div>
-                            <Button size="sm" variant="outline">View</Button>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="report">
-            {processedData && <ShapefileReportGenerator data={processedData} />}
-          </TabsContent>
-        </Tabs>
+        <ProcessorTabs
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          files={files}
+          onFileChange={handleFileChange}
+          onProcessFiles={processShapefiles}
+          isProcessing={isProcessing}
+          progress={progress}
+          processedData={processedData}
+          validationResult={validationResult}
+          onAnalysisComplete={handleAnalysisComplete}
+        />
+        
+        {activeTab === "analyze" && processedData && (
+          <div className="mt-6">
+            <AnalysisHistory analysisResults={analysisResults} />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
