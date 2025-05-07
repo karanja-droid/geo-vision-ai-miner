@@ -4,6 +4,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 
 const OverviewTab: React.FC = () => {
+  console.log("Rendering OverviewTab component");
+  
   return (
     <div className="space-y-4">
       <div className="space-y-2">

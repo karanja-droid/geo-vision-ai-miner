@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText } from "lucide-react";
@@ -11,6 +11,19 @@ import ReportsTab from "./gis-shapefiles/ReportsTab";
 import FormatsTab from "./gis-shapefiles/FormatsTab";
 
 const GisShapefilesDocs: React.FC = () => {
+  console.log("Rendering GisShapefilesDocs component");
+  
+  useEffect(() => {
+    console.log("GisShapefilesDocs component mounted");
+    return () => {
+      console.log("GisShapefilesDocs component unmounted");
+    };
+  }, []);
+
+  const handleTabChange = (value: string) => {
+    console.log(`Tab changed to: ${value}`);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -27,7 +40,7 @@ const GisShapefilesDocs: React.FC = () => {
             the key features and how to use them effectively.
           </p>
 
-          <Tabs defaultValue="overview" className="mt-6">
+          <Tabs defaultValue="overview" className="mt-6" onValueChange={handleTabChange}>
             <TabsList className="grid grid-cols-4 mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="analysis">Analysis Tools</TabsTrigger>

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +10,34 @@ interface ShapefileViewerProps {
 }
 
 const ShapefileViewer: React.FC<ShapefileViewerProps> = ({ data }) => {
+  console.log("Rendering ShapefileViewer component", {
+    dataType: data?.type,
+    featureCount: data?.features?.length
+  });
+  
   const [viewMode, setViewMode] = useState<string>("map");
   
+  useEffect(() => {
+    console.log(`ShapefileViewer switched to ${viewMode} view mode`);
+    
+    // Log feature details for debugging
+    if (data?.features && data.features.length > 0) {
+      console.log("First feature details:", {
+        type: data.features[0].geometry?.type,
+        properties: data.features[0].properties,
+        coordinates: data.features[0].geometry?.coordinates ? 
+          `Array[${data.features[0].geometry.coordinates.length}]` : 
+          'undefined'
+      });
+    }
+    
+    return () => {
+      console.log("ShapefileViewer view mode cleanup");
+    };
+  }, [viewMode, data]);
+
   const renderMapView = () => {
+    console.log("Rendering map view");
     return (
       <div className="relative h-[400px] w-full bg-slate-100 dark:bg-slate-800 overflow-hidden rounded-md">
         {/* Simulated map visualization */}
@@ -20,6 +45,8 @@ const ShapefileViewer: React.FC<ShapefileViewerProps> = ({ data }) => {
           <div className="h-full w-full grid-pattern">
             {/* Render features based on their geometry type */}
             {data.features.map((feature: any, index: number) => {
+              console.log(`Rendering feature ${index + 1}, type: ${feature.geometry?.type}`);
+              
               if (feature.geometry.type === "Polygon") {
                 // Simulate polygon rendering
                 return (
@@ -80,6 +107,7 @@ const ShapefileViewer: React.FC<ShapefileViewerProps> = ({ data }) => {
   };
   
   const renderDataView = () => {
+    console.log("Rendering data view");
     return (
       <div className="h-[400px] overflow-auto rounded-md border bg-muted/50">
         <pre className="p-4 text-xs">
@@ -90,6 +118,7 @@ const ShapefileViewer: React.FC<ShapefileViewerProps> = ({ data }) => {
   };
   
   const renderAttributesView = () => {
+    console.log("Rendering attributes view");
     return (
       <div className="overflow-auto">
         <table className="w-full border-collapse">
@@ -101,22 +130,25 @@ const ShapefileViewer: React.FC<ShapefileViewerProps> = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-            {data.features.map((feature: any, index: number) => (
-              <tr key={index} className="border-b">
-                <td className="border p-2 text-sm">{feature.properties.name || `Feature ${index + 1}`}</td>
-                <td className="border p-2 text-sm">{feature.geometry.type}</td>
-                <td className="border p-2">
-                  <div className="space-y-1">
-                    {Object.entries(feature.properties).map(([key, value]: [string, any]) => (
-                      <div key={key} className="grid grid-cols-2 gap-2 text-sm">
-                        <span className="font-medium">{key}:</span>
-                        <span>{String(value)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {data.features.map((feature: any, index: number) => {
+              console.log(`Rendering attribute row for feature ${index + 1}`);
+              return (
+                <tr key={index} className="border-b">
+                  <td className="border p-2 text-sm">{feature.properties.name || `Feature ${index + 1}`}</td>
+                  <td className="border p-2 text-sm">{feature.geometry.type}</td>
+                  <td className="border p-2">
+                    <div className="space-y-1">
+                      {Object.entries(feature.properties).map(([key, value]: [string, any]) => (
+                        <div key={key} className="grid grid-cols-2 gap-2 text-sm">
+                          <span className="font-medium">{key}:</span>
+                          <span>{String(value)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -125,7 +157,10 @@ const ShapefileViewer: React.FC<ShapefileViewerProps> = ({ data }) => {
   
   return (
     <Card className="p-4">
-      <Tabs value={viewMode} onValueChange={setViewMode} className="w-full">
+      <Tabs value={viewMode} onValueChange={(value) => {
+        console.log(`Changing view mode from ${viewMode} to ${value}`);
+        setViewMode(value);
+      }} className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="map" className="flex items-center gap-2">
             <Map className="h-4 w-4" />

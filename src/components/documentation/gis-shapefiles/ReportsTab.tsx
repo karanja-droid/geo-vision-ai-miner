@@ -2,6 +2,8 @@
 import React from "react";
 
 const ReportsTab: React.FC = () => {
+  console.log("Rendering ReportsTab component");
+  
   return (
     <div className="space-y-4">
       <div className="space-y-2">
