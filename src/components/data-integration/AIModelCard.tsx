@@ -17,6 +17,8 @@ interface AIModelCardProps {
   };
   features: string[];
   demoLink?: string;
+  regionSpecialization?: 'global' | 'africa' | 'north-america' | 'south-america' | 'europe' | 'asia' | 'australia';
+  mineralTypes?: string[];
 }
 
 export const AIModelCard: React.FC<AIModelCardProps> = ({ 
@@ -26,7 +28,9 @@ export const AIModelCard: React.FC<AIModelCardProps> = ({
   description, 
   metrics, 
   features, 
-  demoLink 
+  demoLink,
+  regionSpecialization = 'global',
+  mineralTypes = []
 }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -40,6 +44,25 @@ export const AIModelCard: React.FC<AIModelCardProps> = ({
       default:
         return 'bg-muted text-foreground';
     }
+  };
+  
+  const getRegionBadge = () => {
+    if (regionSpecialization === 'global') return null;
+    
+    const regionColors: Record<string, string> = {
+      'africa': 'bg-amber-600 text-white',
+      'north-america': 'bg-blue-600 text-white',
+      'south-america': 'bg-green-600 text-white',
+      'europe': 'bg-indigo-600 text-white',
+      'asia': 'bg-red-600 text-white',
+      'australia': 'bg-orange-600 text-white',
+    };
+    
+    return (
+      <Badge className={regionColors[regionSpecialization]}>
+        {regionSpecialization.charAt(0).toUpperCase() + regionSpecialization.slice(1)} Optimized
+      </Badge>
+    );
   };
   
   return (
@@ -72,6 +95,17 @@ export const AIModelCard: React.FC<AIModelCardProps> = ({
             <p className="text-xs font-medium">{metrics.lastTrained}</p>
           </div>
         </div>
+        
+        {(regionSpecialization !== 'global' || mineralTypes.length > 0) && (
+          <div className="mb-3 flex flex-wrap gap-1">
+            {getRegionBadge()}
+            {mineralTypes.map((mineral, idx) => (
+              <Badge key={idx} variant="outline" className="bg-primary/10 border-primary/20">
+                {mineral.charAt(0).toUpperCase() + mineral.slice(1)}
+              </Badge>
+            ))}
+          </div>
+        )}
         
         <div className="mt-2">
           <p className="text-xs font-medium mb-1">Key Features:</p>

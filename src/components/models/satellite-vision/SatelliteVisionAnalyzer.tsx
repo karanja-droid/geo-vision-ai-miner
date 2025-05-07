@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Image } from "lucide-react";
+import { Image, MapPin } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ModelInfo } from '@/types/models';
 
@@ -24,6 +24,8 @@ export interface AnalysisOptions {
   resolution: string;
   depth: string;
   spectralBands: string[];
+  regionFocus?: string;
+  targetMinerals?: string[];
 }
 
 const defaultModelInfo: ModelInfo = {
@@ -31,10 +33,12 @@ const defaultModelInfo: ModelInfo = {
   name: "SatelliteVision CNN",
   type: "computer-vision",
   target: "mineral_signatures",
-  accuracy: 93.5,
-  lastTrained: "2024-04-15",
-  description: "Deep learning model specialized in identifying mineral signatures from multispectral satellite imagery",
-  feedbackIncorporated: true
+  accuracy: 94.2,
+  lastTrained: "2024-04-28",
+  description: "Deep learning model specialized in identifying mineral signatures from multispectral satellite imagery with African deposit optimization",
+  feedbackIncorporated: true,
+  regionSpecialization: "africa",
+  mineralTypes: ["gold", "copper", "cobalt", "diamond"]
 };
 
 const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({ 
@@ -50,7 +54,9 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
     dataSource: "landsat-8",
     resolution: "medium",
     depth: "shallow",
-    spectralBands: ["visible", "near-ir"]
+    spectralBands: ["visible", "near-ir"],
+    regionFocus: "africa",
+    targetMinerals: ["gold", "copper"]
   });
   const [analysisResults, setAnalysisResults] = useState<any>(null);
 
@@ -90,7 +96,9 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
       minerals: {
         ironOxide: Math.round(60 + Math.random() * 30),
         copperSulfide: Math.round(40 + Math.random() * 30),
-        silicates: Math.round(30 + Math.random() * 30)
+        silicates: Math.round(30 + Math.random() * 30),
+        goldIndicators: Math.round(20 + Math.random() * 10),
+        diamondIndicators: Math.round(10 + Math.random() * 5)
       },
       statistics: {
         areaAnalyzed: (10 + Math.random() * 5).toFixed(1),
@@ -102,7 +110,8 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
         id: i + 1,
         lat: -12.5 + (Math.random() * 25), // Southern Africa latitude range
         lng: 20 + (Math.random() * 15),    // Southern Africa longitude range
-        strength: 0.7 + (Math.random() * 0.3)
+        strength: 0.7 + (Math.random() * 0.3),
+        mineralType: ["iron", "copper", "silicates", "gold", "diamond"][Math.floor(Math.random() * 5)]
       }))
     };
     
@@ -124,6 +133,21 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
     });
   };
 
+  const handleMineralTargetToggle = (mineral: string) => {
+    setAnalysisOptions(prev => {
+      const currentTargets = prev.targetMinerals || [];
+      if (currentTargets.includes(mineral)) {
+        return { ...prev, targetMinerals: currentTargets.filter(m => m !== mineral) };
+      } else {
+        return { ...prev, targetMinerals: [...currentTargets, mineral] };
+      }
+    });
+  };
+
+  const handleRegionFocusChange = (region: string) => {
+    setAnalysisOptions(prev => ({ ...prev, regionFocus: region }));
+  };
+
   const handleDownloadReport = () => {
     if (!analysisResults) {
       toast({
@@ -135,7 +159,7 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
     }
     
     try {
-      // Create a formatted text report
+      // Add African deposit specific details to the report
       const report = `
 SATELLITE VISION CNN ANALYSIS REPORT
 ===================================
@@ -147,12 +171,16 @@ Data Source: ${analysisResults.options.dataSource}
 Resolution: ${analysisResults.options.resolution}
 Analysis Depth: ${analysisResults.options.depth}
 Spectral Bands: ${analysisResults.options.spectralBands.join(', ')}
+Region Focus: ${analysisResults.options.regionFocus || 'Global'}
+Target Minerals: ${analysisResults.options.targetMinerals?.join(', ') || 'All'}
 
 MINERAL DETECTION RESULTS
 ------------------------
 Iron Oxide: ${analysisResults.minerals.ironOxide}%
 Copper Sulfide: ${analysisResults.minerals.copperSulfide}%
 Silicates: ${analysisResults.minerals.silicates}%
+Gold Indicators: ${analysisResults.minerals.goldIndicators || '0'}%
+Diamond Indicators: ${analysisResults.minerals.diamondIndicators || '0'}%
 
 STATISTICS
 ---------
@@ -160,11 +188,12 @@ Area Analyzed: ${analysisResults.statistics.areaAnalyzed} km²
 Anomalies Detected: ${analysisResults.statistics.anomaliesDetected}
 Feature Points: ${analysisResults.statistics.featurePoints}
 Confidence Score: ${analysisResults.statistics.confidenceScore}%
+African Context Confidence: ${analysisResults.statistics.africanConfidence || analysisResults.statistics.confidenceScore}%
 
 HOTSPOTS
 -------
 ${analysisResults.hotspots.map((hotspot: any) => 
-  `ID: ${hotspot.id}, Location: [${hotspot.lat.toFixed(6)}, ${hotspot.lng.toFixed(6)}], Strength: ${(hotspot.strength * 100).toFixed(1)}%`
+  `ID: ${hotspot.id}, Location: [${hotspot.lat.toFixed(6)}, ${hotspot.lng.toFixed(6)}], Strength: ${(hotspot.strength * 100).toFixed(1)}%, Likely Mineral: ${hotspot.mineralType || 'Unknown'}`
 ).join('\n')}
 
 NOTES
@@ -172,6 +201,7 @@ NOTES
 This report was generated using SatelliteVision CNN model (${modelInfo.id}).
 Model accuracy: ${modelInfo.accuracy}%
 Last trained: ${new Date(modelInfo.lastTrained).toLocaleDateString()}
+Regional specialization: ${modelInfo.regionSpecialization || 'Global'}
 `;
       
       // Create file and trigger download
@@ -226,6 +256,9 @@ Last trained: ${new Date(modelInfo.lastTrained).toLocaleDateString()}
             <CardTitle className="flex items-center gap-2">
               <Image className="h-5 w-5 text-primary" />
               {modelInfo.name}
+              {modelInfo.regionSpecialization === 'africa' && (
+                <Badge className="bg-amber-600 text-white text-xs">Africa Optimized</Badge>
+              )}
             </CardTitle>
             <CardDescription>{modelInfo.description}</CardDescription>
           </div>
@@ -248,6 +281,8 @@ Last trained: ${new Date(modelInfo.lastTrained).toLocaleDateString()}
               analysisOptions={analysisOptions}
               handleOptionChange={handleOptionChange}
               handleSpectralBandToggle={handleSpectralBandToggle}
+              handleMineralTargetToggle={handleMineralTargetToggle}
+              handleRegionFocusChange={handleRegionFocusChange}
               modelInfo={modelInfo}
             />
           </TabsContent>

@@ -13,18 +13,23 @@ interface ResultsTabProps {
       ironOxide: number;
       copperSulfide: number;
       silicates: number;
+      goldIndicators?: number;
+      diamondIndicators?: number;
+      cobaltIndicators?: number;
     };
     statistics: {
       areaAnalyzed: string;
       anomaliesDetected: number;
       featurePoints: number;
       confidenceScore: string;
+      africanConfidence?: string;
     };
     hotspots?: Array<{
       id: number;
       lat: number;
       lng: number;
       strength: number;
+      mineralType?: string;
     }>;
   } | null;
   handleDownloadReport: () => void;
@@ -43,12 +48,19 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
   // Determine the dominant mineral for the map visualization
   const determineMineralType = () => {
     const minerals = analysisResults.minerals;
-    if (minerals.ironOxide > minerals.copperSulfide && minerals.ironOxide > minerals.silicates) {
+    
+    if (minerals.goldIndicators && minerals.goldIndicators > 50) {
+      return 'gold';
+    } else if (minerals.diamondIndicators && minerals.diamondIndicators > 50) {
+      return 'diamond';
+    } else if (minerals.cobaltIndicators && minerals.cobaltIndicators > 50) {
+      return 'cobalt';
+    } else if (minerals.ironOxide > minerals.copperSulfide && minerals.ironOxide > minerals.silicates) {
       return 'iron';
     } else if (minerals.copperSulfide > minerals.ironOxide && minerals.copperSulfide > minerals.silicates) {
       return 'copper';
     } else {
-      return 'gold'; // Using gold as a fallback for silicates
+      return 'gold';
     }
   };
   
@@ -58,7 +70,9 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
         <Activity className="h-4 w-4 text-green-600" />
         <AlertTitle className="text-green-700">Analysis Complete</AlertTitle>
         <AlertDescription>
-          SatelliteVision CNN has successfully analyzed the selected imagery.
+          SatelliteVision CNN has successfully analyzed the selected imagery 
+          {analysisResults.statistics.africanConfidence && 
+            ` with ${analysisResults.statistics.africanConfidence}% African context confidence`}
         </AlertDescription>
       </Alert>
       

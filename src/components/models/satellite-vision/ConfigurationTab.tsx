@@ -10,12 +10,16 @@ interface AnalysisOptions {
   resolution: string;
   depth: string;
   spectralBands: string[];
+  regionFocus?: string;
+  targetMinerals?: string[];
 }
 
 interface ConfigurationTabProps {
   analysisOptions: AnalysisOptions;
   handleOptionChange: (key: keyof AnalysisOptions, value: any) => void;
   handleSpectralBandToggle: (band: string) => void;
+  handleMineralTargetToggle?: (mineral: string) => void;
+  handleRegionFocusChange?: (region: string) => void;
   modelInfo: ModelInfo;
 }
 
@@ -23,6 +27,8 @@ const ConfigurationTab: React.FC<ConfigurationTabProps> = ({
   analysisOptions,
   handleOptionChange,
   handleSpectralBandToggle,
+  handleMineralTargetToggle,
+  handleRegionFocusChange,
   modelInfo
 }) => {
   return (
@@ -42,6 +48,7 @@ const ConfigurationTab: React.FC<ConfigurationTabProps> = ({
               <SelectItem value="landsat-9">Landsat 9</SelectItem>
               <SelectItem value="sentinel-2">Sentinel-2</SelectItem>
               <SelectItem value="worldview-3">WorldView-3</SelectItem>
+              <SelectItem value="aster">ASTER</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -82,6 +89,26 @@ const ConfigurationTab: React.FC<ConfigurationTabProps> = ({
         </div>
         
         <div>
+          <label className="text-sm font-medium">Region Focus</label>
+          <Select 
+            value={analysisOptions.regionFocus || "global"}
+            onValueChange={(value) => handleRegionFocusChange && handleRegionFocusChange(value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select region focus" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="global">Global</SelectItem>
+              <SelectItem value="africa">Africa</SelectItem>
+              <SelectItem value="southern-africa">Southern Africa</SelectItem>
+              <SelectItem value="west-africa">West Africa</SelectItem>
+              <SelectItem value="east-africa">East Africa</SelectItem>
+              <SelectItem value="central-africa">Central Africa</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
           <label className="text-sm font-medium">Spectral Bands</label>
           <div className="flex flex-wrap gap-2 mt-2">
             {["visible", "near-ir", "short-ir", "thermal-ir", "red-edge"].map(band => (
@@ -92,6 +119,22 @@ const ConfigurationTab: React.FC<ConfigurationTabProps> = ({
                 onClick={() => handleSpectralBandToggle(band)}
               >
                 {band}
+              </Badge>
+            ))}
+          </div>
+        </div>
+        
+        <div>
+          <label className="text-sm font-medium">Target Mineral Deposits</label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {["gold", "copper", "cobalt", "diamond", "iron", "platinum", "lithium"].map(mineral => (
+              <Badge 
+                key={mineral}
+                variant={analysisOptions.targetMinerals?.includes(mineral) ? "default" : "outline"}
+                className={`cursor-pointer ${analysisOptions.targetMinerals?.includes(mineral) ? 'bg-amber-600 hover:bg-amber-700' : ''}`}
+                onClick={() => handleMineralTargetToggle && handleMineralTargetToggle(mineral)}
+              >
+                {mineral}
               </Badge>
             ))}
           </div>
