@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { GeoAnalysisResult, ShapefileValidationResult } from '@/types/datasets';
-import { validateGeoJSON } from '@/utils/gisOperations';
+import { validateGeoJSON } from '@/utils/gis';
 import ProcessorTabs from './shapefile-processor/ProcessorTabs';
 import { validateShapefiles } from './shapefile-processor/utils';
 import AnalysisHistory from './shapefile-processor/AnalysisHistory';
