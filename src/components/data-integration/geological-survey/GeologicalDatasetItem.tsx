@@ -29,6 +29,12 @@ export const GeologicalDatasetItem: React.FC<GeologicalDatasetItemProps> = ({
   hasActiveDownload,
   onDownload,
 }) => {
+  const handleDownload = (e: React.MouseEvent) => {
+    // Stop propagation to prevent the parent click handler from firing
+    e.stopPropagation();
+    onDownload(dataset.id, dataset.name);
+  };
+
   return (
     <div className="p-4 flex items-center justify-between">
       <div>
@@ -51,7 +57,7 @@ export const GeologicalDatasetItem: React.FC<GeologicalDatasetItemProps> = ({
           <Button 
             size="sm" 
             variant="outline"
-            onClick={() => onDownload(dataset.id, dataset.name)}
+            onClick={handleDownload}
             disabled={!connected || hasActiveDownload}
           >
             <Download className="h-4 w-4 mr-2" />

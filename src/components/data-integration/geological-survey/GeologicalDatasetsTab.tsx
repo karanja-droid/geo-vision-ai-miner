@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { GeologicalDatasetItem, GeologicalDataset } from './GeologicalDatasetItem';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { FileJson, Filter } from "lucide-react";
+import { GeologicalDatasetDetailView } from './GeologicalDatasetDetailView';
 
 interface GeologicalDatasetsTabProps {
   availableDatasets: GeologicalDataset[];
@@ -20,6 +21,7 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
   onDownload,
 }) => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedDataset, setSelectedDataset] = useState<GeologicalDataset | null>(null);
 
   // Extract unique dataset types
   const datasetTypes = useMemo(() => {
@@ -35,6 +37,16 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
     if (!selectedType) return availableDatasets;
     return availableDatasets.filter(dataset => dataset.type === selectedType);
   }, [availableDatasets, selectedType]);
+
+  // Handle dataset selection
+  const handleDatasetSelect = (dataset: GeologicalDataset) => {
+    setSelectedDataset(dataset);
+  };
+
+  // Handle closing the detail view
+  const handleCloseDetailView = () => {
+    setSelectedDataset(null);
+  };
 
   return (
     <div className="space-y-4">
@@ -64,15 +76,24 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
       <div className="border rounded-md divide-y">
         {filteredDatasets.length > 0 ? (
           filteredDatasets.map((dataset) => (
-            <GeologicalDatasetItem
-              key={dataset.id}
-              dataset={dataset}
-              isDownloading={downloadingDataset === dataset.id}
-              downloadProgress={downloadProgress}
-              connected={connected}
-              hasActiveDownload={!!downloadingDataset}
-              onDownload={onDownload}
-            />
+            <div 
+              key={dataset.id} 
+              className="cursor-pointer hover:bg-muted/50 transition-colors"
+              onClick={() => handleDatasetSelect(dataset)}
+            >
+              <GeologicalDatasetItem
+                dataset={dataset}
+                isDownloading={downloadingDataset === dataset.id}
+                downloadProgress={downloadProgress}
+                connected={connected}
+                hasActiveDownload={!!downloadingDataset}
+                onDownload={(id, name) => {
+                  // Prevent the click event from triggering dataset selection
+                  // when clicking the download button
+                  onDownload(id, name);
+                }}
+              />
+            </div>
           ))
         ) : (
           <div className="p-6 text-center text-muted-foreground">
@@ -90,6 +111,18 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
           <p>Connect to the data source to access these datasets</p>
         )}
       </div>
+
+      {/* Dataset Detail View */}
+      <GeologicalDatasetDetailView 
+        dataset={selectedDataset}
+        isOpen={!!selectedDataset}
+        onClose={handleCloseDetailView}
+        isDownloading={!!downloadingDataset && !!selectedDataset && downloadingDataset === selectedDataset.id}
+        downloadProgress={downloadProgress}
+        connected={connected}
+        hasActiveDownload={!!downloadingDataset}
+        onDownload={onDownload}
+      />
     </div>
   );
 };
