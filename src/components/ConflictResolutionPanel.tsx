@@ -14,7 +14,7 @@ const initialConflicts: Conflict[] = [
     type: 'claim-overlap',
     severity: 'high',
     description: 'Mining license claim overlap between Pacific Mining Corp and Sierra Explorations',
-    partiesInvolved: ['Mining Company', 'Government Agency'],
+    partiesInvolved: ['Mining Company', 'Mining Company'],
     status: 'reviewing',
     resolutionSuggestions: [
       'Adjust boundary of claim A by 2.5km eastward',
@@ -29,7 +29,7 @@ const initialConflicts: Conflict[] = [
     type: 'regulatory',
     severity: 'medium',
     description: 'Water usage permit requirement conflict with existing drilling plan',
-    partiesInvolved: ['Mining Company', 'Environmental Regulator', 'Government Agency'],
+    partiesInvolved: ['Mining Company', 'Environmental Regulator', 'Environmental Regulator'],
     status: 'resolving',
     resolutionSuggestions: [
       'Reduce water consumption by implementing closed-loop system',
