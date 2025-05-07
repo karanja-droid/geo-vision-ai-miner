@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import MainNavigation from './MainNavigation';
 import ConnectionStatusIndicator from './data-integration/ConnectionStatusIndicator';
 import { useConnectivity } from '@/contexts/ConnectivityContext';
+import { SyncStatus } from './connectivity/SyncStatus';
 
 const Header: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -27,7 +28,9 @@ const Header: React.FC = () => {
           <MainNavigation />
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-3">
+          <SyncStatus />
+          <div className="w-px h-6 bg-gray-200 mx-1"></div>
           <ConnectionStatusIndicator />
           
           {isAuthenticated && (

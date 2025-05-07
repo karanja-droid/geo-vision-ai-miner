@@ -12,6 +12,7 @@ import { GeologicalSettingsTab } from './geological-survey/GeologicalSettingsTab
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 import { cacheDataset, removeCachedDataset } from '@/services/DatasetCacheService';
 import { GeologicalDataset } from './geological-survey/GeologicalDatasetItem';
+import { DatasetCacheQueue } from '@/services/DatasetCacheQueue';
 
 interface GeologicalSurveyDetailProps {
   onBack: () => void;
@@ -19,7 +20,7 @@ interface GeologicalSurveyDetailProps {
 
 const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack }) => {
   const { toast } = useToast();
-  const { isOnline, addToCache, removeFromCache } = useConnectivity();
+  const { isOnline, addToCache, removeFromCache, registerOfflineAction } = useConnectivity();
   const [connecting, setConnecting] = useState(false);
   const [connectionProgress, setConnectionProgress] = useState(0);
   const [connected, setConnected] = useState(false);
@@ -62,6 +63,19 @@ const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack 
     
     // Find the dataset from our available datasets
     const datasetToCache = availableDatasets.find(d => d.id === datasetId);
+    
+    // Create an offline action for this download
+    const actionId = DatasetCacheQueue.createActionId();
+    registerOfflineAction({
+      id: actionId,
+      type: 'download',
+      datasetId,
+      timestamp: Date.now(),
+      payload: {
+        name: datasetName,
+        type: 'geological'
+      }
+    });
     
     // Simulate download progress
     const interval = setInterval(() => {
