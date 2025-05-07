@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
-import { Layers, Download, Map, Database, ArrowLeft } from "lucide-react";
+import { Layers, ArrowLeft } from "lucide-react";
+import { GeologicalOverviewTab } from './geological-survey/GeologicalOverviewTab';
+import { GeologicalDatasetsTab } from './geological-survey/GeologicalDatasetsTab';
+import { GeologicalSettingsTab } from './geological-survey/GeologicalSettingsTab';
 
 interface GeologicalSurveyDetailProps {
   onBack: () => void;
@@ -140,143 +142,26 @@ const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack 
           </TabsList>
           
           <TabsContent value="overview">
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Data Source</h3>
-                  <p className="text-sm text-muted-foreground">Geological Survey Department</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Format</h3>
-                  <p className="text-sm text-muted-foreground">Shapefile, GeoJSON, GeoTIFF</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Size</h3>
-                  <p className="text-sm text-muted-foreground">1.8 GB Total</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Last Updated</h3>
-                  <p className="text-sm text-muted-foreground">March 22, 2024</p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium mb-1">Description</h3>
-                <p className="text-sm text-muted-foreground">
-                  This comprehensive dataset provides geological mapping information including rock types, 
-                  geological formations, fault lines, and stratigraphic data essential for mineral 
-                  exploration and geological analysis. The data is provided by the Geological Survey 
-                  Department and is updated quarterly.
-                </p>
-              </div>
-              
-              {connecting ? (
-                <div className="space-y-2 pt-4">
-                  <Progress value={connectionProgress} />
-                  <p className="text-center text-sm text-muted-foreground">
-                    Connecting to Geological Survey data... {connectionProgress}%
-                  </p>
-                </div>
-              ) : connected ? (
-                <div className="flex justify-between items-center pt-4">
-                  <p className="text-sm text-green-600 font-medium">
-                    Connected Successfully
-                  </p>
-                  <div className="flex gap-2">
-                    <Button size="sm">
-                      <Database className="h-4 w-4 mr-2" />
-                      Manage Data
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Map className="h-4 w-4 mr-2" />
-                      View on Map
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="pt-4">
-                  <Button onClick={handleConnect}>
-                    Connect to Geological Survey Data
-                  </Button>
-                </div>
-              )}
-            </div>
+            <GeologicalOverviewTab
+              connecting={connecting}
+              connectionProgress={connectionProgress}
+              connected={connected}
+              onConnect={handleConnect}
+            />
           </TabsContent>
           
           <TabsContent value="datasets">
-            <div className="space-y-4">
-              <div className="border rounded-md divide-y">
-                {availableDatasets.map((dataset) => (
-                  <div key={dataset.id} className="p-4 flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">{dataset.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {dataset.type} • {dataset.size}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-xs">
-                        <span className="font-medium">Coverage: </span>
-                        {dataset.coverage}
-                      </div>
-                      {downloadingDataset === dataset.id ? (
-                        <div className="w-24">
-                          <Progress value={downloadProgress} className="h-1 w-full" />
-                          <p className="text-xs text-center mt-1">{downloadProgress}%</p>
-                        </div>
-                      ) : (
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleDownload(dataset.id, dataset.name)}
-                          disabled={!connected || !!downloadingDataset}
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="text-center text-sm text-muted-foreground">
-                {connected ? (
-                  <p>All datasets are available for download and analysis</p>
-                ) : (
-                  <p>Connect to the data source to access these datasets</p>
-                )}
-              </div>
-            </div>
+            <GeologicalDatasetsTab
+              availableDatasets={availableDatasets}
+              connected={connected}
+              downloadingDataset={downloadingDataset}
+              downloadProgress={downloadProgress}
+              onDownload={handleDownload}
+            />
           </TabsContent>
           
           <TabsContent value="settings">
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium mb-1">API Endpoint</h3>
-                  <p className="text-sm text-muted-foreground">https://api.geological-survey.org/v1/data</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Authentication</h3>
-                  <p className="text-sm text-muted-foreground">OAuth 2.0</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Rate Limit</h3>
-                  <p className="text-sm text-muted-foreground">100 requests / minute</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Data Refresh</h3>
-                  <p className="text-sm text-muted-foreground">Quarterly</p>
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <Button variant="outline">
-                  Advanced Settings
-                </Button>
-              </div>
-            </div>
+            <GeologicalSettingsTab />
           </TabsContent>
         </Tabs>
       </CardContent>
