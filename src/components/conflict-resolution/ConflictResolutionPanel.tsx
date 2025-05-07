@@ -1,64 +1,40 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Conflict } from '@/types';
-import { initialConflicts } from './utils';
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useIsMobile } from '@/hooks/use-mobile';
+import AISuggestionsTab from './AISuggestionsTab';
 import ActiveConflictsTab from './ActiveConflictsTab';
 import ResolvedConflictsTab from './ResolvedConflictsTab';
-import AISuggestionsTab from './AISuggestionsTab';
 
-interface ConflictResolutionPanelProps {
-  className?: string;
-}
-
-const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = ({ className }) => {
-  const [conflicts, setConflicts] = useState<Conflict[]>(initialConflicts);
-  const [selectedConflict, setSelectedConflict] = useState<string | null>(conflicts[0]?.id || null);
-
-  const activeConflicts = conflicts.filter(c => c.status !== 'resolved');
+const ConflictResolutionPanel: React.FC = () => {
+  const isMobile = useIsMobile();
 
   return (
-    <Card className={`h-full ${className}`}>
-      <CardHeader>
-        <CardTitle>Conflict Resolution</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="active">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="active">Active ({activeConflicts.length})</TabsTrigger>
-            <TabsTrigger value="resolved">Resolved</TabsTrigger>
-            <TabsTrigger value="ai-suggestions">AI Suggestions</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="active" className="mt-4">
-            <ActiveConflictsTab 
-              conflicts={activeConflicts} 
-              selectedConflict={selectedConflict} 
-              setSelectedConflict={setSelectedConflict} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="resolved" className="mt-4">
-            <ResolvedConflictsTab />
-          </TabsContent>
-          
-          <TabsContent value="ai-suggestions" className="mt-4">
-            <AISuggestionsTab />
-          </TabsContent>
-        </Tabs>
-        
-        <div className="mt-4 pt-3 border-t flex justify-between items-center">
-          <span className="text-xs text-muted-foreground">
-            {activeConflicts.length} active conflicts requiring attention
-          </span>
-          <Button size="sm">
-            Report Conflict
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="bg-card rounded-lg shadow-md border">
+      <h2 className="text-lg font-semibold p-4 border-b">Conflict Resolution</h2>
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className={`grid w-full ${isMobile ? 'grid-cols-3' : 'grid-cols-3'} mb-2`}>
+          <TabsTrigger value="active" className={isMobile ? 'text-xs py-1 px-2' : ''}>
+            Active
+          </TabsTrigger>
+          <TabsTrigger value="resolved" className={isMobile ? 'text-xs py-1 px-2' : ''}>
+            Resolved
+          </TabsTrigger>
+          <TabsTrigger value="ai" className={isMobile ? 'text-xs py-1 px-2' : ''}>
+            AI Suggestions
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="active" className="p-4">
+          <ActiveConflictsTab />
+        </TabsContent>
+        <TabsContent value="resolved" className="p-4">
+          <ResolvedConflictsTab />
+        </TabsContent>
+        <TabsContent value="ai" className="p-4">
+          <AISuggestionsTab />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

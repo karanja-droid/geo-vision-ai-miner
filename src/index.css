@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -56,7 +57,28 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Mobile touch improvements */
+@layer utilities {
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+    tap-highlight-color: transparent;
+  }
+  
+  .touch-callout-none {
+    -webkit-touch-callout: none;
+    touch-callout: none;
+  }
+}
+
+/* Make buttons and interactive elements touch-friendly */
+button, a, [role="button"] {
+  @apply tap-highlight-none touch-callout-none;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 /* Dataset visualization styles */
@@ -167,4 +189,25 @@
 
 .border-geo-blue {
   border-color: hsl(214, 100%, 40%);
+}
+
+/* Mobile responsive utilities */
+@media (max-width: 640px) {
+  .mobile-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .recharts-container {
+    min-width: 280px;
+    overflow-x: auto;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .mobile-text-xs {
+    font-size: 0.75rem;
+  }
 }

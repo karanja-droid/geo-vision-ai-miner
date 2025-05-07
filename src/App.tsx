@@ -27,7 +27,7 @@ function App() {
   return (
     <div className="App flex flex-col min-h-screen">
       <Header />
-      <div className="flex-1">
+      <div className="flex-1 px-2 sm:px-4">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
