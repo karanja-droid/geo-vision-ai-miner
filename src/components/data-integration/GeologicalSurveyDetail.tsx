@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,9 @@ import { Layers, ArrowLeft } from "lucide-react";
 import { GeologicalOverviewTab } from './geological-survey/GeologicalOverviewTab';
 import { GeologicalDatasetsTab } from './geological-survey/GeologicalDatasetsTab';
 import { GeologicalSettingsTab } from './geological-survey/GeologicalSettingsTab';
+import { useConnectivity } from '@/contexts/ConnectivityContext';
+import { cacheDataset, removeCachedDataset } from '@/services/DatasetCacheService';
+import { GeologicalDataset } from './geological-survey/GeologicalDatasetItem';
 
 interface GeologicalSurveyDetailProps {
   onBack: () => void;
@@ -16,6 +19,7 @@ interface GeologicalSurveyDetailProps {
 
 const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack }) => {
   const { toast } = useToast();
+  const { isOnline, addToCache, removeFromCache } = useConnectivity();
   const [connecting, setConnecting] = useState(false);
   const [connectionProgress, setConnectionProgress] = useState(0);
   const [connected, setConnected] = useState(false);
@@ -44,7 +48,7 @@ const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack 
     }, 200);
   };
   
-  const handleDownload = (datasetId: string, datasetName: string) => {
+  const handleDownload = async (datasetId: string, datasetName: string) => {
     // Prevent multiple simultaneous downloads
     if (downloadingDataset) return;
     
@@ -56,18 +60,37 @@ const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack 
       description: `Downloading ${datasetName}...`,
     });
     
+    // Find the dataset from our available datasets
+    const datasetToCache = availableDatasets.find(d => d.id === datasetId);
+    
     // Simulate download progress
     const interval = setInterval(() => {
       setDownloadProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           
-          setTimeout(() => {
+          setTimeout(async () => {
+            // Cache the dataset when download completes
+            if (datasetToCache) {
+              try {
+                await cacheDataset(datasetToCache, 'geological');
+                await addToCache(datasetId);
+                
+                toast({
+                  title: "Download complete",
+                  description: `${datasetName} has been downloaded and cached for offline use.`,
+                });
+              } catch (error) {
+                console.error("Failed to cache dataset:", error);
+                toast({
+                  title: "Caching failed",
+                  description: "Could not save dataset for offline use.",
+                  variant: "destructive"
+                });
+              }
+            }
+            
             setDownloadingDataset(null);
-            toast({
-              title: "Download complete",
-              description: `${datasetName} has been downloaded successfully.`,
-            });
           }, 500);
           return 100;
         }

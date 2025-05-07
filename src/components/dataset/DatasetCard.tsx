@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Database, Download, Eye, Trash2, MapPin, FileText } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
+import { useConnectivity } from '@/contexts/ConnectivityContext';
 
 interface DatasetCardProps {
   dataset: Dataset;
@@ -23,6 +24,8 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
   onViewDocuments
 }) => {
   const { toast } = useToast();
+  const { isCached, isOnline } = useConnectivity();
+  const datasetIsCached = isCached(dataset.id);
   
   const handleDownload = () => {
     // Call the passed download handler
@@ -50,6 +53,11 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
               <Badge variant="secondary" className="flex items-center">
                 <MapPin className="h-3 w-3 mr-1" /> {dataset.country}
               </Badge>
+              {datasetIsCached && (
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  Available Offline
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -89,17 +97,25 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
           variant="outline" 
           size="sm" 
           onClick={() => onViewDataset(dataset)}
+          disabled={!isOnline && !datasetIsCached}
         >
           <Eye className="h-4 w-4 mr-1" /> View
         </Button>
         <div className="space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleDownload}
-          >
-            <Download className="h-4 w-4 mr-1" /> Download
-          </Button>
+          {isOnline && (
+            <Button 
+              variant={datasetIsCached ? "secondary" : "outline"} 
+              size="sm" 
+              onClick={handleDownload}
+            >
+              {datasetIsCached ? (
+                <Database className="h-4 w-4 mr-1" />
+              ) : (
+                <Download className="h-4 w-4 mr-1" />
+              )}
+              {datasetIsCached ? 'Cached' : 'Download'}
+            </Button>
+          )}
           <Button 
             variant="destructive" 
             size="sm" 

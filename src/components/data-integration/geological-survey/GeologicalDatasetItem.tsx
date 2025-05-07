@@ -2,7 +2,8 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Download, WifiOff } from "lucide-react";
+import { Download, WifiOff, Database } from "lucide-react";
+import { useConnectivity } from '@/contexts/ConnectivityContext';
 
 export interface GeologicalDataset {
   id: string;
@@ -29,6 +30,9 @@ export const GeologicalDatasetItem: React.FC<GeologicalDatasetItemProps> = ({
   hasActiveDownload,
   onDownload,
 }) => {
+  const { isCached } = useConnectivity();
+  const datasetIsCached = isCached(dataset.id);
+
   const handleDownload = (e: React.MouseEvent) => {
     // Stop propagation to prevent the parent click handler from firing
     e.stopPropagation();
@@ -54,24 +58,45 @@ export const GeologicalDatasetItem: React.FC<GeologicalDatasetItemProps> = ({
             <p className="text-xs text-center mt-1">{downloadProgress}%</p>
           </div>
         ) : !connected ? (
-          <Button 
-            size="sm" 
-            variant="outline"
-            disabled={true}
-            className="text-muted-foreground"
-          >
-            <WifiOff className="h-4 w-4 mr-2" />
-            Offline
-          </Button>
+          datasetIsCached ? (
+            <Button 
+              size="sm" 
+              variant="secondary"
+              className="text-green-600"
+              disabled={false}
+            >
+              <Database className="h-4 w-4 mr-2" />
+              Available Offline
+            </Button>
+          ) : (
+            <Button 
+              size="sm" 
+              variant="outline"
+              disabled={true}
+              className="text-muted-foreground"
+            >
+              <WifiOff className="h-4 w-4 mr-2" />
+              Offline
+            </Button>
+          )
         ) : (
           <Button 
             size="sm" 
-            variant="outline"
+            variant={datasetIsCached ? "secondary" : "outline"}
             onClick={handleDownload}
             disabled={!connected || hasActiveDownload}
           >
-            <Download className="h-4 w-4 mr-2" />
-            Download
+            {datasetIsCached ? (
+              <>
+                <Database className="h-4 w-4 mr-2" />
+                Cached
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </>
+            )}
           </Button>
         )}
       </div>

@@ -4,10 +4,12 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { Download, FileText, MapPin } from "lucide-react";
+import { Download, FileText, MapPin, Database } from "lucide-react";
 import { Dataset } from '@/data/datasetLibraryData';
 import { DatasetVisualization } from './DatasetVisualization';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useConnectivity } from '@/contexts/ConnectivityContext';
+import { cacheDataset } from '@/services/DatasetCacheService';
 
 interface DatasetDetailsDialogProps {
   dataset: Dataset | null;
@@ -21,11 +23,23 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
   onOpenChange
 }) => {
   const { toast } = useToast();
+  const { isOnline, addToCache, isCached } = useConnectivity();
   
   if (!dataset) return null;
   
-  const handleDownloadDataset = () => {
+  const datasetIsCached = isCached(dataset.id);
+  
+  const handleDownloadDataset = async () => {
     try {
+      // If the dataset is already cached, just tell the user
+      if (datasetIsCached) {
+        toast({
+          title: "Dataset Already Cached",
+          description: `${dataset.name} is already available offline.`,
+        });
+        return;
+      }
+      
       // Create text content for the dataset
       const textContent = `
         DATASET: ${dataset.name}
@@ -49,6 +63,10 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
         This is a simulated dataset export for demonstration purposes.
       `;
       
+      // Cache the dataset
+      await cacheDataset(dataset, 'library');
+      await addToCache(dataset.id);
+      
       // Use text/plain MIME type with matching .txt extension
       const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
@@ -63,8 +81,8 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
       URL.revokeObjectURL(url);
       
       toast({
-        title: "Download started",
-        description: `Downloading ${dataset.name} as a text file`,
+        title: "Dataset cached for offline use",
+        description: `${dataset.name} can now be accessed when offline`,
       });
     } catch (error) {
       console.error("Failed to download dataset:", error);
@@ -89,6 +107,14 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
               <span>{dataset.format}</span>
               <span className="mx-2">•</span>
               <span>{dataset.size}</span>
+              {datasetIsCached && (
+                <>
+                  <span className="mx-2">•</span>
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    Available Offline
+                  </Badge>
+                </>
+              )}
             </div>
           </DialogDescription>
         </DialogHeader>
@@ -150,9 +176,22 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Close
             </Button>
-            <Button variant="default" onClick={handleDownloadDataset}>
-              <Download className="h-4 w-4 mr-1" />
-              Download Dataset
+            <Button 
+              variant={datasetIsCached ? "secondary" : "default"}
+              onClick={handleDownloadDataset}
+              disabled={!isOnline && !datasetIsCached}
+            >
+              {datasetIsCached ? (
+                <>
+                  <Database className="h-4 w-4 mr-1" />
+                  Already Cached
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-1" />
+                  Download & Cache
+                </>
+              )}
             </Button>
           </div>
         </DialogFooter>

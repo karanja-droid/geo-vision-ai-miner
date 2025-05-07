@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +11,8 @@ import {
   ALL_DATASETS, 
   Dataset 
 } from '@/data/datasetLibraryData';
+import { useConnectivity } from '@/contexts/ConnectivityContext';
+import { cacheDataset, getAllCachedDatasets } from '@/services/DatasetCacheService';
 
 export const DatasetLibrary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -19,6 +21,38 @@ export const DatasetLibrary: React.FC = () => {
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [showDocuments, setShowDocuments] = useState<boolean>(false);
   const { toast } = useToast();
+  const { isOnline, addToCache, cachedDatasets } = useConnectivity();
+  
+  // Load cached datasets when offline
+  useEffect(() => {
+    const loadCachedDatasetsIfOffline = async () => {
+      if (!isOnline && cachedDatasets.length > 0) {
+        try {
+          const cached = await getAllCachedDatasets<Dataset>('library');
+          if (cached && cached.length > 0) {
+            const allDatasets = [...datasets];
+            
+            // Mark cached datasets
+            cached.forEach(cachedDataset => {
+              const index = allDatasets.findIndex(d => d.id === cachedDataset.id);
+              if (index !== -1) {
+                // Dataset already exists, no need to add it
+              } else {
+                // This is a dataset that's cached but not in our current list
+                allDatasets.push(cachedDataset);
+              }
+            });
+            
+            setDatasets(allDatasets);
+          }
+        } catch (error) {
+          console.error("Failed to load cached datasets:", error);
+        }
+      }
+    };
+    
+    loadCachedDatasetsIfOffline();
+  }, [isOnline, cachedDatasets]);
   
   const filteredDatasets = datasets.filter(dataset => {
     // First filter by tab selection
@@ -55,12 +89,28 @@ export const DatasetLibrary: React.FC = () => {
     });
   };
   
-  const handleDownloadDataset = (id: string) => {
+  const handleDownloadDataset = async (id: string) => {
     const dataset = datasets.find(d => d.id === id);
-    toast({
-      title: "Download Started",
-      description: `Downloading ${dataset?.name} (${dataset?.size})`,
-    });
+    if (!dataset) return;
+    
+    try {
+      // Cache the dataset in IndexedDB
+      await cacheDataset(dataset, 'library');
+      // Update the connectivity context
+      await addToCache(id);
+      
+      toast({
+        title: "Download Complete",
+        description: `${dataset.name} (${dataset.size}) has been cached for offline use.`,
+      });
+    } catch (error) {
+      console.error("Failed to cache dataset:", error);
+      toast({
+        title: "Download Failed",
+        description: "Could not cache dataset for offline use.",
+        variant: "destructive"
+      });
+    }
   };
   
   const handleDeleteDataset = (id: string) => {
@@ -83,6 +133,14 @@ export const DatasetLibrary: React.FC = () => {
         onSearchChange={setSearchQuery} 
       />
       
+      {!isOnline && (
+        <Alert className="bg-amber-50 border-amber-200">
+          <AlertDescription className="text-amber-800">
+            You are currently offline. Only cached datasets are available.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-5 mb-4">
           <TabsTrigger value="zambia">Zambia</TabsTrigger>
@@ -96,7 +154,9 @@ export const DatasetLibrary: React.FC = () => {
       {filteredDatasets.length === 0 ? (
         <Alert>
           <AlertDescription>
-            No datasets match your search criteria.
+            {!isOnline 
+              ? "No cached datasets available. Connect to the internet to access more datasets." 
+              : "No datasets match your search criteria."}
           </AlertDescription>
         </Alert>
       ) : (
