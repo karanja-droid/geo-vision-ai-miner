@@ -1,74 +1,40 @@
 
-import { StakeholderOrganization } from './organizations';
-
-export interface DatasetInfo {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-  uploadDate: string;
-  description?: string;
-  source?: string;
-  organization?: StakeholderOrganization;
-  validated?: boolean;
-  contributors?: string[];
-}
-
-export interface Document {
-  id: string;
-  title: string;
-  description?: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  uploadedBy: string;
-  uploadedAt: string;
-  tags?: string[];
-  organization?: StakeholderOrganization;
-  accessRights?: import('./users').UserRole[];
-}
-
-export interface ExportFormat {
-  type: string;
-  mimeType: string;
-  extension: string;
-  description: string;
-}
-
-export interface ExportOptions {
-  includeMetadata: boolean;
-  includeAnalysis: boolean;
-  includeRawData: boolean;
-  format: string;
-  resolution?: 'low' | 'medium' | 'high';
-  compression?: number;
-  template?: string;
-  includeMaps?: boolean;
-  includeCharts?: boolean;
-}
-
-export interface ReportTemplate {
-  id: string;
-  name: string;
-  description: string;
-  previewUrl?: string;
-}
-
 export interface ShapefileValidationResult {
   isValid: boolean;
-  errors?: string[];
-  warnings?: string[];
-  features: number;
-  boundingBox?: [number, number, number, number]; // [minX, minY, maxX, maxY]
-  crs?: string;
+  errors: string[];
+  warnings: string[];
 }
 
 export interface GeoAnalysisResult {
-  type: 'buffer' | 'intersection' | 'union' | 'difference' | 'area' | 'length' | 'custom';
-  result: any;
-  metadata: {
-    executionTime: number;
-    timestamp: string;
-    parameters?: Record<string, any>;
+  id: string;
+  name: string;
+  description: string;
+  timestamp: string;
+  features: {
+    id: string;
+    name: string;
+    type: string;
+    properties: Record<string, any>;
+  }[];
+  summary: {
+    featureCount: number;
+    area?: number;
+    length?: number;
+    elevation?: {
+      min: number;
+      max: number;
+      average: number;
+    };
+  };
+}
+
+export interface ShapefileFeature {
+  id: string;
+  name: string;
+  type: string;
+  properties: Record<string, any>;
+  geometry: {
+    type: string;
+    coordinates: any;
   };
 }

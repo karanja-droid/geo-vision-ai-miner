@@ -1,239 +1,242 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { GeoAnalysisResult, ShapefileValidationResult } from '@/types/datasets';
-import { validateGeoJSON } from '@/utils/gis';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Database, MapPin } from "lucide-react";
 import ProcessorTabs from './shapefile-processor/ProcessorTabs';
-import { validateShapefiles } from './shapefile-processor/utils';
-import AnalysisHistory from './shapefile-processor/AnalysisHistory';
+import { useToast } from "@/components/ui/use-toast";
+import { ShapefileValidationResult, GeoAnalysisResult } from '@/types/datasets';
 
 const ShapefileProcessor: React.FC = () => {
   console.log("Rendering ShapefileProcessor component");
   
-  const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<string>("upload");
   const [processedData, setProcessedData] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState("upload");
   const [validationResult, setValidationResult] = useState<ShapefileValidationResult | null>(null);
-  const [analysisResults, setAnalysisResults] = useState<GeoAnalysisResult[]>([]);
+  const { toast } = useToast();
 
+  // Reset progress when files change
   useEffect(() => {
-    console.log("ShapefileProcessor component mounted or updated");
-    console.log("Current state:", { 
-      filesCount: files.length, 
-      isProcessing, 
-      progress, 
-      activeTab,
-      hasProcessedData: processedData !== null,
-      validationStatus: validationResult?.isValid,
-      analysisResultsCount: analysisResults.length
-    });
-    
-    return () => {
-      console.log("ShapefileProcessor component unmounting");
-    };
-  }, [files, isProcessing, progress, processedData, activeTab, validationResult, analysisResults]);
+    setProgress(0);
+    setValidationResult(null);
+    setProcessedData(null);
+  }, [files]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("handleFileChange triggered");
-    
     if (e.target.files) {
-      const selectedFiles = Array.from(e.target.files);
-      console.log("Selected files:", selectedFiles.map(f => ({name: f.name, size: f.size, type: f.type})));
-      
-      const shapefiles = selectedFiles.filter(file => 
-        file.name.endsWith('.shp') || 
-        file.name.endsWith('.dbf') || 
-        file.name.endsWith('.shx') || 
-        file.name.endsWith('.prj') ||
-        file.name.endsWith('.zip') ||
-        file.name.endsWith('.json') ||
-        file.name.endsWith('.geojson')
-      );
-      
-      console.log("Filtered shapefile components:", shapefiles.map(f => f.name));
-      setFiles(shapefiles);
-      
-      // Testing empty file case
-      if (shapefiles.length === 0) {
-        console.warn("No valid shapefile components found");
-        toast({
-          variant: "destructive",
-          title: "Invalid files",
-          description: "Please select valid shapefile components (.shp, .dbf, .shx, .prj) or compressed formats (.zip, .geojson)"
-        });
-      } else {
-        console.log(`${shapefiles.length} valid shapefile component(s) selected`);
-      }
-      
-      // Reset processed data when new files are selected
-      if (processedData) {
-        console.log("Resetting processed data due to new file selection");
-        setProcessedData(null);
-        setValidationResult(null);
-      }
+      const fileList = Array.from(e.target.files);
+      setFiles(fileList);
+      console.log("Files selected:", fileList.map(f => f.name));
     }
   };
 
-  const processShapefiles = async () => {
-    console.log("processShapefiles called");
-    
+  const handleProcessFiles = async () => {
     if (files.length === 0) {
-      console.warn("No files selected for processing");
       toast({
-        variant: "destructive",
         title: "No files selected",
-        description: "Please select shapefile components to process"
+        description: "Please select files to process",
+        variant: "destructive"
       });
       return;
     }
 
-    setIsProcessing(true);
-    setProgress(0);
-    console.log("Starting processing simulation...");
+    try {
+      setIsProcessing(true);
+      setProgress(0);
 
-    // Simulate processing with progress
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 50) {
-          clearInterval(interval);
-          console.log("Processing phase 1 complete, starting validation");
-          
-          // Validate the shapefiles
-          validateShapefiles(files).then(result => {
-            setValidationResult(result);
-            console.log(`Validation ${result.isValid ? 'succeeded' : 'failed'}`);
-            
-            if (result.isValid) {
-              // Continue processing
-              const secondInterval = setInterval(() => {
-                setProgress(prev => {
-                  if (prev >= 100) {
-                    clearInterval(secondInterval);
-                    setIsProcessing(false);
-                    console.log("Processing complete");
-                    
-                    // Mock processed data - testing edge case with empty data
-                    let mockProcessedData;
-                    
-                    // Test if we're providing a proper GeoJSON object
-                    mockProcessedData = {
-                      type: "FeatureCollection",
-                      features: [
-                        {
-                          type: "Feature",
-                          geometry: {
-                            type: "Polygon",
-                            coordinates: [[[27.5, -12.5], [28.5, -12.5], [28.5, -13.5], [27.5, -13.5], [27.5, -12.5]]]
-                          },
-                          properties: {
-                            name: "Copperbelt Province",
-                            population: 2382895,
-                            mineralDeposits: "Copper, Cobalt",
-                            explorationStatus: "Active"
-                          }
-                        },
-                        {
-                          type: "Feature",
-                          geometry: {
-                            type: "Point",
-                            coordinates: [28.2, -12.8]
-                          },
-                          properties: {
-                            name: "Mining Site A",
-                            minerals: "Copper",
-                            status: "Operational",
-                            output: "450000 tons/year"
-                          }
-                        }
-                      ]
-                    };
-                    
-                    // Validate the mock data with our utility
-                    const validationCheck = validateGeoJSON(mockProcessedData);
-                    console.log("Processed data validation:", validationCheck);
-                    
-                    setProcessedData(mockProcessedData);
-                    setActiveTab("view");
-                    
-                    toast({
-                      title: "Processing complete",
-                      description: "Shapefile data has been successfully processed"
-                    });
-                    
-                    return 100;
-                  }
-                  return prev + 5;
-                });
-              }, 100);
-            } else {
-              // Stop processing due to validation failure
-              setIsProcessing(false);
-              setProgress(0);
-              console.error("Processing stopped due to validation failure");
-              
-              toast({
-                variant: "destructive",
-                title: "Validation failed",
-                description: "Shapefile contains errors and cannot be processed"
-              });
-            }
-          });
-          
-          return 50;
-        }
-        return prev + 5;
+      // Simulate processing steps
+      await simulateProcessing(25, "Validating files");
+      await simulateFileValidation();
+      
+      if (validationResult?.isValid) {
+        await simulateProcessing(75, "Converting shapefile data");
+        await simulateProcessingComplete();
+        setActiveTab("view");
+      } else {
+        setIsProcessing(false);
+      }
+    } catch (err) {
+      console.error("Error processing files:", err);
+      toast({
+        title: "Processing Error",
+        description: "An error occurred while processing files",
+        variant: "destructive"
       });
-    }, 100);
+      setIsProcessing(false);
+    }
   };
 
-  const handleAnalysisComplete = (result: GeoAnalysisResult) => {
-    console.log("Analysis complete:", result);
-    setAnalysisResults(prev => [...prev, result]);
+  const simulateProcessing = async (targetProgress: number, message: string) => {
+    const startProgress = progress;
+    const increment = (targetProgress - startProgress) / 10;
     
-    // In a real implementation, we might update the processed data with the analysis results
-    // For now, we'll just show a toast notification
-    toast({
-      title: `${result.type.charAt(0).toUpperCase() + result.type.slice(1)} Analysis Complete`,
-      description: `Analysis completed in ${result.metadata.executionTime.toFixed(2)}s`
+    for (let i = 0; i < 10; i++) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+      setProgress(prev => Math.min(prev + increment, targetProgress));
+    }
+    
+    console.log(message);
+  };
+  
+  const simulateFileValidation = async () => {
+    // Check file types
+    const hasShapefile = files.some(file => 
+      file.name.endsWith('.shp') || 
+      file.name.endsWith('.geojson') || 
+      file.name.endsWith('.json')
+    );
+    
+    // If no valid shapefile is found, return error
+    if (!hasShapefile) {
+      setValidationResult({
+        isValid: false,
+        errors: ["No valid shapefile or GeoJSON found"],
+        warnings: []
+      });
+      
+      toast({
+        title: "Invalid Files",
+        description: "No valid shapefile or GeoJSON found",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Simulate a valid result
+    setValidationResult({
+      isValid: true,
+      errors: [],
+      warnings: files.length < 2 ? ["Missing associated files may affect rendering"] : []
     });
   };
-
-  const handleTabChange = (value: string) => {
-    console.log(`Tab changed to: ${value}`);
-    setActiveTab(value);
+  
+  const simulateProcessingComplete = async () => {
+    // Generate sample GeoJSON data based on file names
+    const sampleData = generateSampleGeoJSON(files);
+    setProcessedData(sampleData);
+    
+    toast({
+      title: "Processing Complete",
+      description: `Successfully processed ${files.length} files`,
+    });
+    
+    setIsProcessing(false);
+    setProgress(100);
+  };
+  
+  const generateSampleGeoJSON = (files: File[]) => {
+    // Base GeoJSON structure
+    const geojson = {
+      type: "FeatureCollection",
+      features: [] as any[]
+    };
+    
+    // Generate random features based on file names
+    const featureCount = Math.floor(Math.random() * 6) + 5; // 5-10 features
+    
+    for (let i = 0; i < featureCount; i++) {
+      // Determine feature type based on index
+      let geometryType;
+      let geometryCoords;
+      
+      if (i % 3 === 0) {
+        // Point feature
+        geometryType = "Point";
+        geometryCoords = [
+          -100 + Math.random() * 50,
+          30 + Math.random() * 20
+        ];
+      } else if (i % 3 === 1) {
+        // LineString feature
+        geometryType = "LineString";
+        const points = [];
+        const pointCount = Math.floor(Math.random() * 4) + 3; // 3-6 points
+        for (let j = 0; j < pointCount; j++) {
+          points.push([
+            -100 + Math.random() * 50,
+            30 + Math.random() * 20
+          ]);
+        }
+        geometryCoords = points;
+      } else {
+        // Polygon feature
+        geometryType = "Polygon";
+        const points = [];
+        const pointCount = Math.floor(Math.random() * 4) + 5; // 5-8 points
+        const centerX = -100 + Math.random() * 50;
+        const centerY = 30 + Math.random() * 20;
+        const radius = 1 + Math.random() * 3;
+        
+        for (let j = 0; j < pointCount; j++) {
+          const angle = (j / pointCount) * Math.PI * 2;
+          points.push([
+            centerX + Math.cos(angle) * radius,
+            centerY + Math.sin(angle) * radius
+          ]);
+        }
+        // Close the polygon
+        points.push([...points[0]]);
+        geometryCoords = [points];
+      }
+      
+      // Create feature
+      const feature = {
+        type: "Feature",
+        properties: {
+          name: `Feature ${i + 1}`,
+          description: `Generated from ${files[i % files.length].name}`,
+          elevation: Math.floor(Math.random() * 1000),
+          rockType: ["Igneous", "Sedimentary", "Metamorphic", "Volcanic"][i % 4],
+          mineral: ["Gold", "Copper", "Iron", "Coal", "None"][i % 5],
+        },
+        geometry: {
+          type: geometryType,
+          coordinates: geometryCoords
+        }
+      };
+      
+      geojson.features.push(feature);
+    }
+    
+    return geojson;
+  };
+  
+  const handleAnalysisComplete = (result: GeoAnalysisResult) => {
+    console.log("Analysis complete:", result);
+    toast({
+      title: "Analysis Complete",
+      description: `Found ${result.features.length} features matching criteria`,
+    });
   };
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>GIS Shapefile Processor</CardTitle>
-        <CardDescription>
-          Upload and process geological shapefiles for analysis and reporting
-        </CardDescription>
+      <CardHeader className="pb-3">
+        <div className="flex items-start gap-3">
+          <Database className="h-5 w-5 mt-1 text-primary" />
+          <div>
+            <CardTitle>GIS Shapefile Processor</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Upload, analyze and process geological shapefile data
+            </p>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <ProcessorTabs
           activeTab={activeTab}
-          onTabChange={handleTabChange}
+          onTabChange={setActiveTab}
           files={files}
           onFileChange={handleFileChange}
-          onProcessFiles={processShapefiles}
+          onProcessFiles={handleProcessFiles}
           isProcessing={isProcessing}
           progress={progress}
           processedData={processedData}
           validationResult={validationResult}
           onAnalysisComplete={handleAnalysisComplete}
         />
-        
-        {activeTab === "analyze" && processedData && (
-          <div className="mt-6">
-            <AnalysisHistory analysisResults={analysisResults} />
-          </div>
-        )}
       </CardContent>
     </Card>
   );

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ShapefileViewer from '../ShapefileViewer';
+import ShapefileVisualizer3D from '../ShapefileVisualizer3D';
 import ShapefileAnalysis from '../ShapefileAnalysis';
 import ShapefileReportGenerator from '../ShapefileReportGenerator';
 import FileUpload from './FileUpload';
@@ -42,9 +43,10 @@ const ProcessorTabs: React.FC<ProcessorTabsProps> = ({
   
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="upload">Upload</TabsTrigger>
         <TabsTrigger value="view" disabled={!processedData}>View</TabsTrigger>
+        <TabsTrigger value="visualize" disabled={!processedData}>3D Visual</TabsTrigger>
         <TabsTrigger value="analyze" disabled={!processedData}>Analyze</TabsTrigger>
         <TabsTrigger value="report" disabled={!processedData}>Reports</TabsTrigger>
       </TabsList>
@@ -68,6 +70,10 @@ const ProcessorTabs: React.FC<ProcessorTabsProps> = ({
       
       <TabsContent value="view">
         {processedData && <ShapefileViewer data={processedData} />}
+      </TabsContent>
+      
+      <TabsContent value="visualize">
+        {processedData && <ShapefileVisualizer3D data={processedData} />}
       </TabsContent>
       
       <TabsContent value="analyze">
