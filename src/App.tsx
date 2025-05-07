@@ -25,9 +25,9 @@ import GisShapefileManagement from './pages/GisShapefileManagement';
 
 function App() {
   return (
-    <div className="App flex flex-col min-h-screen">
+    <div className="App flex flex-col min-h-screen max-w-[100vw] overflow-x-hidden">
       <Header />
-      <div className="flex-1 px-2 sm:px-4">
+      <div className="flex-1 px-2 sm:px-4 w-full">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />

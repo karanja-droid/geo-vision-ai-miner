@@ -54,10 +54,30 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
+  
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
   body {
     @apply bg-background text-foreground;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overscroll-behavior: none;
+  }
+  
+  #root {
+    height: 100%;
+    width: 100%;
+    position: relative;
   }
 }
 
@@ -201,6 +221,7 @@ button, a, [role="button"] {
   .recharts-container {
     min-width: 280px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .mobile-text-sm {
@@ -209,5 +230,21 @@ button, a, [role="button"] {
   
   .mobile-text-xs {
     font-size: 0.75rem;
+  }
+  
+  /* Improved chart responsiveness */
+  .chart-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better spacing for mobile */
+  .p-mobile {
+    padding: 0.5rem;
+  }
+  
+  .m-mobile {
+    margin: 0.5rem;
   }
 }
