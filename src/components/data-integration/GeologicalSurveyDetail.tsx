@@ -17,6 +17,8 @@ const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack 
   const [connecting, setConnecting] = useState(false);
   const [connectionProgress, setConnectionProgress] = useState(0);
   const [connected, setConnected] = useState(false);
+  const [downloadingDataset, setDownloadingDataset] = useState<string | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState(0);
   
   const handleConnect = () => {
     setConnecting(true);
@@ -38,6 +40,38 @@ const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack 
         return prev + 5;
       });
     }, 200);
+  };
+  
+  const handleDownload = (datasetId: string, datasetName: string) => {
+    // Prevent multiple simultaneous downloads
+    if (downloadingDataset) return;
+    
+    setDownloadingDataset(datasetId);
+    setDownloadProgress(0);
+    
+    toast({
+      title: "Download started",
+      description: `Downloading ${datasetName}...`,
+    });
+    
+    // Simulate download progress
+    const interval = setInterval(() => {
+      setDownloadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          
+          setTimeout(() => {
+            setDownloadingDataset(null);
+            toast({
+              title: "Download complete",
+              description: `${datasetName} has been downloaded successfully.`,
+            });
+          }, 500);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 300);
   };
   
   const availableDatasets = [
@@ -185,10 +219,22 @@ const GeologicalSurveyDetail: React.FC<GeologicalSurveyDetailProps> = ({ onBack 
                         <span className="font-medium">Coverage: </span>
                         {dataset.coverage}
                       </div>
-                      <Button size="sm" variant="outline">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
+                      {downloadingDataset === dataset.id ? (
+                        <div className="w-24">
+                          <Progress value={downloadProgress} className="h-1 w-full" />
+                          <p className="text-xs text-center mt-1">{downloadProgress}%</p>
+                        </div>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleDownload(dataset.id, dataset.name)}
+                          disabled={!connected || !!downloadingDataset}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
