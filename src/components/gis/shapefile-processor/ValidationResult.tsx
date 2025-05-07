@@ -19,8 +19,8 @@ const ValidationResult: React.FC<ValidationResultProps> = ({ validationResult })
       </AlertTitle>
       <AlertDescription>
         <div className="text-sm">
-          <p>Features: {validationResult.features}</p>
-          <p>CRS: {validationResult.crs || "Unknown"}</p>
+          {validationResult.features !== undefined && <p>Features: {validationResult.features}</p>}
+          {validationResult.crs && <p>CRS: {validationResult.crs}</p>}
           {validationResult.warnings && validationResult.warnings.length > 0 && (
             <div className="mt-2">
               <p className="font-medium text-amber-600">Warnings:</p>

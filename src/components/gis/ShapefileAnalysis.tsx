@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { GeoAnalysisResult } from '@/types/datasets';
 
-// Import the new component files
+// Import the component files
 import AnalysisIcon from './shapefile-analysis/AnalysisIcon';
 import BufferAnalysisTab from './shapefile-analysis/BufferAnalysisTab';
 import OverlayAnalysisTab from './shapefile-analysis/OverlayAnalysisTab';

@@ -1,54 +1,46 @@
 
-import { ShapefileValidationResult } from '@/types/datasets';
+import { ShapefileValidationResult } from "@/types/datasets";
 
-export const validateShapefiles = (files: File[]): Promise<ShapefileValidationResult> => {
-  console.log("validateShapefiles called with files:", files.map(f => f.name));
+export const validateShapefileData = (data: any): ShapefileValidationResult => {
+  // Check if data is valid GeoJSON
+  if (!data || !data.type || data.type !== "FeatureCollection") {
+    return {
+      isValid: false,
+      errors: ["Invalid GeoJSON format: missing or incorrect type"],
+      warnings: []
+    };
+  }
   
-  // Testing edge cases with file types
-  const hasShp = files.some(f => f.name.endsWith('.shp'));
-  const hasDbf = files.some(f => f.name.endsWith('.dbf'));
-  const hasShx = files.some(f => f.name.endsWith('.shx'));
-  const hasPrj = files.some(f => f.name.endsWith('.prj'));
-  const hasGeoJson = files.some(f => f.name.endsWith('.geojson') || f.name.endsWith('.json'));
-  const hasZip = files.some(f => f.name.endsWith('.zip'));
+  // Check if features array exists
+  if (!Array.isArray(data.features)) {
+    return {
+      isValid: false,
+      errors: ["Invalid GeoJSON: missing features array"],
+      warnings: []
+    };
+  }
   
-  console.log("File type presence:", { hasShp, hasDbf, hasShx, hasPrj, hasGeoJson, hasZip });
+  const warnings: string[] = [];
+  const errors: string[] = [];
   
-  // In a real implementation, this would perform actual validation
-  return new Promise((resolve) => {
-    console.log("Starting validation simulation...");
+  // Check each feature
+  data.features.forEach((feature: any, index: number) => {
+    if (!feature.geometry) {
+      errors.push(`Feature #${index + 1} has no geometry`);
+    } else if (!feature.geometry.type) {
+      errors.push(`Feature #${index + 1} has invalid geometry type`);
+    }
     
-    setTimeout(() => {
-      // Generate warnings based on file types
-      const warnings: string[] = [];
-      
-      if (!hasPrj && (hasShp || hasDbf || hasShx)) {
-        warnings.push("Missing projection file (.prj)");
-      }
-      
-      if (hasShp && !hasDbf) {
-        warnings.push("Missing database file (.dbf)");
-      }
-      
-      if (hasShp && !hasShx) {
-        warnings.push("Missing index file (.shx)");
-      }
-      
-      // Handle the case where files are provided but wouldn't be valid in real-world
-      const isValid = hasGeoJson || hasZip || (hasShp && hasDbf && hasShx);
-      
-      // Show different validation results based on files
-      const result: ShapefileValidationResult = {
-        isValid,
-        features: isValid ? 2 : 0,
-        boundingBox: isValid ? [27.5, -13.5, 28.5, -12.5] : [0, 0, 0, 0],
-        crs: isValid ? "EPSG:4326" : undefined,
-        warnings,
-        errors: !isValid ? ["Incomplete or invalid shapefile components"] : undefined
-      };
-      
-      console.log("Validation result:", result);
-      resolve(result);
-    }, 1000);
+    if (!feature.properties) {
+      warnings.push(`Feature #${index + 1} has no properties`);
+    }
   });
+  
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    features: data.features.length,
+    crs: data.crs?.properties?.name || "Unknown"
+  };
 };

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +34,34 @@ const BufferAnalysisTab: React.FC<BufferAnalysisTabProps> = ({ data, onAnalysisC
           
           // Mock result for demonstration
           const analysisResult: GeoAnalysisResult = {
+            id: `buffer-${Date.now()}`,
+            name: `Buffer Analysis (${bufferDistance} ${bufferUnit})`,
+            description: `Buffer zones with distance ${bufferDistance} ${bufferUnit}`,
+            timestamp: new Date().toISOString(),
             type: 'buffer',
+            features: data.features.map((feature: any) => ({
+              id: feature.id || `feature-${Math.random().toString(36).substr(2, 9)}`,
+              name: feature.properties?.name || 'Unnamed feature',
+              type: feature.geometry?.type || 'unknown',
+              properties: {
+                ...feature.properties,
+                buffer_distance: bufferDistance,
+                buffer_unit: bufferUnit
+              }
+            })),
+            metadata: {
+              executionTime: 1.24,
+              timestamp: new Date().toISOString(),
+              parameters: {
+                distance: bufferDistance,
+                unit: bufferUnit
+              }
+            },
+            summary: {
+              featureCount: data.features.length,
+              area: Math.random() * 1000,
+              length: Math.random() * 100
+            },
             result: {
               type: 'FeatureCollection',
               features: data.features.map((feature: any) => ({
@@ -46,14 +72,6 @@ const BufferAnalysisTab: React.FC<BufferAnalysisTabProps> = ({ data, onAnalysisC
                   buffer_unit: bufferUnit
                 }
               }))
-            },
-            metadata: {
-              executionTime: 1.24,
-              timestamp: new Date().toISOString(),
-              parameters: {
-                distance: bufferDistance,
-                unit: bufferUnit
-              }
             }
           };
           
