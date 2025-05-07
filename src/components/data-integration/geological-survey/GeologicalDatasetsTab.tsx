@@ -4,6 +4,9 @@ import { GeologicalDatasetItem, GeologicalDataset } from './GeologicalDatasetIte
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { FileJson, Filter } from "lucide-react";
 import { GeologicalDatasetDetailView } from './GeologicalDatasetDetailView';
+import { useConnectivity } from '@/contexts/ConnectivityContext';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { WifiOff } from "lucide-react";
 
 interface GeologicalDatasetsTabProps {
   availableDatasets: GeologicalDataset[];
@@ -22,6 +25,7 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
 }) => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedDataset, setSelectedDataset] = useState<GeologicalDataset | null>(null);
+  const { isOnline } = useConnectivity();
 
   // Extract unique dataset types
   const datasetTypes = useMemo(() => {
@@ -50,6 +54,15 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
 
   return (
     <div className="space-y-4">
+      {!isOnline && (
+        <Alert variant="destructive" className="mb-4">
+          <WifiOff className="h-5 w-5" />
+          <AlertDescription>
+            You are currently offline. Dataset operations will be limited until your connection is restored.
+          </AlertDescription>
+        </Alert>
+      )}
+    
       {datasetTypes.length > 1 && (
         <div className="flex items-center gap-2 pb-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
@@ -85,12 +98,12 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
                 dataset={dataset}
                 isDownloading={downloadingDataset === dataset.id}
                 downloadProgress={downloadProgress}
-                connected={connected}
+                connected={connected && isOnline}
                 hasActiveDownload={!!downloadingDataset}
                 onDownload={(id, name) => {
-                  // Prevent the click event from triggering dataset selection
-                  // when clicking the download button
-                  onDownload(id, name);
+                  if (isOnline) {
+                    onDownload(id, name);
+                  }
                 }}
               />
             </div>
@@ -105,7 +118,7 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
       </div>
       
       <div className="text-center text-sm text-muted-foreground">
-        {connected ? (
+        {connected && isOnline ? (
           <p>All datasets are available for download and analysis</p>
         ) : (
           <p>Connect to the data source to access these datasets</p>
@@ -119,7 +132,7 @@ export const GeologicalDatasetsTab: React.FC<GeologicalDatasetsTabProps> = ({
         onClose={handleCloseDetailView}
         isDownloading={!!downloadingDataset && !!selectedDataset && downloadingDataset === selectedDataset.id}
         downloadProgress={downloadProgress}
-        connected={connected}
+        connected={connected && isOnline}
         hasActiveDownload={!!downloadingDataset}
         onDownload={onDownload}
       />

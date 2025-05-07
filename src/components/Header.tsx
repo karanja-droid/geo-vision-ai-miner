@@ -6,9 +6,12 @@ import UserMenu from './UserMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import MainNavigation from './MainNavigation';
+import ConnectionStatusIndicator from './data-integration/ConnectionStatusIndicator';
+import { useConnectivity } from '@/contexts/ConnectivityContext';
 
 const Header: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const { isOnline } = useConnectivity();
 
   return (
     <header className="border-b bg-card sticky top-0 z-50 shadow-sm">
@@ -25,6 +28,8 @@ const Header: React.FC = () => {
         </div>
 
         <div className="flex items-center">
+          <ConnectionStatusIndicator />
+          
           {isAuthenticated && (
             <>
               <div className="relative mr-4 w-64">
@@ -39,7 +44,7 @@ const Header: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2 mr-4">
-                <Button className="bg-geo-blue hover:bg-blue-800">
+                <Button className="bg-geo-blue hover:bg-blue-800" disabled={!isOnline}>
                   Run AI Analysis
                 </Button>
               </div>

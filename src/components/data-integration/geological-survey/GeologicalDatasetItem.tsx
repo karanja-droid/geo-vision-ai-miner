@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Download } from "lucide-react";
+import { Download, WifiOff } from "lucide-react";
 
 export interface GeologicalDataset {
   id: string;
@@ -53,6 +53,16 @@ export const GeologicalDatasetItem: React.FC<GeologicalDatasetItemProps> = ({
             <Progress value={downloadProgress} className="h-1 w-full" />
             <p className="text-xs text-center mt-1">{downloadProgress}%</p>
           </div>
+        ) : !connected ? (
+          <Button 
+            size="sm" 
+            variant="outline"
+            disabled={true}
+            className="text-muted-foreground"
+          >
+            <WifiOff className="h-4 w-4 mr-2" />
+            Offline
+          </Button>
         ) : (
           <Button 
             size="sm" 
