@@ -1,13 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AISuggestionsTab from './AISuggestionsTab';
 import ActiveConflictsTab from './ActiveConflictsTab';
 import ResolvedConflictsTab from './ResolvedConflictsTab';
+import { initialConflicts } from './utils';
+import { Conflict } from '@/types';
 
 const ConflictResolutionPanel: React.FC = () => {
   const isMobile = useIsMobile();
+  const [conflicts] = useState<Conflict[]>(initialConflicts);
+  const [selectedConflict, setSelectedConflict] = useState<string | null>(null);
 
   return (
     <div className="bg-card rounded-lg shadow-md border">
@@ -25,7 +29,11 @@ const ConflictResolutionPanel: React.FC = () => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="active" className="p-4">
-          <ActiveConflictsTab />
+          <ActiveConflictsTab 
+            conflicts={conflicts} 
+            selectedConflict={selectedConflict} 
+            setSelectedConflict={setSelectedConflict} 
+          />
         </TabsContent>
         <TabsContent value="resolved" className="p-4">
           <ResolvedConflictsTab />
