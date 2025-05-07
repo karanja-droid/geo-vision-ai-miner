@@ -50,7 +50,7 @@ const MineralsChart: React.FC<MineralsChartProps> = ({ minerals }) => {
                 formatter={(value) => [`${value}%`, 'Presence']} 
                 labelFormatter={(label) => `${label} Signature`}
               />
-              <Bar dataKey="value" name="Presence" fill="var(--primary)" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="value" name="Presence" fill="var(--primary)" radius={4}>
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -67,7 +67,7 @@ const Cell = (props: any) => {
   const { fill, x, y, width, height } = props;
   
   return (
-    <rect x={x} y={y} width={width} height={height} fill={fill} radius={[4, 4, 0, 0]} />
+    <rect x={x} y={y} width={width} height={height} fill={fill} rx={4} ry={4} />
   );
 };
 
