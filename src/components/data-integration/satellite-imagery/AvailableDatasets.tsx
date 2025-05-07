@@ -1,71 +1,87 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Database, Image } from "lucide-react";
-import { Link } from 'react-router-dom';
+import { Image } from "lucide-react";
 
 interface AvailableDatasetsProps {
   isRefreshing: boolean;
   progress: number;
 }
 
-const AvailableDatasets: React.FC<AvailableDatasetsProps> = ({ isRefreshing, progress }) => {
+const AvailableDatasets: React.FC<AvailableDatasetsProps> = ({ 
+  isRefreshing, 
+  progress 
+}) => {
+  const datasets = [
+    {
+      name: "Sentinel-2 Multispectral",
+      type: "Optical",
+      resolution: "10m",
+      updated: "Daily",
+      size: "1.8 TB"
+    },
+    {
+      name: "Landsat 9 OLI/TIRS",
+      type: "Optical/Thermal",
+      resolution: "15-30m",
+      updated: "16 days",
+      size: "950 GB"
+    },
+    {
+      name: "WorldView-3 SWIR",
+      type: "Shortwave Infrared",
+      resolution: "3.7m",
+      updated: "On-demand",
+      size: "540 GB"
+    }
+  ];
+  
   return (
-    <div className="border rounded-lg p-5 space-y-4">
-      <div className="flex items-center gap-2">
-        <Database className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-medium">Available Datasets</h3>
-      </div>
-
-      {isRefreshing ? (
-        <div className="space-y-4 py-4">
-          <div className="text-center text-sm text-muted-foreground">Refreshing satellite imagery data...</div>
-          <Progress value={progress} className="h-2" />
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between bg-muted/50 p-2 rounded-md">
-            <div>
-              <p className="font-medium">Landsat 8/9</p>
-              <p className="text-xs text-muted-foreground">Multispectral imagery (30m resolution)</p>
-            </div>
-            <Badge>Active</Badge>
+    <Card>
+      <CardHeader>
+        <CardTitle>Available Datasets</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isRefreshing ? (
+          <div className="space-y-4">
+            <p className="text-sm">Refreshing dataset information...</p>
+            <Progress value={progress} className="h-2" />
           </div>
-          
-          <div className="flex items-center justify-between bg-muted/50 p-2 rounded-md">
-            <div>
-              <p className="font-medium">Sentinel-2</p>
-              <p className="text-xs text-muted-foreground">13-band multispectral (10m resolution)</p>
-            </div>
-            <Badge>Active</Badge>
+        ) : (
+          <div className="space-y-4">
+            {datasets.map((dataset, index) => (
+              <div 
+                key={index} 
+                className="flex items-start p-3 rounded-md bg-muted/30 border border-border/50"
+              >
+                <Image className="h-5 w-5 text-primary mr-3 mt-0.5" />
+                <div className="space-y-1 flex-1">
+                  <div className="flex justify-between">
+                    <p className="font-medium">{dataset.name}</p>
+                    <Badge variant="outline" className="ml-2">
+                      {dataset.type}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-3 text-xs">
+                    <p className="text-muted-foreground">
+                      Resolution: <span className="text-foreground">{dataset.resolution}</span>
+                    </p>
+                    <p className="text-muted-foreground">
+                      Updated: <span className="text-foreground">{dataset.updated}</span>
+                    </p>
+                    <p className="text-muted-foreground">
+                      Size: <span className="text-foreground">{dataset.size}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-          
-          <div className="flex items-center justify-between bg-muted/50 p-2 rounded-md">
-            <div>
-              <p className="font-medium">WorldView-3</p>
-              <p className="text-xs text-muted-foreground">High-resolution imagery (0.3m resolution)</p>
-            </div>
-            <Badge>Active</Badge>
-          </div>
-        </div>
-      )}
-      
-      <div className="pt-2">
-        <Button 
-          variant="default" 
-          size="sm" 
-          className="w-full"
-          asChild
-        >
-          <Link to="/satellite-vision">
-            <Image className="h-4 w-4 mr-2" />
-            Analyze with SatelliteVision
-          </Link>
-        </Button>
-      </div>
-    </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
