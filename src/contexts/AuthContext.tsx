@@ -4,7 +4,7 @@ import { AuthContextType, AuthUser } from '@/types/auth';
 import { useAuthActions } from '@/hooks/useAuthActions';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { calculateDaysLeftInTrial, checkIsTrialActive, handleUserSession } from '@/utils/authUtils';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
