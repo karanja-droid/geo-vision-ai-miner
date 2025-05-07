@@ -1,6 +1,6 @@
 
 import { GeoPoint } from './geo';
-import { StakeholderOrganization } from './organizations';
+import { StakeholderOrganization } from './datasets';
 
 export interface RiskAssessment {
   id: string;

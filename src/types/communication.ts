@@ -1,4 +1,3 @@
-
 export interface Notification {
   id: string;
   title: string;
@@ -33,7 +32,7 @@ export interface Channel {
   members: string[];
   createdAt: string;
   lastActivity: string;
-  stakeholderAccess?: import('./organizations').StakeholderOrganization[];
+  stakeholderAccess?: import('./datasets').StakeholderOrganization[];
   slackChannel?: string; // ID of connected Slack channel
   teamsChannel?: string; // ID of connected Teams channel
 }

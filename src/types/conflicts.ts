@@ -1,5 +1,5 @@
 
-import { StakeholderOrganization } from './organizations';
+import { StakeholderOrganization } from './datasets';
 
 export interface Conflict {
   id: string;
