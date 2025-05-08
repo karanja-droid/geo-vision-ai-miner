@@ -42,7 +42,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-drawer bg-background shadow-lg",
+        "fixed z-drawer bg-background h-full shadow-lg",
         className
       )}
       {...props}

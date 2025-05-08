@@ -25,7 +25,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, setIsOpen }
           <span className="sr-only">Toggle menu</span>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="h-[100dvh] w-[85%] max-w-[300px] left-0 right-auto rounded-none">
+      <DrawerContent className="drawer-menu z-drawer">
         <div className="flex justify-between items-center border-b p-4">
           <h2 className="font-semibold text-lg">Menu</h2>
           <DrawerClose asChild>
@@ -36,7 +36,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, setIsOpen }
           </DrawerClose>
         </div>
         
-        <div className="p-4 overflow-y-auto flex-1">
+        <div className="drawer-content-container p-4">
           <div className="flex flex-col gap-6">
             <MobileNavigationGroup title="Data" items={getDataItems()} />
             <MobileNavigationGroup title="Analysis" items={getAnalysisItems()} />
