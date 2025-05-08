@@ -14,19 +14,34 @@ import {
 import { Link } from 'react-router-dom';
 import { UserRound, Settings, LogOut, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const UserMenu: React.FC = () => {
   const { user, signOut, isTrialActive } = useAuth();
+  const isMobile = useIsMobile();
   
   if (!user) {
     return (
-      <div className="flex gap-2">
-        <Button variant="outline" asChild>
-          <Link to="/login">Log in</Link>
-        </Button>
-        <Button asChild>
-          <Link to="/signup">Sign up</Link>
-        </Button>
+      <div className="flex gap-1 sm:gap-2">
+        {isMobile ? (
+          <Button variant="outline" size="sm" asChild className="px-2">
+            <Link to="/login">Log in</Link>
+          </Button>
+        ) : (
+          <Button variant="outline" asChild>
+            <Link to="/login">Log in</Link>
+          </Button>
+        )}
+        
+        {isMobile ? (
+          <Button size="sm" asChild className="px-2">
+            <Link to="/signup">Sign up</Link>
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link to="/signup">Sign up</Link>
+          </Button>
+        )}
       </div>
     );
   }
@@ -45,8 +60,11 @@ const UserMenu: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="rounded-full w-10 h-10 p-0">
-          <UserRound className="h-5 w-5" />
+        <Button 
+          variant="outline" 
+          className={`rounded-full ${isMobile ? 'w-8 h-8' : 'w-10 h-10'} p-0`}
+        >
+          <UserRound className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

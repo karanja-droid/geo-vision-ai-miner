@@ -9,33 +9,41 @@ import MainNavigation from './MainNavigation';
 import ConnectionStatusIndicator from './data-integration/ConnectionStatusIndicator';
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 import { SyncStatus } from './connectivity/SyncStatus';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Header: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { isOnline } = useConnectivity();
+  const isMobile = useIsMobile();
 
   return (
     <header className="border-b bg-card sticky top-0 z-50 shadow-sm">
-      <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-geo-blue text-white">
-              <Database size={18} />
+      <div className="container flex items-center justify-between h-16 px-2 sm:px-4 mx-auto">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link to="/" className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-md bg-geo-blue text-white">
+              <Database size={isMobile ? 16 : 18} />
             </div>
-            <h1 className="text-xl font-bold text-geo-blue">GeoVision AI Miner</h1>
+            <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold text-geo-blue truncate`}>
+              {isMobile ? 'GeoVision' : 'GeoVision AI Miner'}
+            </h1>
           </Link>
           
           <MainNavigation />
         </div>
 
-        <div className="flex items-center gap-3">
-          <SyncStatus />
-          <div className="w-px h-6 bg-gray-200 mx-1"></div>
-          <ConnectionStatusIndicator />
-          
-          {isAuthenticated && (
+        <div className="flex items-center gap-1 sm:gap-3">
+          {!isMobile && (
             <>
-              <div className="relative mr-4 w-64">
+              <SyncStatus />
+              <div className="w-px h-6 bg-gray-200 mx-1 hidden sm:block"></div>
+              <ConnectionStatusIndicator />
+            </>
+          )}
+          
+          {isAuthenticated && !isMobile && (
+            <>
+              <div className="relative mr-4 w-64 hidden sm:block">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <Search className="w-4 h-4 text-muted-foreground" />
                 </div>
@@ -46,10 +54,16 @@ const Header: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-2 mr-4">
-                <Button className="bg-geo-blue hover:bg-blue-800" disabled={!isOnline}>
-                  Run AI Analysis
-                </Button>
+              <div className="flex items-center gap-2 mr-1 sm:mr-4">
+                {isMobile ? (
+                  <Button size="icon" className="bg-geo-blue hover:bg-blue-800 w-8 h-8" disabled={!isOnline}>
+                    <Search className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button className="bg-geo-blue hover:bg-blue-800" disabled={!isOnline}>
+                    Run AI Analysis
+                  </Button>
+                )}
               </div>
             </>
           )}
