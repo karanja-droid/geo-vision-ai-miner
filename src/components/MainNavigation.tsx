@@ -1,226 +1,27 @@
+
 import React from 'react';
-import {
-  NavigationMenu,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu';
 import BackButton from '@/components/navigation/BackButton';
-import { 
-  DataMenuItems,
-  AnalysisMenuItems,
-  ResourcesMenuItems,
-  DirectLinks
-} from '@/components/navigation/NavigationMenuItems';
+import MobileNavigation from '@/components/navigation/MobileNavigation';
+import DesktopNavigation from '@/components/navigation/DesktopNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { 
-  Drawer, 
-  DrawerTrigger, 
-  DrawerContent,
-  DrawerClose
-} from '@/components/ui/drawer';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const MainNavigation: React.FC = () => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = React.useState(false);
 
-  if (isMobile) {
-    return (
-      <div className="flex items-center">
-        <BackButton />
-        
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
-          <DrawerTrigger asChild>
-            <Button variant="ghost" size="icon" className="ml-2">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent className="h-[100dvh] w-[85%] max-w-[300px] left-0 right-auto rounded-none">
-            <div className="flex justify-between items-center border-b p-4">
-              <h2 className="font-semibold text-lg">Menu</h2>
-              <DrawerClose asChild>
-                <Button variant="ghost" size="icon">
-                  <X className="h-5 w-5" />
-                  <span className="sr-only">Close menu</span>
-                </Button>
-              </DrawerClose>
-            </div>
-            
-            <div className="p-4 overflow-y-auto flex-1">
-              <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-1">
-                  <h3 className="mb-1 px-4 text-lg font-semibold">Data</h3>
-                  <MobileNavigationGroup />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="mb-1 px-4 text-lg font-semibold">Analysis</h3>
-                  <MobileNavigationGroup type="analysis" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="mb-1 px-4 text-lg font-semibold">Resources</h3>
-                  <MobileNavigationGroup type="resources" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="mb-1 px-4 text-lg font-semibold">Quick Links</h3>
-                  <MobileDirectLinks />
-                </div>
-              </div>
-            </div>
-          </DrawerContent>
-        </Drawer>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center">
       <BackButton />
       
-      <NavigationMenu>
-        <NavigationMenuList>
-          {/* Data Group */}
-          <DataMenuItems />
-          
-          {/* Analysis Group */}
-          <AnalysisMenuItems />
-          
-          {/* Resources Group */}
-          <ResourcesMenuItems />
-          
-          {/* Direct Links */}
-          <DirectLinks />
-        </NavigationMenuList>
-      </NavigationMenu>
+      {isMobile ? (
+        <MobileNavigation isOpen={isOpen} setIsOpen={setIsOpen} />
+      ) : (
+        <div className="flex items-center space-x-4">
+          <DesktopNavigation />
+        </div>
+      )}
     </div>
   );
-};
-
-// Mobile navigation group component
-const MobileNavigationGroup: React.FC<{type?: 'data' | 'analysis' | 'resources'}> = ({ type = 'data' }) => {
-  const items = getMobileNavItems(type);
-  
-  return (
-    <div className="flex flex-col">
-      {items.map((item) => (
-        <Button
-          key={item.title}
-          variant="ghost"
-          asChild
-          className="justify-start px-4 py-2 h-auto text-left"
-        >
-          <a href={item.href} className="flex items-center gap-3">
-            {item.icon}
-            <span>{item.title}</span>
-          </a>
-        </Button>
-      ))}
-    </div>
-  );
-};
-
-// Mobile direct links component
-const MobileDirectLinks: React.FC = () => {
-  return (
-    <div className="flex flex-col">
-      <Button
-        variant="ghost"
-        asChild
-        className="justify-start px-4 py-2 h-auto text-left"
-      >
-        <a href="/" className="flex items-center gap-3">
-          Dashboard
-        </a>
-      </Button>
-      <Button
-        variant="ghost"
-        asChild
-        className="justify-start px-4 py-2 h-auto text-left"
-      >
-        <a href="/user-profile" className="flex items-center gap-3">
-          Profile
-        </a>
-      </Button>
-    </div>
-  );
-};
-
-// Function to get mobile nav items based on type
-const getMobileNavItems = (type: 'data' | 'analysis' | 'resources') => {
-  const { Database, Layers, Globe, FileText, Map, LineChart, Satellite, Box, BookOpen, Users, Rocket, BarChart } = require('lucide-react');
-  
-  if (type === 'data') {
-    return [
-      {
-        title: "Data Integration",
-        href: "/data-integration",
-        icon: <Database className="h-4 w-4 text-blue-500" />
-      },
-      {
-        title: "Dataset Management",
-        href: "/dataset-management",
-        icon: <Layers className="h-4 w-4 text-amber-500" />
-      },
-      {
-        title: "Global Data",
-        href: "/global-data-integration",
-        icon: <Globe className="h-4 w-4 text-green-500" />
-      },
-      {
-        title: "GIS Shapefiles",
-        href: "/gis-shapefile",
-        icon: <FileText className="h-4 w-4 text-purple-500" />
-      }
-    ];
-  }
-  
-  if (type === 'analysis') {
-    return [
-      {
-        title: "Interactive Map",
-        href: "/interactive-map",
-        icon: <Map className="h-4 w-4 text-purple-500" />
-      },
-      {
-        title: "Analysis Pipeline",
-        href: "/next-steps",
-        icon: <LineChart className="h-4 w-4 text-indigo-500" />
-      },
-      {
-        title: "Satellite Vision",
-        href: "/satellite-vision",
-        icon: <Satellite className="h-4 w-4 text-sky-500" />
-      },
-      {
-        title: "3D Geostructure",
-        href: "/geostructure-3d",
-        icon: <Box className="h-4 w-4 text-rose-500" />
-      }
-    ];
-  }
-  
-  return [
-    {
-      title: "Documentation",
-      href: "/documentation",
-      icon: <BookOpen className="h-4 w-4 text-orange-500" />
-    },
-    {
-      title: "About Us",
-      href: "/about",
-      icon: <Users className="h-4 w-4 text-teal-500" />
-    },
-    {
-      title: "Product Roadmap",
-      href: "/product-roadmap",
-      icon: <Rocket className="h-4 w-4 text-red-500" />
-    },
-    {
-      title: "Plans & Pricing",
-      href: "/upgrade",
-      icon: <BarChart className="h-4 w-4 text-emerald-500" />
-    }
-  ];
 };
 
 export default MainNavigation;
