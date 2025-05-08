@@ -1,0 +1,58 @@
+
+/* Mobile responsive utilities */
+@media (max-width: 640px) {
+  .mobile-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .recharts-container {
+    min-width: 280px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .mobile-text-xs {
+    font-size: 0.75rem;
+  }
+  
+  /* Improved chart responsiveness */
+  .chart-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better spacing for mobile */
+  .p-mobile {
+    padding: 0.5rem;
+  }
+  
+  .m-mobile {
+    margin: 0.5rem;
+  }
+  
+  /* Fix for mobile navigation */
+  .mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Ensure drawer content is above other elements */
+  .vaul-drawer-content {
+    z-index: 100 !important;
+  }
+  
+  /* Fix for dropdowns on mobile */
+  .dropdown-menu {
+    z-index: 50;
+    background-color: var(--background);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}

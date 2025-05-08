@@ -1,0 +1,37 @@
+
+/* Mineral color classes */
+.bg-mineral-copper {
+  background-color: #d97706;
+}
+
+.bg-mineral-gold {
+  background-color: #fbbf24;
+}
+
+.bg-mineral-cobalt {
+  background-color: #2563eb;
+}
+
+.bg-mineral-iron {
+  background-color: #7f1d1d;
+}
+
+.bg-mineral-zinc {
+  background-color: #64748b;
+}
+
+.gradient-anomaly {
+  background: radial-gradient(circle, rgba(239,68,68,0.6) 0%, rgba(239,68,68,0.1) 70%, rgba(239,68,68,0) 100%);
+}
+
+.gradient-copper {
+  background: radial-gradient(circle, rgba(217,119,6,0.6) 0%, rgba(217,119,6,0.1) 70%, rgba(217,119,6,0) 100%);
+}
+
+.gradient-gold {
+  background: radial-gradient(circle, rgba(251,191,36,0.6) 0%, rgba(251,191,36,0.1) 70%, rgba(251,191,36,0) 100%);
+}
+
+.gradient-heatmap {
+  background: linear-gradient(to right, rgba(59,130,246,0.5), rgba(139,92,246,0.5), rgba(249,115,22,0.5), rgba(239,68,68,0.5));
+}

@@ -1,0 +1,43 @@
+
+/* Z-index layering system */
+.z-header {
+  z-index: 50;
+}
+
+.z-dropdown {
+  z-index: 60;
+}
+
+.z-modal-overlay {
+  z-index: 70;
+}
+
+.z-modal {
+  z-index: 80;
+}
+
+.z-drawer-overlay {
+  z-index: 90;
+}
+
+.z-drawer {
+  z-index: 100;
+}
+
+.z-tooltip {
+  z-index: 110;
+}
+
+/* Drawer specific styles */
+.drawer-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.drawer-content-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}

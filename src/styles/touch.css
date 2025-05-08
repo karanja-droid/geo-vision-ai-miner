@@ -1,0 +1,20 @@
+
+/* Mobile touch improvements */
+@layer utilities {
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+    tap-highlight-color: transparent;
+  }
+  
+  .touch-callout-none {
+    -webkit-touch-callout: none;
+    touch-callout: none;
+  }
+}
+
+/* Make buttons and interactive elements touch-friendly */
+button, a, [role="button"] {
+  @apply tap-highlight-none touch-callout-none;
+  min-height: 44px;
+  min-width: 44px;
+}

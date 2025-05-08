@@ -1,0 +1,13 @@
+
+/* Custom colors */
+.bg-geo-blue {
+  background-color: hsl(214, 100%, 40%);
+}
+
+.text-geo-blue {
+  color: hsl(214, 100%, 40%);
+}
+
+.border-geo-blue {
+  border-color: hsl(214, 100%, 40%);
+}

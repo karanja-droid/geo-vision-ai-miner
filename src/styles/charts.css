@@ -1,0 +1,39 @@
+
+/* Chart overflow fixes */
+.recharts-wrapper {
+  max-width: 100%;
+  overflow: visible;
+}
+
+.recharts-surface {
+  overflow: visible;
+}
+
+.recharts-tooltip-wrapper {
+  max-width: 90%;
+  overflow: visible !important;
+  z-index: 20 !important;
+}
+
+/* Dialog content scrolling */
+.dialog-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Enhanced scrolling for charts */
+.recharts-container {
+  min-width: 500px;
+  width: 100%;
+  height: 100%;
+}
+
+/* Allow horizontal scrolling for chart containers */
+.recharts-wrapper {
+  min-width: 100%;
+}
+
+/* Ensure tooltips are visible */
+.recharts-tooltip-wrapper {
+  pointer-events: none;
+}
