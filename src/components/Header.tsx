@@ -17,7 +17,7 @@ const Header: React.FC = () => {
   const isMobile = useIsMobile();
 
   return (
-    <header className="border-b bg-card sticky top-0 z-50 shadow-sm">
+    <header className="border-b bg-card sticky top-0 z-header shadow-sm">
       <div className="container flex items-center justify-between h-16 px-2 sm:px-4 mx-auto">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link to="/" className="flex items-center gap-1 sm:gap-2">

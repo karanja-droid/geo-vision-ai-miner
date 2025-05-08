@@ -31,7 +31,7 @@ const MainNavigation: React.FC = () => {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[85%] max-w-[300px] pt-10">
+          <SheetContent side="left" className="w-[85%] max-w-[300px] pt-10 z-[100]">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-1">
                 <h3 className="mb-1 px-4 text-lg font-semibold">Data</h3>
