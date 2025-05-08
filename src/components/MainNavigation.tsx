@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   NavigationMenu,
@@ -12,46 +11,64 @@ import {
   DirectLinks
 } from '@/components/navigation/NavigationMenuItems';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { 
+  Drawer, 
+  DrawerTrigger, 
+  DrawerContent,
+  DrawerClose
+} from '@/components/ui/drawer';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const MainNavigation: React.FC = () => {
   const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   if (isMobile) {
     return (
       <div className="flex items-center">
         <BackButton />
         
-        <Sheet>
-          <SheetTrigger asChild>
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+          <DrawerTrigger asChild>
             <Button variant="ghost" size="icon" className="ml-2">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
             </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[85%] max-w-[300px] pt-10 z-[100]">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-1">
-                <h3 className="mb-1 px-4 text-lg font-semibold">Data</h3>
-                <MobileNavigationGroup />
-              </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="mb-1 px-4 text-lg font-semibold">Analysis</h3>
-                <MobileNavigationGroup type="analysis" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="mb-1 px-4 text-lg font-semibold">Resources</h3>
-                <MobileNavigationGroup type="resources" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="mb-1 px-4 text-lg font-semibold">Quick Links</h3>
-                <MobileDirectLinks />
+          </DrawerTrigger>
+          <DrawerContent className="h-[100dvh] w-[85%] max-w-[300px] left-0 right-auto rounded-none">
+            <div className="flex justify-between items-center border-b p-4">
+              <h2 className="font-semibold text-lg">Menu</h2>
+              <DrawerClose asChild>
+                <Button variant="ghost" size="icon">
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Close menu</span>
+                </Button>
+              </DrawerClose>
+            </div>
+            
+            <div className="p-4 overflow-y-auto flex-1">
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-1">
+                  <h3 className="mb-1 px-4 text-lg font-semibold">Data</h3>
+                  <MobileNavigationGroup />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <h3 className="mb-1 px-4 text-lg font-semibold">Analysis</h3>
+                  <MobileNavigationGroup type="analysis" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <h3 className="mb-1 px-4 text-lg font-semibold">Resources</h3>
+                  <MobileNavigationGroup type="resources" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <h3 className="mb-1 px-4 text-lg font-semibold">Quick Links</h3>
+                  <MobileDirectLinks />
+                </div>
               </div>
             </div>
-          </SheetContent>
-        </Sheet>
+          </DrawerContent>
+        </Drawer>
       </div>
     );
   }

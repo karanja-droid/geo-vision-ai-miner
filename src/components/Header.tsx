@@ -19,7 +19,9 @@ const Header: React.FC = () => {
   return (
     <header className="border-b bg-card sticky top-0 z-header shadow-sm">
       <div className="container flex items-center justify-between h-16 px-2 sm:px-4 mx-auto">
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-2">
+          <MainNavigation />
+          
           <Link to="/" className="flex items-center gap-1 sm:gap-2">
             <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-md bg-geo-blue text-white">
               <Database size={isMobile ? 16 : 18} />
@@ -28,8 +30,6 @@ const Header: React.FC = () => {
               {isMobile ? 'GeoVision' : 'GeoVision AI Miner'}
             </h1>
           </Link>
-          
-          <MainNavigation />
         </div>
 
         <div className="flex items-center gap-1 sm:gap-3">

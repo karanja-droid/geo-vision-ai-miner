@@ -210,6 +210,18 @@ button, a, [role="button"] {
   border-color: hsl(214, 100%, 40%);
 }
 
+/* Drawer menu customizations */
+.drawer-menu {
+  height: 100dvh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  max-width: 85vw;
+  border-right: 1px solid var(--border);
+  background-color: var(--background);
+}
+
 /* Mobile responsive utilities */
 @media (max-width: 640px) {
   .mobile-container {
@@ -255,8 +267,8 @@ button, a, [role="button"] {
     background-color: rgba(0, 0, 0, 0.5);
   }
   
-  /* Ensure sheet content is above other elements */
-  .radix-sheet-content {
+  /* Ensure drawer content is above other elements */
+  .vaul-drawer-content {
     z-index: 100 !important;
   }
   
@@ -285,14 +297,28 @@ button, a, [role="button"] {
   z-index: 80;
 }
 
-.z-sheet-overlay {
+.z-drawer-overlay {
   z-index: 90;
 }
 
-.z-sheet {
+.z-drawer {
   z-index: 100;
 }
 
 .z-tooltip {
   z-index: 110;
+}
+
+/* Drawer specific styles */
+.drawer-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.drawer-content-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 }
