@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import MobileNavigation from './navigation/MobileNavigation';
 import DesktopNavigation from './navigation/DesktopNavigation';
-import { useMediaQuery } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile'; // Fixed the import
 import UserMenu from './UserMenu';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 const HeaderWithLanguage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useIsMobile(); // Using the correct hook
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
 

@@ -6,7 +6,8 @@
     "dashboard": "Tableau de bord",
     "profile": "Profil",
     "search": "Rechercher",
-    "logout": "Déconnecter"
+    "logout": "Déconnecter",
+    "quickLinks": "Liens rapides"
   },
   "navigation": {
     "data": "Données",

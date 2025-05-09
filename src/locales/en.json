@@ -6,7 +6,8 @@
     "dashboard": "Dashboard",
     "profile": "Profile",
     "search": "Search",
-    "logout": "Log out"
+    "logout": "Log out",
+    "quickLinks": "Quick Links"
   },
   "navigation": {
     "data": "Data",

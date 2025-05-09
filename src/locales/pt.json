@@ -6,7 +6,8 @@
     "dashboard": "Painel",
     "profile": "Perfil",
     "search": "Pesquisar",
-    "logout": "Sair"
+    "logout": "Sair",
+    "quickLinks": "Links Rápidos"
   },
   "navigation": {
     "data": "Dados",
