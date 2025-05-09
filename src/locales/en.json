@@ -8,7 +8,13 @@
     "searchData": "Search data...",
     "loading": "Loading...",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "menu": "Menu",
+    "close": "Close",
+    "dashboard": "Dashboard",
+    "search": "Search",
+    "quickLinks": "Quick Links",
+    "copyright": "© {{year}} GeoVision AI Miner. All rights reserved."
   },
   "security": {
     "securityLevel": "Security Level:",
@@ -29,7 +35,24 @@
     "map": "Interactive Map",
     "documentation": "Documentation",
     "admin": "Admin",
-    "profile": "Profile"
+    "profile": "Profile",
+    "data": "Data",
+    "analysis": "Analysis",
+    "resources": "Resources",
+    "dataIntegration": "Data Integration",
+    "datasetManagement": "Dataset Management",
+    "globalData": "Global Data",
+    "gisShapefiles": "GIS Shapefiles",
+    "interactiveMap": "Interactive Map",
+    "analysisPipeline": "Analysis Pipeline",
+    "satelliteVision": "Satellite Vision",
+    "3dGeostructure": "3D Geostructure",
+    "documentation": "Documentation",
+    "shapefileDocs": "Shapefile Documentation",
+    "aboutUs": "About Us",
+    "productRoadmap": "Product Roadmap",
+    "plansPricing": "Plans & Pricing",
+    "goBack": "Go Back"
   },
   "subscription": {
     "upgrade": "Upgrade Plan",
@@ -45,6 +68,30 @@
     "updateSuccess": "Profile updated",
     "updateSuccessMessage": "Your profile information has been updated successfully.",
     "updateFailed": "Update failed",
-    "updateFailedMessage": "Failed to update profile"
+    "updateFailedMessage": "Failed to update profile",
+    "profileInfo": "Profile Information",
+    "manageInfo": "Manage your personal information and account settings",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "emailCannotChange": "Email address cannot be changed. Contact support if needed.",
+    "organization": "Organization",
+    "yourOrganization": "Your organization",
+    "role": "Role",
+    "saveChanges": "Save Changes",
+    "saving": "Saving..."
+  },
+  "regions": {
+    "regionFocus": "Region Focus",
+    "global": "Global",
+    "africa": "Africa",
+    "zambia": "Zambia",
+    "drc": "DRC"
+  },
+  "languages": {
+    "language": "Language",
+    "english": "English",
+    "french": "French",
+    "swahili": "Swahili",
+    "portuguese": "Portuguese"
   }
 }

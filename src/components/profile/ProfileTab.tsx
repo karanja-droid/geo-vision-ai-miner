@@ -85,29 +85,29 @@ const ProfileTab: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
+        <CardTitle>{t('profile.profileInfo')}</CardTitle>
         <CardDescription>
-          Manage your personal information and account settings
+          {t('profile.manageInfo')}
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleProfileUpdate}>
         <CardContent>
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">{t('profile.fullName')}</Label>
               <div className="flex">
                 <UserRound className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
                 <Input 
                   id="name"
                   value={userForm.name}
                   onChange={(e) => setUserForm({...userForm, name: e.target.value})}
-                  placeholder="Your full name"
+                  placeholder={t('profile.fullName')}
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t('profile.email')}</Label>
               <div className="flex">
                 <Mail className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
                 <Input 
@@ -115,30 +115,30 @@ const ProfileTab: React.FC = () => {
                   type="email"
                   value={userForm.email}
                   onChange={(e) => setUserForm({...userForm, email: e.target.value})}
-                  placeholder="Your email address"
+                  placeholder={t('profile.email')}
                   disabled
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Email address cannot be changed. Contact support if needed.
+                {t('profile.emailCannotChange')}
               </p>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="organization">Organization</Label>
+              <Label htmlFor="organization">{t('profile.organization')}</Label>
               <div className="flex">
                 <Building className="mr-2 h-4 w-4 mt-3 text-muted-foreground" />
                 <Input 
                   id="organization"
                   value={userForm.organization}
                   onChange={(e) => setUserForm({...userForm, organization: e.target.value})}
-                  placeholder="Your organization"
+                  placeholder={t('profile.yourOrganization')}
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label>Role</Label>
+              <Label>{t('profile.role')}</Label>
               <div className="flex items-center">
                 <Shield className="mr-2 h-4 w-4 text-muted-foreground" />
                 <Badge variant="outline" className="text-primary">
@@ -150,10 +150,10 @@ const ProfileTab: React.FC = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline" onClick={() => window.history.back()}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? t('profile.saving') : t('common.save')}
           </Button>
         </CardFooter>
       </form>

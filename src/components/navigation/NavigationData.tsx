@@ -1,85 +1,87 @@
 
 import React from 'react';
 import { 
-  Database, 
-  Layers, 
-  Globe, 
-  FileText, 
-  Map, 
-  LineChart, 
-  Satellite, 
-  Box, 
-  BookOpen, 
-  Users, 
-  Rocket, 
-  BarChart 
-} from 'lucide-react';
+  BarChart3, Database, Map, FileText, Settings, 
+  Globe, FileJson, TableProperties, Layers, Satellite, 
+  Building3D, BookOpen, Info, Route
+} from "lucide-react";
 
 export const getDataItems = () => [
   {
-    title: "Data Integration",
+    title: "dataIntegration",
     href: "/data-integration",
-    icon: <Database className="h-4 w-4 text-blue-500" />
+    icon: <Database className="h-4 w-4" />
   },
   {
-    title: "Dataset Management",
+    title: "datasetManagement",
     href: "/dataset-management",
-    icon: <Layers className="h-4 w-4 text-amber-500" />
+    icon: <TableProperties className="h-4 w-4" />
   },
   {
-    title: "Global Data",
+    title: "globalData",
     href: "/global-data-integration",
-    icon: <Globe className="h-4 w-4 text-green-500" />
+    icon: <Globe className="h-4 w-4" />
   },
   {
-    title: "GIS Shapefiles",
+    title: "gisShapefiles",
     href: "/gis-shapefile",
-    icon: <FileText className="h-4 w-4 text-purple-500" />
+    icon: <FileJson className="h-4 w-4" />
+  },
+  {
+    title: "interactiveMap",
+    href: "/interactive-map",
+    icon: <Map className="h-4 w-4" />
   }
 ];
 
 export const getAnalysisItems = () => [
   {
-    title: "Interactive Map",
-    href: "/interactive-map",
-    icon: <Map className="h-4 w-4 text-purple-500" />
+    title: "analysisPipeline",
+    href: "/analysis-pipeline",
+    icon: <Layers className="h-4 w-4" />
   },
   {
-    title: "Analysis Pipeline",
-    href: "/next-steps",
-    icon: <LineChart className="h-4 w-4 text-indigo-500" />
-  },
-  {
-    title: "Satellite Vision",
+    title: "satelliteVision",
     href: "/satellite-vision",
-    icon: <Satellite className="h-4 w-4 text-sky-500" />
+    icon: <Satellite className="h-4 w-4" />
   },
   {
-    title: "3D Geostructure",
+    title: "3dGeostructure",
     href: "/geostructure-3d",
-    icon: <Box className="h-4 w-4 text-rose-500" />
+    icon: <Building3D className="h-4 w-4" />
   }
 ];
 
 export const getResourcesItems = () => [
   {
-    title: "Documentation",
+    title: "documentation",
     href: "/documentation",
-    icon: <BookOpen className="h-4 w-4 text-orange-500" />
+    icon: <FileText className="h-4 w-4" />
   },
   {
-    title: "About Us",
+    title: "shapefileDocs",
+    href: "/documentation?tab=gis-shapefiles",
+    icon: <BookOpen className="h-4 w-4" />
+  },
+  {
+    title: "aboutUs",
     href: "/about",
-    icon: <Users className="h-4 w-4 text-teal-500" />
+    icon: <Info className="h-4 w-4" />
   },
   {
-    title: "Product Roadmap",
+    title: "productRoadmap",
     href: "/product-roadmap",
-    icon: <Rocket className="h-4 w-4 text-red-500" />
+    icon: <Route className="h-4 w-4" />
+  }
+];
+
+export const getDirectLinks = () => [
+  {
+    title: "home",
+    href: "/"
   },
   {
-    title: "Plans & Pricing",
-    href: "/upgrade",
-    icon: <BarChart className="h-4 w-4 text-emerald-500" />
+    title: "profile",
+    href: "/user-profile"
   }
 ];

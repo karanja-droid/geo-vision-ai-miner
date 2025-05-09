@@ -31,7 +31,7 @@ export const MobileNavigationGroup: React.FC<MobileNavigationGroupProps> = ({ ti
           >
             <Link to={item.href} className="flex items-center gap-3">
               {item.icon}
-              <span>{t(`navigation.${item.title.replace(/\s+/g, '').toLowerCase()}`)}</span>
+              <span>{t(`navigation.${item.title}`)}</span>
             </Link>
           </Button>
         ))}
