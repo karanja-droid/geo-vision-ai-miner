@@ -3,7 +3,7 @@ import React from 'react';
 import { 
   BarChart3, Database, Map, FileText, Settings, 
   Globe, FileJson, TableProperties, Layers, Satellite, 
-  Building3D, BookOpen, Info, Route
+  Building, BookOpen, Info, Route
 } from "lucide-react";
 
 export const getDataItems = () => [
@@ -48,7 +48,7 @@ export const getAnalysisItems = () => [
   {
     title: "3dGeostructure",
     href: "/geostructure-3d",
-    icon: <Building3D className="h-4 w-4" />
+    icon: <Building className="h-4 w-4" />
   }
 ];
 
