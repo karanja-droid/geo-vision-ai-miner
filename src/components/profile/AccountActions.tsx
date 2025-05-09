@@ -24,9 +24,9 @@ const AccountActions: React.FC = () => {
     try {
       if (isSupabaseConfigured()) {
         await supabase.auth.signOut({ scope: 'global' });
-        signOut();
+        await signOut();
       } else {
-        signOut();
+        await signOut();
       }
       
       toast({

@@ -18,7 +18,7 @@ import { SubscriptionTier } from '@/contexts/AuthContext';
 const SubscriptionTab: React.FC = () => {
   const { user, isPremiumUser } = useAuth();
   
-  const getSubscriptionBadgeColor = (tier: SubscriptionTier) => {
+  const getSubscriptionBadgeColor = (tier: SubscriptionTier | undefined) => {
     switch(tier) {
       case 'premium':
         return "bg-primary";
@@ -29,7 +29,7 @@ const SubscriptionTab: React.FC = () => {
     }
   };
   
-  const formatDate = (date: Date | null) => {
+  const formatDate = (date: Date | null | undefined) => {
     if (!date) return 'N/A';
     return new Date(date).toLocaleDateString();
   };
@@ -47,13 +47,13 @@ const SubscriptionTab: React.FC = () => {
           <div className="space-y-2">
             <h3 className="text-lg font-medium">Current Plan</h3>
             <div className="flex items-center space-x-2">
-              <Badge className={getSubscriptionBadgeColor(user?.subscription.tier || 'free')}>
-                {user?.subscription.tier === 'premium' ? 'Premium' : 
-                 user?.subscription.tier === 'basic' ? 'Basic' : 'Free'}
+              <Badge className={getSubscriptionBadgeColor(user?.subscription?.tier)}>
+                {user?.subscription?.tier === 'premium' ? 'Premium' : 
+                 user?.subscription?.tier === 'basic' ? 'Basic' : 'Free'}
               </Badge>
-              {user?.subscription.trialEnd && (
+              {user?.subscription?.trialEnd && (
                 <Badge variant="outline">
-                  Trial ends: {formatDate(user.subscription.trialEnd)}
+                  Trial ends: {formatDate(user?.subscription?.trialEnd)}
                 </Badge>
               )}
             </div>
@@ -109,7 +109,7 @@ const SubscriptionTab: React.FC = () => {
         <CardFooter>
           <Button asChild className="w-full">
             <a href="/upgrade">
-              {user?.subscription.tier === 'free' ? 'Upgrade Plan' : 'Manage Subscription'}
+              {user?.subscription?.tier === 'free' ? 'Upgrade Plan' : 'Manage Subscription'}
             </a>
           </Button>
         </CardFooter>

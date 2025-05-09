@@ -12,9 +12,13 @@ import { SyncStatus } from './connectivity/SyncStatus';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Header: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const { isOnline } = useConnectivity();
   const isMobile = useIsMobile();
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <header className="border-b bg-card sticky top-0 z-header shadow-sm">
@@ -68,7 +72,15 @@ const Header: React.FC = () => {
             </>
           )}
 
-          <UserMenu />
+          {user ? (
+            <UserMenu user={user} onLogout={handleLogout} />
+          ) : (
+            <Link to="/login">
+              <Button size="sm" variant="outline">
+                Login
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
