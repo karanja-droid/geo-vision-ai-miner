@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { UserRound, Mail, Building, Shield } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileFormData {
   name: string;
@@ -25,6 +27,7 @@ interface ProfileFormData {
 const ProfileTab: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [userForm, setUserForm] = useState<ProfileFormData>({
     name: '',
@@ -63,15 +66,15 @@ const ProfileTab: React.FC = () => {
       }
       
       toast({
-        title: "Profile updated",
-        description: "Your profile information has been updated successfully.",
+        title: t("profile.updateSuccess"),
+        description: t("profile.updateSuccessMessage"),
       });
       
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
-        title: "Update failed",
-        description: error instanceof Error ? error.message : "Failed to update profile",
+        title: t("profile.updateFailed"),
+        description: error instanceof Error ? error.message : t("profile.updateFailedMessage"),
         variant: "destructive",
       });
     } finally {

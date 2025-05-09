@@ -4,9 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { AlertCircle, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const SubscriptionBanner: React.FC = () => {
   const { isAuthenticated, isTrialActive, isPremiumUser, daysLeftInTrial } = useAuth();
+  const { t } = useTranslation();
   
   // Don't show banner for premium users or unauthenticated users
   if (isPremiumUser || !isAuthenticated) {
@@ -20,19 +22,19 @@ const SubscriptionBanner: React.FC = () => {
           <>
             <Clock className="h-4 w-4 text-blue-500" />
             <span>
-              Your free trial expires in <strong>{daysLeftInTrial}</strong> day{daysLeftInTrial === 1 ? '' : 's'}
+              {t('trial.welcome')} <strong>{daysLeftInTrial}</strong> {daysLeftInTrial === 1 ? t('trial.daysLeft') : t('trial.daysLeftPlural')}
             </span>
           </>
         ) : (
           <>
             <AlertCircle className="h-4 w-4 text-amber-500" />
-            <span>Your free trial has expired</span>
+            <span>{t('subscription.expired')}</span>
           </>
         )}
         
         <Button size="sm" variant="outline" className="ml-2" asChild>
           <Link to="/upgrade">
-            {isTrialActive ? 'Upgrade Now' : 'Choose a Plan'}
+            {isTrialActive ? t('subscription.upgrade') : t('subscription.choosePlan')}
           </Link>
         </Button>
       </div>

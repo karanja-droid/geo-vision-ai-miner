@@ -1,54 +1,50 @@
 
 {
   "common": {
-    "menu": "Menu",
-    "close": "Close",
-    "dashboard": "Dashboard",
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up",
     "profile": "Profile",
-    "search": "Search",
-    "logout": "Log out",
-    "quickLinks": "Quick Links"
-  },
-  "navigation": {
-    "data": "Data",
-    "analysis": "Analysis",
-    "resources": "Resources",
-    "dataIntegration": "Data Integration",
-    "datasetManagement": "Dataset Management",
-    "globalData": "Global Data",
-    "gisShapefiles": "GIS Shapefiles",
-    "interactiveMap": "Interactive Map",
-    "analysisPipeline": "Analysis Pipeline",
-    "satelliteVision": "Satellite Vision",
-    "3dGeostructure": "3D Geostructure",
-    "documentation": "Documentation",
-    "shapefileDocs": "GIS Shapefile Docs",
-    "aboutUs": "About Us",
-    "productRoadmap": "Product Roadmap",
-    "plansPricing": "Plans & Pricing"
-  },
-  "regions": {
-    "regionFocus": "Region Focus",
-    "global": "Global",
-    "africa": "Africa",
-    "zambia": "Zambia",
-    "drc": "DRC"
-  },
-  "languages": {
-    "language": "Language",
-    "english": "English",
-    "french": "French",
-    "swahili": "Swahili",
-    "portuguese": "Portuguese"
-  },
-  "trial": {
-    "welcome": "Welcome to your free trial! You have",
-    "daysLeft": "day",
-    "daysLeftPlural": "days",
-    "leftToExplore": "left to explore all premium features"
+    "searchData": "Search data...",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "security": {
-    "securityLevel": "Security Level",
-    "roleDescription": "Your role determines what data and features you can access in this application"
+    "securityLevel": "Security Level:",
+    "roleDescription": "Your role determines what features and data you can access."
+  },
+  "trial": {
+    "welcome": "Welcome to your trial! You have",
+    "daysLeft": "day",
+    "daysLeftPlural": "days",
+    "leftToExplore": "left to explore all features."
+  },
+  "analysis": {
+    "runAnalysis": "Run AI Analysis"
+  },
+  "navigation": {
+    "home": "Home",
+    "datasets": "Datasets",
+    "map": "Interactive Map",
+    "documentation": "Documentation",
+    "admin": "Admin",
+    "profile": "Profile"
+  },
+  "subscription": {
+    "upgrade": "Upgrade Plan",
+    "manage": "Manage Subscription",
+    "trial": "Trial",
+    "free": "Free",
+    "basic": "Basic",
+    "premium": "Premium",
+    "expired": "Your free trial has expired",
+    "choosePlan": "Choose a Plan"
+  },
+  "profile": {
+    "updateSuccess": "Profile updated",
+    "updateSuccessMessage": "Your profile information has been updated successfully.",
+    "updateFailed": "Update failed",
+    "updateFailedMessage": "Failed to update profile"
   }
 }

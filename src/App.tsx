@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HeaderWithLanguage from './components/HeaderWithLanguage';
 import Footer from './components/Footer';
@@ -22,36 +22,40 @@ import SatelliteVisionDemo from './pages/SatelliteVisionDemo';
 import GeoStructure3DDemo from './pages/GeoStructure3DDemo';
 import ProductRoadmap from './pages/ProductRoadmap';
 import GisShapefileManagement from './pages/GisShapefileManagement';
+import SubscriptionBanner from './components/SubscriptionBanner';
 
 function App() {
   return (
-    <div className="App flex flex-col min-h-screen max-w-[100vw] overflow-x-hidden">
-      <HeaderWithLanguage />
-      <div className="flex-1 px-2 sm:px-4 w-full">
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/user-profile" element={<UserProfile />} />
-          <Route path="/dataset-management" element={<DatasetManagement />} />
-          <Route path="/documentation" element={<Documentation />} />
-          <Route path="/interactive-map" element={<InteractiveMap />} />
-          <Route path="/data-integration" element={<DataIntegration />} />
-          <Route path="/project/:id" element={<ProjectDetails />} />
-          <Route path="/next-steps" element={<NextSteps />} />
-          <Route path="/global-data-integration" element={<GlobalDataIntegration />} />
-          <Route path="/upgrade" element={<Upgrade />} />
-          <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
-          <Route path="/geostructure-3d" element={<GeoStructure3DDemo />} />
-          <Route path="/product-roadmap" element={<ProductRoadmap />} />
-          <Route path="/gis-shapefile" element={<GisShapefileManagement />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+      <div className="App flex flex-col min-h-screen max-w-[100vw] overflow-x-hidden">
+        <HeaderWithLanguage />
+        <SubscriptionBanner />
+        <div className="flex-1 px-2 sm:px-4 w-full">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/user-profile" element={<UserProfile />} />
+            <Route path="/dataset-management" element={<DatasetManagement />} />
+            <Route path="/documentation" element={<Documentation />} />
+            <Route path="/interactive-map" element={<InteractiveMap />} />
+            <Route path="/data-integration" element={<DataIntegration />} />
+            <Route path="/project/:id" element={<ProjectDetails />} />
+            <Route path="/next-steps" element={<NextSteps />} />
+            <Route path="/global-data-integration" element={<GlobalDataIntegration />} />
+            <Route path="/upgrade" element={<Upgrade />} />
+            <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
+            <Route path="/geostructure-3d" element={<GeoStructure3DDemo />} />
+            <Route path="/product-roadmap" element={<ProductRoadmap />} />
+            <Route path="/gis-shapefile" element={<GisShapefileManagement />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </Suspense>
   );
 }
 

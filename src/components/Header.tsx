@@ -10,11 +10,13 @@ import ConnectionStatusIndicator from './data-integration/ConnectionStatusIndica
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 import { SyncStatus } from './connectivity/SyncStatus';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const { isOnline } = useConnectivity();
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     await logout();
@@ -53,7 +55,7 @@ const Header: React.FC = () => {
                 </div>
                 <input
                   type="search"
-                  placeholder="Search data..."
+                  placeholder={t('common.searchData')}
                   className="w-full py-2 pl-10 pr-4 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
@@ -65,7 +67,7 @@ const Header: React.FC = () => {
                   </Button>
                 ) : (
                   <Button className="bg-geo-blue hover:bg-blue-800" disabled={!isOnline}>
-                    Run AI Analysis
+                    {t('analysis.runAnalysis')}
                   </Button>
                 )}
               </div>
@@ -77,7 +79,7 @@ const Header: React.FC = () => {
           ) : (
             <Link to="/login">
               <Button size="sm" variant="outline">
-                Login
+                {t('common.login')}
               </Button>
             </Link>
           )}
