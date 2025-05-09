@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { 
   BarChart3, Database, Map, FileText, Settings, 
   Globe, FileJson, TableProperties, Layers, Satellite, 
-  Building, BookOpen, Info, Route
+  Building, BookOpen, Info, Route, Mountain
 } from "lucide-react";
 
 export const getDataItems = () => [
@@ -31,6 +30,11 @@ export const getDataItems = () => [
     title: "interactiveMap",
     href: "/interactive-map",
     icon: <Map className="h-4 w-4" />
+  },
+  {
+    title: "minesExplorer",
+    href: "/mines-explorer",
+    icon: <Mountain className="h-4 w-4" />
   }
 ];
 

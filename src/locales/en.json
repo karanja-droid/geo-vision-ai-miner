@@ -52,7 +52,8 @@
     "aboutUs": "About Us",
     "productRoadmap": "Product Roadmap",
     "plansPricing": "Plans & Pricing",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "minesExplorer": "Mines Explorer"
   },
   "subscription": {
     "upgrade": "Upgrade Plan",
@@ -93,5 +94,21 @@
     "french": "French",
     "swahili": "Swahili",
     "portuguese": "Portuguese"
+  },
+  "mines": {
+    "explorer": "Mines Explorer",
+    "configuration": "API Configuration",
+    "deploymentName": "Deployment Name",
+    "connectToApi": "Connect to API",
+    "apiDescription": "Connect to your Convex deployment to explore mines data",
+    "visDetails": "Visualizing global mining operations",
+    "minesOverview": "Mines Overview",
+    "topCountries": "Top Mining Countries",
+    "topMinerals": "Top Minerals",
+    "active": "Active",
+    "inactive": "Inactive",
+    "planned": "Planned",
+    "closed": "Closed",
+    "status": "Status"
   }
 }
