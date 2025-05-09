@@ -16,6 +16,9 @@ import './styles/map.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { ConnectivityProvider } from './contexts/ConnectivityContext';
 
+// Initialize i18n
+import './i18n';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>

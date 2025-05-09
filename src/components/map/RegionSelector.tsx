@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { useTranslation } from 'react-i18next';
 
 interface RegionSelectorProps {
   regionFocus: string;
@@ -11,9 +12,11 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({
   regionFocus, 
   onRegionChange 
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="mb-4">
-      <h4 className="text-xs font-medium mb-2 text-muted-foreground">Region Focus</h4>
+      <h4 className="text-xs font-medium mb-2 text-muted-foreground">{t('regions.regionFocus')}</h4>
       <div className="flex flex-wrap gap-1">
         <Button 
           size="sm" 
@@ -21,7 +24,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({
           className="h-7 px-2 text-xs"
           onClick={() => onRegionChange('global')}
         >
-          Global
+          {t('regions.global')}
         </Button>
         <Button 
           size="sm" 
@@ -29,7 +32,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({
           className="h-7 px-2 text-xs"
           onClick={() => onRegionChange('africa')}
         >
-          Africa
+          {t('regions.africa')}
         </Button>
         <Button 
           size="sm" 
@@ -37,7 +40,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({
           className="h-7 px-2 text-xs"
           onClick={() => onRegionChange('zambia')}
         >
-          Zambia
+          {t('regions.zambia')}
         </Button>
         <Button 
           size="sm" 
@@ -45,7 +48,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({
           className="h-7 px-2 text-xs"
           onClick={() => onRegionChange('drc')}
         >
-          DRC
+          {t('regions.drc')}
         </Button>
       </div>
     </div>

@@ -1,0 +1,53 @@
+
+{
+  "common": {
+    "menu": "Menu",
+    "close": "Close",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "search": "Search",
+    "logout": "Log out"
+  },
+  "navigation": {
+    "data": "Data",
+    "analysis": "Analysis",
+    "resources": "Resources",
+    "dataIntegration": "Data Integration",
+    "datasetManagement": "Dataset Management",
+    "globalData": "Global Data",
+    "gisShapefiles": "GIS Shapefiles",
+    "interactiveMap": "Interactive Map",
+    "analysisPipeline": "Analysis Pipeline",
+    "satelliteVision": "Satellite Vision",
+    "3dGeostructure": "3D Geostructure",
+    "documentation": "Documentation",
+    "shapefileDocs": "GIS Shapefile Docs",
+    "aboutUs": "About Us",
+    "productRoadmap": "Product Roadmap",
+    "plansPricing": "Plans & Pricing"
+  },
+  "regions": {
+    "regionFocus": "Region Focus",
+    "global": "Global",
+    "africa": "Africa",
+    "zambia": "Zambia",
+    "drc": "DRC"
+  },
+  "languages": {
+    "language": "Language",
+    "english": "English",
+    "french": "French",
+    "swahili": "Swahili",
+    "portuguese": "Portuguese"
+  },
+  "trial": {
+    "welcome": "Welcome to your free trial! You have",
+    "daysLeft": "day",
+    "daysLeftPlural": "days",
+    "leftToExplore": "left to explore all premium features"
+  },
+  "security": {
+    "securityLevel": "Security Level",
+    "roleDescription": "Your role determines what data and features you can access in this application"
+  }
+}

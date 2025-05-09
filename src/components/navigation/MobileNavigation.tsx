@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/drawer';
 import { MobileNavigationGroup, MobileDirectLinks } from './MobileNavigationMenu';
 import { getDataItems, getAnalysisItems, getResourcesItems } from './NavigationData';
+import { useTranslation } from 'react-i18next';
 
 interface MobileNavigationProps {
   isOpen: boolean;
@@ -17,21 +18,23 @@ interface MobileNavigationProps {
 }
 
 const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, setIsOpen }) => {
+  const { t } = useTranslation();
+  
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         <Button variant="ghost" size="icon" className="ml-2">
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
+          <span className="sr-only">{t('common.menu')}</span>
         </Button>
       </DrawerTrigger>
       <DrawerContent className="drawer-menu z-drawer">
         <div className="flex justify-between items-center border-b p-4">
-          <h2 className="font-semibold text-lg">Menu</h2>
+          <h2 className="font-semibold text-lg">{t('common.menu')}</h2>
           <DrawerClose asChild>
             <Button variant="ghost" size="icon">
               <X className="h-5 w-5" />
-              <span className="sr-only">Close menu</span>
+              <span className="sr-only">{t('common.close')}</span>
             </Button>
           </DrawerClose>
         </div>

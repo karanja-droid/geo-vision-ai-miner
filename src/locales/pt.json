@@ -1,0 +1,53 @@
+
+{
+  "common": {
+    "menu": "Menu",
+    "close": "Fechar",
+    "dashboard": "Painel",
+    "profile": "Perfil",
+    "search": "Pesquisar",
+    "logout": "Sair"
+  },
+  "navigation": {
+    "data": "Dados",
+    "analysis": "Análise",
+    "resources": "Recursos",
+    "dataIntegration": "Integração de Dados",
+    "datasetManagement": "Gerenciamento de Conjuntos de Dados",
+    "globalData": "Dados Globais",
+    "gisShapefiles": "Arquivos de Forma GIS",
+    "interactiveMap": "Mapa Interativo",
+    "analysisPipeline": "Pipeline de Análise",
+    "satelliteVision": "Visão de Satélite",
+    "3dGeostructure": "Geoestrutura 3D",
+    "documentation": "Documentação",
+    "shapefileDocs": "Documentação de Arquivos de Forma GIS",
+    "aboutUs": "Sobre Nós",
+    "productRoadmap": "Roteiro do Produto",
+    "plansPricing": "Planos e Preços"
+  },
+  "regions": {
+    "regionFocus": "Foco Regional",
+    "global": "Global",
+    "africa": "África",
+    "zambia": "Zâmbia",
+    "drc": "RDC"
+  },
+  "languages": {
+    "language": "Idioma",
+    "english": "Inglês",
+    "french": "Francês",
+    "swahili": "Suaíli",
+    "portuguese": "Português"
+  },
+  "trial": {
+    "welcome": "Bem-vindo ao seu teste gratuito! Você tem",
+    "daysLeft": "dia",
+    "daysLeftPlural": "dias",
+    "leftToExplore": "restantes para explorar todos os recursos premium"
+  },
+  "security": {
+    "securityLevel": "Nível de Segurança",
+    "roleDescription": "Sua função determina quais dados e recursos você pode acessar neste aplicativo"
+  }
+}

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
+import HeaderWithLanguage from './components/HeaderWithLanguage';
 import Footer from './components/Footer';
 import Index from './pages/Index';
 import Login from './pages/Login';
@@ -26,7 +26,7 @@ import GisShapefileManagement from './pages/GisShapefileManagement';
 function App() {
   return (
     <div className="App flex flex-col min-h-screen max-w-[100vw] overflow-x-hidden">
-      <Header />
+      <HeaderWithLanguage />
       <div className="flex-1 px-2 sm:px-4 w-full">
         <Routes>
           <Route path="/" element={<Index />} />

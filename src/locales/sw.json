@@ -1,0 +1,53 @@
+
+{
+  "common": {
+    "menu": "Menyu",
+    "close": "Funga",
+    "dashboard": "Dashibodi",
+    "profile": "Wasifu",
+    "search": "Tafuta",
+    "logout": "Toka"
+  },
+  "navigation": {
+    "data": "Data",
+    "analysis": "Uchambuzi",
+    "resources": "Rasilimali",
+    "dataIntegration": "Ushirikishaji wa Data",
+    "datasetManagement": "Usimamizi wa Takwimu",
+    "globalData": "Data ya Kimataifa",
+    "gisShapefiles": "Faili za Umbo za GIS",
+    "interactiveMap": "Ramani ya Kuvutia",
+    "analysisPipeline": "Mfumo wa Uchambuzi",
+    "satelliteVision": "Mtazamo wa Satellite",
+    "3dGeostructure": "Muundo wa Jiografia 3D",
+    "documentation": "Nyaraka",
+    "shapefileDocs": "Nyaraka za Faili za Umbo za GIS",
+    "aboutUs": "Kuhusu Sisi",
+    "productRoadmap": "Ramani ya Bidhaa",
+    "plansPricing": "Mipango na Bei"
+  },
+  "regions": {
+    "regionFocus": "Mtazamo wa Eneo",
+    "global": "Dunia Nzima",
+    "africa": "Afrika",
+    "zambia": "Zambia",
+    "drc": "DRC"
+  },
+  "languages": {
+    "language": "Lugha",
+    "english": "Kiingereza",
+    "french": "Kifaransa",
+    "swahili": "Kiswahili",
+    "portuguese": "Kireno"
+  },
+  "trial": {
+    "welcome": "Karibu kwenye jaribio lako la bure! Una",
+    "daysLeft": "siku",
+    "daysLeftPlural": "siku",
+    "leftToExplore": "zilizosalia kuchunguza vipengele vyote vya premium"
+  },
+  "security": {
+    "securityLevel": "Kiwango cha Usalama",
+    "roleDescription": "Jukumu lako linaamua data na vipengele gani unaweza kufikia katika programu hii"
+  }
+}
