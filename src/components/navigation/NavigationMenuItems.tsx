@@ -7,8 +7,71 @@ import {
   NavigationMenuContent,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { getDataItems, getAnalysisItems, getResourcesItems, getDirectLinks } from './NavigationData';
+import { 
+  getExplorationItems, 
+  getResourceItems,
+  getDataItems, 
+  getAnalysisItems, 
+  getResourcesItems, 
+  getDirectLinks 
+} from './NavigationData';
 import { useTranslation } from 'react-i18next';
+
+export const ExplorationMenuItems = () => {
+  const { t } = useTranslation();
+  const explorationItems = getExplorationItems();
+  
+  return (
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>{t('navigation.exploration')}</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <ul className="grid w-[400px] gap-2 p-4 md:w-[500px] grid-cols-2">
+          {explorationItems.map((item) => (
+            <li key={item.href}>
+              <NavigationMenuLink asChild>
+                <Link
+                  to={item.href}
+                  className="flex items-center space-x-2 rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
+                >
+                  {item.icon}
+                  <span>{t(`navigation.${item.title}`)}</span>
+                </Link>
+              </NavigationMenuLink>
+            </li>
+          ))}
+        </ul>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  );
+};
+
+export const ResourceMenuItems = () => {
+  const { t } = useTranslation();
+  const resourceItems = getResourceItems();
+  
+  return (
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>{t('navigation.resources')}</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <ul className="grid w-[400px] gap-2 p-4 md:w-[500px] grid-cols-2">
+          {resourceItems.map((item) => (
+            <li key={item.href}>
+              <NavigationMenuLink asChild>
+                <Link
+                  to={item.href}
+                  className="flex items-center space-x-2 rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
+                >
+                  {item.icon}
+                  <span>{t(`navigation.${item.title}`)}</span>
+                </Link>
+              </NavigationMenuLink>
+            </li>
+          ))}
+        </ul>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  );
+};
 
 export const DataMenuItems = () => {
   const { t } = useTranslation();
@@ -66,13 +129,13 @@ export const AnalysisMenuItems = () => {
   );
 };
 
-export const ResourcesMenuItems = () => {
+export const SupportMenuItems = () => {
   const { t } = useTranslation();
   const resourcesItems = getResourcesItems();
   
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger>{t('navigation.resources')}</NavigationMenuTrigger>
+      <NavigationMenuTrigger>{t('navigation.support')}</NavigationMenuTrigger>
       <NavigationMenuContent>
         <ul className="grid w-[400px] gap-2 p-4 md:w-[500px] grid-cols-2">
           {resourcesItems.map((item) => (

@@ -5,9 +5,11 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { 
+  ExplorationMenuItems,
+  ResourceMenuItems,
   DataMenuItems,
   AnalysisMenuItems,
-  ResourcesMenuItems,
+  SupportMenuItems,
   DirectLinks
 } from '@/components/navigation/NavigationMenuItems';
 
@@ -15,14 +17,20 @@ const DesktopNavigation: React.FC = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList>
+        {/* Exploration Group */}
+        <ExplorationMenuItems />
+        
+        {/* Resource Group */}
+        <ResourceMenuItems />
+        
         {/* Data Group */}
         <DataMenuItems />
         
         {/* Analysis Group */}
         <AnalysisMenuItems />
         
-        {/* Resources Group */}
-        <ResourcesMenuItems />
+        {/* Support Group */}
+        <SupportMenuItems />
         
         {/* Direct Links */}
         <DirectLinks />

@@ -9,7 +9,13 @@ import {
   DrawerClose 
 } from '@/components/ui/drawer';
 import { MobileNavigationGroup, MobileDirectLinks } from './MobileNavigationMenu';
-import { getDataItems, getAnalysisItems, getResourcesItems } from './NavigationData';
+import { 
+  getExplorationItems, 
+  getResourceItems, 
+  getDataItems, 
+  getAnalysisItems, 
+  getResourcesItems 
+} from './NavigationData';
 import { useTranslation } from 'react-i18next';
 
 interface MobileNavigationProps {
@@ -41,9 +47,11 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, setIsOpen }
         
         <div className="drawer-content-container p-4">
           <div className="flex flex-col gap-6">
+            <MobileNavigationGroup title="Exploration" items={getExplorationItems()} />
+            <MobileNavigationGroup title="Resources" items={getResourceItems()} />
             <MobileNavigationGroup title="Data" items={getDataItems()} />
             <MobileNavigationGroup title="Analysis" items={getAnalysisItems()} />
-            <MobileNavigationGroup title="Resources" items={getResourcesItems()} />
+            <MobileNavigationGroup title="Support" items={getResourcesItems()} />
             <MobileDirectLinks />
           </div>
         </div>

@@ -7,11 +7,14 @@ import Map from "@/components/Map";
 import UploadPanel from "@/components/UploadPanel";
 import AnalysisPanel from "@/components/AnalysisPanel";
 import { Link } from "react-router-dom";
-import { Map as MapIcon, Combine, Database, Globe, BarChart } from "lucide-react";
+import { Map as MapIcon, Combine, Database, Globe, BarChart, Compass, Mountain, Layers } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
+import { FeatureTooltip } from './help/FeatureTooltip';
 
 const Dashboard: React.FC = () => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
   
   // Mock user data
   const user = {
@@ -35,6 +38,149 @@ const Dashboard: React.FC = () => {
         <div className="md:col-span-1 flex flex-col gap-3 sm:gap-6">
           <UploadPanel />
           <AnalysisPanel />
+        </div>
+      </div>
+
+      <div className="mt-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Tasks by Function</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Exploration Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Compass className="mr-2 h-5 w-5 text-primary" />
+                Exploration
+              </CardTitle>
+              <CardDescription>
+                Discover and map new potential deposits
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FeatureTooltip 
+                title="Interactive Map" 
+                description="Visualize geological data on an interactive map with multiple layers."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/interactive-map">
+                    <span>Interactive Map</span>
+                    <MapIcon className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+              
+              <FeatureTooltip 
+                title="Mines Explorer" 
+                description="Explore active and historical mining operations around the world."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/mines-explorer">
+                    <span>Mines Explorer</span>
+                    <Mountain className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+              
+              <FeatureTooltip 
+                title="Field Survey" 
+                description="Plan and document field surveys with GPS integration."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/field-survey">
+                    <span>Field Survey</span>
+                    <Compass className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+            </CardContent>
+          </Card>
+          
+          {/* Resource Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <BarChart className="mr-2 h-5 w-5 text-primary" />
+                Resource Management
+              </CardTitle>
+              <CardDescription>
+                Estimate and manage discovered resources
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FeatureTooltip 
+                title="Resource Estimation" 
+                description="Calculate resource volumes and quality based on sampling data."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/resource-estimation">
+                    <span>Resource Estimation</span>
+                    <BarChart className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+              
+              <FeatureTooltip 
+                title="3D Geostructure" 
+                description="Visualize geological formations in 3D to understand deposit structure."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/geostructure-3d">
+                    <span>3D Visualization</span>
+                    <Layers className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+            </CardContent>
+          </Card>
+          
+          {/* Data Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Database className="mr-2 h-5 w-5 text-primary" />
+                Data Management
+              </CardTitle>
+              <CardDescription>
+                Import and organize geological data
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FeatureTooltip 
+                title="Data Integration" 
+                description="Connect and integrate data from various sources into your projects."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/data-integration">
+                    <span>Data Integration</span>
+                    <Combine className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+              
+              <FeatureTooltip 
+                title="Dataset Management" 
+                description="Organize and manage your geological datasets."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/dataset-management">
+                    <span>Dataset Management</span>
+                    <Database className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+              
+              <FeatureTooltip 
+                title="GIS Shapefiles" 
+                description="Import and process GIS shapefiles for geological analysis."
+              >
+                <Button variant="outline" asChild className="w-full flex justify-between items-center">
+                  <Link to="/gis-shapefile">
+                    <span>GIS Shapefiles</span>
+                    <Globe className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </FeatureTooltip>
+            </CardContent>
+          </Card>
         </div>
       </div>
 

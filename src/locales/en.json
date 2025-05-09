@@ -36,9 +36,11 @@
     "documentation": "Documentation",
     "admin": "Admin",
     "profile": "Profile",
-    "data": "Data",
-    "analysis": "Analysis",
-    "resources": "Resources",
+    "data": "Data Management",
+    "analysis": "Analysis Tools",
+    "exploration": "Exploration",
+    "resources": "Resource Management",
+    "support": "Help & Support",
     "dataIntegration": "Data Integration",
     "datasetManagement": "Dataset Management",
     "globalData": "Global Data",
@@ -53,7 +55,12 @@
     "productRoadmap": "Product Roadmap",
     "plansPricing": "Plans & Pricing",
     "goBack": "Go Back",
-    "minesExplorer": "Mines Explorer"
+    "minesExplorer": "Mines Explorer",
+    "fieldSurvey": "Field Survey",
+    "resourceEstimation": "Resource Estimation",
+    "mineralProcessing": "Mineral Processing",
+    "dashboard": "Dashboard",
+    "help": "Help Center"
   },
   "subscription": {
     "upgrade": "Upgrade Plan",
@@ -110,5 +117,32 @@
     "planned": "Planned",
     "closed": "Closed",
     "status": "Status"
+  },
+  "onboarding": {
+    "showGuide": "Show Guide",
+    "stepCount": "Step {{current}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Finish",
+    "welcome": {
+      "title": "Welcome to GeoVision AI Miner",
+      "description": "This brief tour will help you understand how to use this platform effectively for your geological exploration and resource management needs."
+    },
+    "exploration": {
+      "title": "Exploration Tools",
+      "description": "Use our exploration tools to discover new resources. The Interactive Map and Mines Explorer help you visualize and analyze geographical data."
+    },
+    "resources": {
+      "title": "Resource Management",
+      "description": "Manage your resources with our estimation tools, mineral processing analysis, and 3D geostructure visualization."
+    },
+    "data": {
+      "title": "Data Management",
+      "description": "Import, organize, and integrate your geological data from various sources including GIS shapefiles and global datasets."
+    },
+    "analysis": {
+      "title": "Analysis Tools",
+      "description": "Powerful AI-driven analysis tools help you make sense of your data, identify patterns, and make better decisions."
+    }
   }
 }

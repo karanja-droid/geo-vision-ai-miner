@@ -25,6 +25,7 @@ import GisShapefileManagement from './pages/GisShapefileManagement';
 import MinesExplorer from './pages/MinesExplorer';
 import SubscriptionBanner from './components/SubscriptionBanner';
 import { MinesProvider } from './contexts/MinesContext';
+import OnboardingGuide from './components/onboarding/OnboardingGuide';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <HeaderWithLanguage />
           <SubscriptionBanner />
           <div className="flex-1 px-2 sm:px-4 w-full">
+            <OnboardingGuide />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
@@ -54,6 +56,11 @@ function App() {
               <Route path="/product-roadmap" element={<ProductRoadmap />} />
               <Route path="/gis-shapefile" element={<GisShapefileManagement />} />
               <Route path="/mines-explorer" element={<MinesExplorer />} />
+              {/* Placeholder routes for new sections */}
+              <Route path="/field-survey" element={<NotFound />} />
+              <Route path="/resource-estimation" element={<NotFound />} />
+              <Route path="/mineral-processing" element={<NotFound />} />
+              <Route path="/help" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
