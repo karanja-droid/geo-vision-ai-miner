@@ -53,7 +53,7 @@ export interface AnomalyAlertData {
   description: string;
   confidence: number;
   location?: string;
-  severity?: 'low' | 'medium' | 'high' | 'critical'; // Added severity property
+  severity?: 'low' | 'medium' | 'high' | 'critical'; // Updated to include severity property
   mineralType?: string;
   timestamp?: string;
 }

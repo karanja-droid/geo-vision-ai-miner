@@ -31,3 +31,17 @@ export interface DrillRecommendation {
   createdAt: string;
   aiConfidence: number;
 }
+
+// Add the ModelInfo interface
+export interface ModelInfo {
+  id: string;
+  name: string;
+  type: string;
+  target: string;
+  accuracy: number;
+  lastTrained: string;
+  description: string;
+  feedbackIncorporated?: boolean;
+  regionSpecialization?: string;
+  mineralTypes?: string[];
+}

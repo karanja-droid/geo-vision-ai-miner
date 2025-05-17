@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Container } from "@/components/ui/container";
-import DataInsights from '@/components/DataInsights';
+import { DataInsights } from '@/components/DataInsights';
 
 const Dashboard: React.FC = () => {
   return (

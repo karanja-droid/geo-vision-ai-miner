@@ -7,3 +7,12 @@ export interface ShapefileValidationResult {
   features?: number;
   crs?: string;
 }
+
+// Add GeoPoint interface
+export interface GeoPoint {
+  id: string;
+  latitude: number;
+  longitude: number;
+  elevation: number;
+  properties?: Record<string, any>;
+}
