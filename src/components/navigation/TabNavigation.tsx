@@ -4,8 +4,16 @@ import { Moon, Sun } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
+import { useNavigate, useLocation } from "react-router-dom"
 
-const tabs = ["Dashboard", "Datasets", "Analysis", "Maps", "Reports", "Settings"]
+const tabs = [
+  { name: "Dashboard", path: "/" },
+  { name: "Datasets", path: "/dataset-management" },
+  { name: "Analysis", path: "/analysis" },
+  { name: "Maps", path: "/interactive-map" },
+  { name: "Reports", path: "/reports" },
+  { name: "Settings", path: "/user-profile" }
+]
 
 export function TabNavigation() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
@@ -15,6 +23,20 @@ export function TabNavigation() {
   const { theme, setTheme } = useTheme()
   const isDarkMode = theme === "dark"
   const tabRefs = useRef<(HTMLDivElement | null)[]>([])
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // Set active tab based on current path
+  useEffect(() => {
+    const currentPath = location.pathname
+    const index = tabs.findIndex(tab => 
+      currentPath === tab.path || 
+      (tab.path !== "/" && currentPath.startsWith(tab.path))
+    )
+    if (index !== -1) {
+      setActiveIndex(index)
+    }
+  }, [location.pathname])
 
   useEffect(() => {
     if (hoveredIndex !== null) {
@@ -57,6 +79,11 @@ export function TabNavigation() {
     setTheme(isDarkMode ? "light" : "dark")
   }
 
+  const handleTabClick = (index: number) => {
+    setActiveIndex(index)
+    navigate(tabs[index].path)
+  }
+
   return (
     <Card className={`w-full max-w-[1200px] h-[100px] border-none shadow-none relative flex items-center justify-center ${isDarkMode ? "bg-transparent" : ""}`}>
       <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={toggleDarkMode}>
@@ -90,10 +117,10 @@ export function TabNavigation() {
                 }`}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => setActiveIndex(index)}
+                onClick={() => handleTabClick(index)}
               >
                 <div className="text-sm font-medium leading-5 whitespace-nowrap flex items-center justify-center h-full">
-                  {tab}
+                  {tab.name}
                 </div>
               </div>
             ))}
