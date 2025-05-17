@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from "@/components/theme-provider"
@@ -17,6 +18,7 @@ import { Sidebar } from './components/navigation/Sidebar';
 import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import AppWrapper from './components/AppWrapper';
 import ProductRoadmapPage from './pages/ProductRoadmap';
+import TabNavigation from './components/navigation/TabNavigation';
 
 // Main application layout with sidebar
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
@@ -28,6 +30,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       
       <div className="flex flex-col flex-1 overflow-hidden">
         <HeaderWithLanguage />
+        
+        {/* Added TabNavigation here */}
+        <div className="flex justify-center w-full bg-background pt-2">
+          <TabNavigation />
+        </div>
+        
         <main className="flex-1 overflow-auto bg-background">
           {children}
         </main>

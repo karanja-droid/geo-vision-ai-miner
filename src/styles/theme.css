@@ -11,3 +11,18 @@
 .border-geo-blue {
   border-color: hsl(214, 100%, 40%);
 }
+
+/* Dark mode overrides */
+.dark {
+  color-scheme: dark;
+  --background: #0e0f11;
+  --foreground: #ffffff;
+}
+
+.dark .bg-background {
+  background-color: var(--background);
+}
+
+.dark .text-foreground {
+  color: var(--foreground);
+}
