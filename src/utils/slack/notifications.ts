@@ -4,24 +4,6 @@ import { getSlackConfig } from "./config";
 import { sendToSlack } from "./sender";
 import { AnomalyAlertData, AnalysisCompletionData, DailySummaryData, FileShareData } from "./types";
 
-// Define missing types
-interface DailySummaryData {
-  date: string;
-  anomalies: number;
-  predictions: Array<{
-    area: string;
-    probability: number;
-  }>;
-  insights: string[];
-}
-
-interface FileShareData {
-  name: string;
-  url: string;
-  type: string;
-  description?: string;
-}
-
 // Send anomaly detection alert to Slack
 export const sendAnomalyAlert = async (
   anomalyData: AnomalyAlertData

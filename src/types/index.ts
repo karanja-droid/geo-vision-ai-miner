@@ -19,5 +19,4 @@ import { GeoPoint } from './geo';
 export { GeoPoint };
 
 // Re-export everything else from geo using export type to fix isolatedModules error
-import type { ShapefileValidationResult } from './geo';
-export type { ShapefileValidationResult };
+export type { ShapefileValidationResult } from './geo';

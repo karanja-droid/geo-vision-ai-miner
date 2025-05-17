@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { SlackIntegration as SlackIntegrationType } from "@/types";
-import { sendToSlack } from "@/utils/slackIntegration";
+import { sendToSlack } from "@/utils/slack/sender";
 
 interface ConnectionSettingsProps {
   config: SlackIntegrationType;

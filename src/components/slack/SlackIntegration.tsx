@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slack } from "lucide-react";
-import { getSlackConfig, saveSlackConfig } from "@/utils/slackIntegration";
+import { getSlackConfig, saveSlackConfig } from "@/utils/slack/config";
 import { SlackIntegration as SlackIntegrationType } from "@/types";
 import ConnectionSettings from './ConnectionSettings';
 import NotificationPreferences from './NotificationPreferences';
