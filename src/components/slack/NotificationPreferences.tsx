@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
@@ -79,8 +80,8 @@ const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({ confi
             description: "This is a test anomaly alert from your mineral exploration platform.",
             confidence: 95,
             location: "Test Location",
-            severity: "medium", // Added required property
-            mineralType: "copper" // Added required property
+            severity: "medium", // Required property
+            mineralType: "copper" // Required property
           });
           break;
         case 'daily_summaries':

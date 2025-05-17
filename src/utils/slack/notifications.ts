@@ -1,9 +1,8 @@
-
 import { toast } from "@/hooks/use-toast";
 import { Task } from "@/types";
 import { getSlackConfig } from "./config";
 import { sendToSlack } from "./sender";
-import { AnomalyAlertData, AnalysisCompletionData } from "./types";
+import { AnomalyAlertData, AnalysisCompletionData, DailySummaryData, FileShareData } from "./types";
 
 // Define missing types
 interface DailySummaryData {
