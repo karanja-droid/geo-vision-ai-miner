@@ -1,58 +1,63 @@
 
 import React, { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchFilter } from './dataset/SearchFilter';
 import { DatasetCard } from './dataset/DatasetCard';
 import { DatasetDetailsDialog } from './dataset/DatasetDetailsDialog';
 import { RelatedDocsDialog } from './dataset/RelatedDocsDialog';
-import { 
-  ALL_DATASETS, 
-  Dataset 
-} from '@/data/datasetLibraryData';
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 import { cacheDataset, getAllCachedDatasets } from '@/services/DatasetCacheService';
+import { useDatasets } from '@/hooks/database';
+import { DatasetInfo } from '@/types';
+import { Loader2 } from "lucide-react";
 
 export const DatasetLibrary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [datasets, setDatasets] = useState<Dataset[]>(ALL_DATASETS);
+  const [datasets, setDatasets] = useState<DatasetInfo[]>([]);
   const [activeTab, setActiveTab] = useState<string>('zambia');
-  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+  const [selectedDataset, setSelectedDataset] = useState<DatasetInfo | null>(null);
   const [showDocuments, setShowDocuments] = useState<boolean>(false);
   const { toast } = useToast();
   const { isOnline, addToCache, cachedDatasets } = useConnectivity();
+  const { getDatasets, loading } = useDatasets();
   
-  // Load cached datasets when offline
+  // Fetch datasets from API
   useEffect(() => {
-    const loadCachedDatasetsIfOffline = async () => {
-      if (!isOnline && cachedDatasets.length > 0) {
+    const fetchDatasets = async () => {
+      try {
+        const fetchedDatasets = await getDatasets();
+        if (fetchedDatasets) {
+          setDatasets(fetchedDatasets);
+        }
+      } catch (error) {
+        console.error("Failed to fetch datasets:", error);
+        toast({
+          title: "Error fetching datasets",
+          description: "Could not load datasets from the server. Please try again later.",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    if (isOnline) {
+      fetchDatasets();
+    } else if (cachedDatasets.length > 0) {
+      // Load cached datasets when offline
+      const loadCachedDatasets = async () => {
         try {
-          const cached = await getAllCachedDatasets<Dataset>('library');
+          const cached = await getAllCachedDatasets<DatasetInfo>('library');
           if (cached && cached.length > 0) {
-            const allDatasets = [...datasets];
-            
-            // Mark cached datasets
-            cached.forEach(cachedDataset => {
-              const index = allDatasets.findIndex(d => d.id === cachedDataset.id);
-              if (index !== -1) {
-                // Dataset already exists, no need to add it
-              } else {
-                // This is a dataset that's cached but not in our current list
-                allDatasets.push(cachedDataset);
-              }
-            });
-            
-            setDatasets(allDatasets);
+            setDatasets(cached);
           }
         } catch (error) {
           console.error("Failed to load cached datasets:", error);
         }
-      }
-    };
-    
-    loadCachedDatasetsIfOffline();
-  }, [isOnline, cachedDatasets]);
+      };
+      loadCachedDatasets();
+    }
+  }, [isOnline, cachedDatasets.length, getDatasets, toast]);
   
   const filteredDatasets = datasets.filter(dataset => {
     // First filter by tab selection
@@ -70,17 +75,20 @@ export const DatasetLibrary: React.FC = () => {
                dataset.country === 'Tanzania' || 
                dataset.country === 'Nigeria')) {
       return false;
+    } else if (activeTab === 'all') {
+      // Include all datasets for "all" tab
     }
     
     // Then filter by search query
-    return dataset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dataset.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dataset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      dataset.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dataset.source.toLowerCase().includes(searchQuery.toLowerCase());
+    return !searchQuery || 
+      dataset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (dataset.description && dataset.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (dataset.tags && dataset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))) ||
+      (dataset.country && dataset.country.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (dataset.source && dataset.source.toLowerCase().includes(searchQuery.toLowerCase()));
   });
   
-  const handleViewDataset = (dataset: Dataset) => {
+  const handleViewDataset = (dataset: DatasetInfo) => {
     setSelectedDataset(dataset);
     setShowDocuments(false);
     toast({
@@ -101,7 +109,7 @@ export const DatasetLibrary: React.FC = () => {
       
       toast({
         title: "Download Complete",
-        description: `${dataset.name} (${dataset.size}) has been cached for offline use.`,
+        description: `${dataset.name} has been cached for offline use.`,
       });
     } catch (error) {
       console.error("Failed to cache dataset:", error);
@@ -121,7 +129,7 @@ export const DatasetLibrary: React.FC = () => {
     });
   };
 
-  const handleViewDocuments = (dataset: Dataset) => {
+  const handleViewDocuments = (dataset: DatasetInfo) => {
     setSelectedDataset(dataset);
     setShowDocuments(true);
   };
@@ -151,7 +159,12 @@ export const DatasetLibrary: React.FC = () => {
         </TabsList>
       </Tabs>
       
-      {filteredDatasets.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2">Loading datasets...</span>
+        </div>
+      ) : filteredDatasets.length === 0 ? (
         <Alert>
           <AlertDescription>
             {!isOnline 

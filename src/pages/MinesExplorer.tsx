@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMines } from '@/contexts/MinesContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +21,13 @@ const MinesExplorer: React.FC = () => {
   const { mines, loading, error, refreshMines, isConfigured } = useMines();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<string>("map");
+  
+  // Load mines data when component mounts
+  useEffect(() => {
+    if (isConfigured && mines.length === 0 && !loading) {
+      refreshMines();
+    }
+  }, [isConfigured, mines.length, loading, refreshMines]);
   
   const handleRefresh = () => {
     refreshMines();
@@ -111,7 +118,16 @@ const MinesExplorer: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mines.length === 0 && !loading ? (
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        <div className="flex justify-center items-center">
+                          <RefreshCw className="animate-spin h-5 w-5 mr-2" />
+                          Loading mines data...
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : mines.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center">No mines data available</TableCell>
                     </TableRow>
