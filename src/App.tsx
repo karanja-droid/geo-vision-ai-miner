@@ -16,6 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { Sidebar } from './components/navigation/Sidebar';
 import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import AppWrapper from './components/AppWrapper';
+import ProductRoadmapPage from './pages/ProductRoadmap';
 
 // Main application layout with sidebar
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
@@ -104,6 +105,11 @@ function App() {
                     <p>Explore global mining operations data</p>
                   </div>
                 </ProtectedRoute>
+              </AppLayout>
+            } />
+            <Route path="/product-roadmap" element={
+              <AppLayout>
+                <ProductRoadmapPage />
               </AppLayout>
             } />
             {/* Other routes would be added here */}
