@@ -4,6 +4,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFoo
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
+import { initErrorMonitoring } from "@/utils/monitoring/errorMonitoring";
 
 interface GlobalErrorHandlerProps {
   children: React.ReactNode;
@@ -14,6 +15,9 @@ const GlobalErrorHandler: React.FC<GlobalErrorHandlerProps> = ({ children }) => 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    // Initialize error monitoring
+    initErrorMonitoring();
+    
     // Save the original console.error
     const originalConsoleError = console.error;
 

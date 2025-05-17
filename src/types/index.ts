@@ -19,3 +19,6 @@ export type { GeoPoint } from './geo';
 
 // Re-export ShapefileValidationResult with export type to fix isolatedModules error
 export type { ShapefileValidationResult } from './geo';
+
+// Export monitoring types
+export * from './monitoring';

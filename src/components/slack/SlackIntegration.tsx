@@ -7,6 +7,7 @@ import { getSlackConfig, saveSlackConfig } from "@/utils/slack/config";
 import { SlackIntegration as SlackIntegrationType } from "@/types";
 import ConnectionSettings from './ConnectionSettings';
 import NotificationPreferences from './NotificationPreferences';
+import MonitoringAlerts from './MonitoringAlerts';
 
 interface SlackIntegrationProps {
   className?: string;
@@ -46,7 +47,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ className }) => {
           <CardTitle>Slack Integration</CardTitle>
         </div>
         <CardDescription>
-          Connect with Slack to enhance team collaboration and receive real-time notifications
+          Connect with Slack to enhance team collaboration and receive real-time notifications and monitoring alerts
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -54,6 +55,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ className }) => {
           <TabsList>
             <TabsTrigger value="settings">Connection Settings</TabsTrigger>
             <TabsTrigger value="notifications">Notification Preferences</TabsTrigger>
+            <TabsTrigger value="monitoring">Monitoring & Alerts</TabsTrigger>
           </TabsList>
           
           <TabsContent value="settings">
@@ -67,6 +69,13 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ className }) => {
           
           <TabsContent value="notifications">
             <NotificationPreferences 
+              config={config}
+              onUpdateConfig={handleUpdateConfig}
+            />
+          </TabsContent>
+          
+          <TabsContent value="monitoring">
+            <MonitoringAlerts
               config={config}
               onUpdateConfig={handleUpdateConfig}
             />
