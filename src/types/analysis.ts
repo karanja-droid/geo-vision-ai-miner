@@ -1,48 +1,56 @@
 
+export interface AnalysisOptions {
+  deepLearning?: boolean;
+  sensitivity?: number;
+  useHistoricalData?: boolean;
+  mineralFocus?: 'gold' | 'copper' | 'all' | string;
+  resolution?: 'low' | 'medium' | 'high';
+  spectralBands?: string[];
+  targetElements?: string[];
+  regionFocus?: string;
+}
+
 export interface AnalysisResult {
   id: string;
-  layerId: string;
+  datasetId: string;
   timestamp: string;
-  modelType: 'prediction' | 'classification' | 'anomaly';
   confidence: number;
-  data: any;
-  mineralType?: 'copper' | 'cobalt' | 'gold' | 'iron' | 'zinc' | 'unknown';
+  mineralType?: string;
+  data: {
+    anomalies: number;
+    coverage?: string;
+    insights?: string[];
+    hotspots?: Array<{
+      id: number;
+      lat: number;
+      lng: number;
+      strength: number;
+      mineralType?: string;
+    }>;
+    correlations?: Record<string, number>;
+    recommendations?: string[];
+  };
 }
 
-export interface AnalysisOptions {
-  dataSource?: string;
-  resolution?: string;
-  depth?: string;
-  spectralBands?: string[];
-  regionFocus?: string;
-  targetMinerals?: string[];
-  deepLearning?: boolean;
-  confidenceThreshold?: number;
+export interface AnomalyAlertData {
+  title: string;
+  description: string;
+  confidence: number;
+  location?: string;
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  mineralType?: string;
+  timestamp?: string;
 }
 
-export interface MineralProspectivityMap {
+export interface ModelInfo {
   id: string;
   name: string;
-  mineralType: 'copper' | 'cobalt' | 'gold' | 'iron' | 'zinc' | 'other';
-  confidence: number;
-  generatedAt: string;
-  features: {
-    geological: boolean;
-    geochemical: boolean;
-    remoteSensing: boolean;
-  };
-  modelType: string;
-  dataSourceIds: string[];
-}
-
-export interface DrillRecommendation {
-  id: string;
-  location: import('./geo').GeoPoint;
-  priority: 'low' | 'medium' | 'high';
-  expectedMineralType: 'copper' | 'cobalt' | 'gold' | 'iron' | 'zinc' | 'unknown';
-  expectedGrade: number;
-  depth: number;
-  costEstimate: number;
-  createdAt: string;
-  aiConfidence: number;
+  type: string;
+  target: string;
+  accuracy: number;
+  lastTrained: string;
+  description: string;
+  feedbackIncorporated?: boolean;
+  regionSpecialization?: string;
+  mineralTypes?: string[];
 }

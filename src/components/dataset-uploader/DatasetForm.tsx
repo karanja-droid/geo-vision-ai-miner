@@ -1,140 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { useDatabase } from '@/hooks/useDatabase';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, FileType, Upload } from 'lucide-react';
-import { StakeholderOrganization } from '@/types';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { useUploaderContext } from './UploaderContext';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ShapefileProcessingService } from '@/services/ShapefileProcessingService';
+import { sendToSlack } from '@/utils/slack/sender';
+import { DatasetInfo } from '@/types';
+import { z } from "zod";
+
+const datasetSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  type: z.string().min(1, "Type is required"),
+  source: z.string().optional(),
+  organization: z.string().optional(),
+  country: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+});
 
 export const DatasetForm: React.FC = () => {
   const { toast } = useToast();
-  const { createDataset, processDatasetFile, loading } = useDatabase();
-  const {
-    name, setName,
-    description, setDescription,
-    type, setType,
-    source, setSource,
-    organization, setOrganization,
-    file, setFile,
-    uploadStatus, setUploadStatus,
-    setUploadProgress,
-    setValidationMessage,
-    setFileValidation,
-    setProcessingStage,
-    setFileMetadata
-  } = useUploaderContext();
+  const { uploadFiles, isUploading } = useUploaderContext();
   
-  const [isValidating, setIsValidating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    type: 'geological',
+    source: '',
+    organization: '',
+    country: 'Zambia',
+    tags: ['mining', 'geological'],
+  });
   
-  const organizations: StakeholderOrganization[] = [
-    'Geological Survey Department',
-    'Mining Company',
-    'Remote Sensing Agency',
-    'Environmental Regulator',
-    'Academic Institution'
-  ];
+  const [files, setFiles] = useState<File[]>([]);
   
-  // When file changes, perform initial validation
-  useEffect(() => {
-    const validateFile = async () => {
-      if (!file) return;
-      
-      try {
-        setIsValidating(true);
-        const fileExtension = file.name.split('.').pop()?.toLowerCase();
-        const isGeospatial = ['shp', 'geojson', 'kml', 'zip'].includes(fileExtension || '');
-        
-        if (isGeospatial) {
-          setProcessingStage('Initial validation');
-          const validationResult = await ShapefileProcessingService.validateShapefile(file);
-          setFileValidation(validationResult);
-          
-          if (!validationResult.isValid) {
-            toast({
-              title: "Validation warning",
-              description: validationResult.errors[0] || "File validation failed",
-              variant: "destructive",
-            });
-          } else if (validationResult.warnings.length > 0) {
-            toast({
-              title: "Validation warning",
-              description: validationResult.warnings[0],
-              variant: "default",
-            });
-          }
-        }
-      } catch (error) {
-        toast({
-          title: "Validation error",
-          description: error instanceof Error ? error.message : "An error occurred during validation",
-          variant: "destructive",
-        });
-      } finally {
-        setIsValidating(false);
-      }
-    };
-    
-    validateFile();
-  }, [file, toast, setFileValidation, setProcessingStage]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      
-      // Auto-detect type from file extension
-      const extension = selectedFile.name.split('.').pop()?.toLowerCase();
-      let detectedType = '';
-      
-      if (['shp', 'geojson', 'kml', 'zip'].includes(extension || '')) {
-        detectedType = 'Geological';
-      } else if (['tif', 'tiff', 'jpg', 'png'].includes(extension || '')) {
-        detectedType = 'Remote Sensing';
-      } else if (['csv', 'xlsx', 'xls'].includes(extension || '')) {
-        detectedType = 'Tabular';
-      }
-      
-      if (detectedType && !type) {
-        setType(detectedType);
-      }
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
     }
   };
   
   const validateForm = () => {
-    if (!name) {
-      toast({
-        title: "Missing information",
-        description: "Dataset name is required",
-        variant: "destructive",
-      });
+    try {
+      datasetSchema.parse(formData);
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const firstError = error.errors[0];
+        toast({
+          title: "Validation Error",
+          description: firstError.message,
+          variant: "destructive"
+        });
+      }
       return false;
     }
-    
-    if (!type) {
-      toast({
-        title: "Missing information",
-        description: "Dataset type is required",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    if (!file) {
-      toast({
-        title: "Missing file",
-        description: "Please select a file to upload",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    return true;
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -144,223 +77,207 @@ export const DatasetForm: React.FC = () => {
       return;
     }
     
+    if (files.length === 0) {
+      toast({
+        title: "No files selected",
+        description: "Please select at least one file to upload",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
-      // Set initial status
-      setUploadStatus('validating');
-      setUploadProgress(5);
-      setProcessingStage('Validating file format');
+      // Upload the files
+      await uploadFiles(files, formData);
       
-      // Create dataset record first
-      setUploadProgress(15);
-      setProcessingStage('Creating dataset record');
-      
-      const dataset = await createDataset({
-        name,
-        description,
-        type,
-        size: file?.size || 0,
-        source,
-        organization: organization as StakeholderOrganization || undefined
+      // Clear form after successful upload
+      setFormData({
+        name: '',
+        description: '',
+        type: 'geological',
+        source: '',
+        organization: '',
+        country: 'Zambia',
+        tags: ['mining', 'geological'],
       });
+      setFiles([]);
       
-      if (!dataset || !file) {
-        throw new Error("Failed to create dataset record");
-      }
+      // Send notification via Slack
+      const dataset: Partial<DatasetInfo> = {
+        name: formData.name,
+        type: formData.type,
+        size: files.reduce((total, file) => total + file.size, 0),
+        description: formData.description,
+      };
       
-      setUploadProgress(30);
-      setUploadStatus('uploading');
-      setProcessingStage('Uploading file');
-      
-      // Now upload and process the file
-      const uploadResult = await processDatasetFile(file, dataset.id);
-      
-      setUploadProgress(70);
-      setUploadStatus('processing');
-      setProcessingStage('Processing geospatial data');
-      
-      if (uploadResult?.validationResult) {
-        setFileValidation(uploadResult.validationResult);
-        setValidationMessage(
-          uploadResult.validationResult.isValid 
-            ? `File validated successfully. ${uploadResult.validationResult.features || 'Unknown'} features detected.`
-            : `Validation failed: ${uploadResult.validationResult.errors.join(', ')}`
-        );
-        
-        if (uploadResult.validationResult.warnings?.length) {
-          const currentMessage = uploadResult.validationResult.isValid 
-            ? `File validated successfully. ${uploadResult.validationResult.features || 'Unknown'} features detected.`
-            : `Validation failed: ${uploadResult.validationResult.errors.join(', ')}`;
-          const warningsText = `${currentMessage} Warnings: ${uploadResult.validationResult.warnings.join(', ')}`;
-          setValidationMessage(warningsText);
-        }
-      }
-      
-      setUploadProgress(90);
-      setProcessingStage('Finalizing');
-      
-      // Set metadata for display
-      setFileMetadata({
-        fileName: file.name,
-        fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'Unknown',
-        fileSize: file.size,
-        uploadPath: uploadResult.filePath,
-        datasetId: dataset.id,
-        features: uploadResult.validationResult?.features || 'Unknown',
-        crs: uploadResult.validationResult?.crs || 'Unknown'
-      });
-      
-      // Complete the upload
-      setUploadProgress(100);
-      setUploadStatus('success');
-      setProcessingStage('Complete');
+      sendDatasetUploadNotification(dataset);
       
     } catch (error) {
-      console.error("Upload error:", error);
-      setUploadStatus('error');
-      setValidationMessage(error instanceof Error ? error.message : "Unknown error occurred");
+      console.error('Error uploading dataset:', error);
+      toast({
+        title: "Upload Failed",
+        description: "An error occurred while uploading the dataset.",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const sendDatasetUploadNotification = async (dataset: Partial<DatasetInfo>) => {
+    try {
+      const message = `🆕 *NEW DATASET UPLOADED*: ${dataset.name}\n${dataset.description || 'No description'}\nType: ${dataset.type}\nSize: ${(Number(dataset.size) / 1024 / 1024).toFixed(2)} MB`;
+      
+      await sendToSlack(message, 'data-sharing', [
+        {
+          color: "#36a64f",
+          title: "New Dataset Upload",
+          text: dataset.description || 'No description',
+          fields: [
+            { title: "Name", value: dataset.name || '', short: true },
+            { title: "Type", value: dataset.type || '', short: true },
+            { title: "Size", value: `${(Number(dataset.size) / 1024 / 1024).toFixed(2)} MB`, short: true },
+            { title: "Uploaded At", value: new Date().toLocaleString(), short: true }
+          ]
+        }
+      ]);
+    } catch (error) {
+      console.error("Failed to send Slack notification:", error);
     }
   };
   
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Dataset Information</CardTitle>
+        <CardTitle>Upload New Dataset</CardTitle>
+        <CardDescription>
+          Fill in the details and select files to upload a new geological dataset
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1">
-              Dataset Name *
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="name">Dataset Name</Label>
             <Input
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Enter dataset name"
-              disabled={uploadStatus !== 'idle'}
               required
             />
           </div>
           
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium mb-1">
-              Description
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter dataset description"
-              disabled={uploadStatus !== 'idle'}
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Brief description of the dataset"
               rows={3}
             />
           </div>
           
-          <div>
-            <label htmlFor="type" className="block text-sm font-medium mb-1">
-              Dataset Type *
-            </label>
-            <Select
-              value={type}
-              onValueChange={setType}
-              disabled={uploadStatus !== 'idle'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Geological">Geological</SelectItem>
-                <SelectItem value="Remote Sensing">Remote Sensing</SelectItem>
-                <SelectItem value="Environmental">Environmental</SelectItem>
-                <SelectItem value="Drill Results">Drill Results</SelectItem>
-                <SelectItem value="Mining">Mining</SelectItem>
-                <SelectItem value="Historical">Historical</SelectItem>
-                <SelectItem value="Tabular">Tabular</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <label htmlFor="source" className="block text-sm font-medium mb-1">
-              Data Source
-            </label>
-            <Input
-              id="source"
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              placeholder="Data source (e.g., survey name, agency)"
-              disabled={uploadStatus !== 'idle'}
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="organization" className="block text-sm font-medium mb-1">
-              Organization
-            </label>
-            <Select
-              value={organization}
-              onValueChange={(value) => setOrganization(value as StakeholderOrganization)}
-              disabled={uploadStatus !== 'idle'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select organization" />
-              </SelectTrigger>
-              <SelectContent>
-                {organizations.map((org) => (
-                  <SelectItem key={org} value={org}>{org}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <label htmlFor="file" className="block text-sm font-medium mb-1">
-              Upload File *
-            </label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="file"
-                type="file"
-                onChange={handleFileChange}
-                disabled={uploadStatus !== 'idle' || isValidating}
-                className="flex-1"
-              />
-              {file && (
-                <div className="flex items-center">
-                  <FileType size={16} className="text-muted-foreground mr-1" />
-                  <span className="text-xs text-muted-foreground">
-                    {file.name.split('.').pop()?.toUpperCase()}
-                  </span>
-                </div>
-              )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="type">Dataset Type</Label>
+              <Select
+                value={formData.type}
+                onValueChange={(value) => handleSelectChange("type", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="geological">Geological</SelectItem>
+                  <SelectItem value="geochemical">Geochemical</SelectItem>
+                  <SelectItem value="geophysical">Geophysical</SelectItem>
+                  <SelectItem value="remote_sensing">Remote Sensing</SelectItem>
+                  <SelectItem value="mining">Mining</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Supported formats: SHP, GeoJSON, CSV, TIF, KML, XLSX
+            
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <Select
+                value={formData.country}
+                onValueChange={(value) => handleSelectChange("country", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Zambia">Zambia</SelectItem>
+                  <SelectItem value="Congo, DRC">Congo, DRC</SelectItem>
+                  <SelectItem value="South Africa">South Africa</SelectItem>
+                  <SelectItem value="Botswana">Botswana</SelectItem>
+                  <SelectItem value="Namibia">Namibia</SelectItem>
+                  <SelectItem value="Zimbabwe">Zimbabwe</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="source">Data Source</Label>
+              <Input
+                id="source"
+                name="source"
+                value={formData.source}
+                onChange={handleChange}
+                placeholder="Source of dataset"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="organization">Organization</Label>
+              <Select
+                value={formData.organization}
+                onValueChange={(value) => handleSelectChange("organization", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select organization" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Geological Survey Department">Geological Survey Department</SelectItem>
+                  <SelectItem value="Mining Company">Mining Company</SelectItem>
+                  <SelectItem value="Remote Sensing Agency">Remote Sensing Agency</SelectItem>
+                  <SelectItem value="Environmental Regulator">Environmental Regulator</SelectItem>
+                  <SelectItem value="Academic Institution">Academic Institution</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="file">Upload Files</Label>
+            <Input
+              id="file"
+              type="file"
+              onChange={handleFileChange}
+              multiple
+              accept=".csv,.xls,.xlsx,.geojson,.shp,.dbf,.prj,.zip,.tif,.tiff,.jpg,.jpeg,.png"
+            />
+            <p className="text-xs text-muted-foreground">
+              Supported formats: CSV, Excel, GeoJSON, Shapefiles, GeoTIFF, JPEG, PNG
             </p>
           </div>
           
-          {isValidating && (
-            <Alert>
-              <AlertCircle size={16} />
-              <AlertDescription>
-                Validating file format...
-              </AlertDescription>
-            </Alert>
+          {files.length > 0 && (
+            <div className="bg-muted p-3 rounded-md">
+              <p className="text-sm font-medium mb-2">Selected Files ({files.length})</p>
+              <ul className="list-disc list-inside space-y-1">
+                {files.map((file, index) => (
+                  <li key={index} className="text-xs">
+                    {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={uploadStatus !== 'idle' || loading || isValidating}
-          >
-            {uploadStatus !== 'idle' ? (
-              <>Processing...</>
-            ) : (
-              <>
-                <Upload size={16} className="mr-1" />
-                Upload Dataset
-              </>
-            )}
+          <Button type="submit" className="w-full" disabled={isUploading}>
+            {isUploading ? "Uploading..." : "Upload Dataset"}
           </Button>
         </form>
       </CardContent>

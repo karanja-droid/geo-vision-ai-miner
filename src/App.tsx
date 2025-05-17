@@ -1,73 +1,45 @@
-
-import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import HeaderWithLanguage from './components/HeaderWithLanguage';
-import Footer from './components/Footer';
-import Index from './pages/Index';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import AdminDashboard from './pages/AdminDashboard';
-import AboutUs from './pages/AboutUs';
-import UserProfile from './pages/UserProfile';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
+import Dashboard from './pages/Dashboard';
 import DatasetManagement from './pages/DatasetManagement';
-import Documentation from './pages/Documentation';
 import InteractiveMap from './pages/InteractiveMap';
-import DataIntegration from './pages/DataIntegration';
-import ProjectDetails from './pages/ProjectDetails';
-import NextSteps from './pages/NextSteps';
-import GlobalDataIntegration from './pages/GlobalDataIntegration';
-import Upgrade from './pages/Upgrade';
-import NotFound from './pages/NotFound';
-import SatelliteVisionDemo from './pages/SatelliteVisionDemo';
-import GeoStructure3DDemo from './pages/GeoStructure3DDemo';
-import ProductRoadmap from './pages/ProductRoadmap';
-import GisShapefileManagement from './pages/GisShapefileManagement';
-import MinesExplorer from './pages/MinesExplorer';
-import SubscriptionBanner from './components/SubscriptionBanner';
-import { MinesProvider } from './contexts/MinesContext';
-import OnboardingGuide from './components/onboarding/OnboardingGuide';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
-      <MinesProvider>
-        <div className="App flex flex-col min-h-screen max-w-[100vw] overflow-x-hidden">
-          <HeaderWithLanguage />
-          <SubscriptionBanner />
-          <div className="flex-1 px-2 sm:px-4 w-full">
-            <OnboardingGuide />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
-              <Route path="/about" element={<AboutUs />} />
-              <Route path="/user-profile" element={<UserProfile />} />
-              <Route path="/dataset-management" element={<DatasetManagement />} />
-              <Route path="/documentation" element={<Documentation />} />
-              <Route path="/interactive-map" element={<InteractiveMap />} />
-              <Route path="/data-integration" element={<DataIntegration />} />
-              <Route path="/project/:id" element={<ProjectDetails />} />
-              <Route path="/next-steps" element={<NextSteps />} />
-              <Route path="/global-data-integration" element={<GlobalDataIntegration />} />
-              <Route path="/upgrade" element={<Upgrade />} />
-              <Route path="/satellite-vision" element={<SatelliteVisionDemo />} />
-              <Route path="/geostructure-3d" element={<GeoStructure3DDemo />} />
-              <Route path="/product-roadmap" element={<ProductRoadmap />} />
-              <Route path="/gis-shapefile" element={<GisShapefileManagement />} />
-              <Route path="/mines-explorer" element={<MinesExplorer />} />
-              {/* Placeholder routes for new sections */}
-              <Route path="/field-survey" element={<NotFound />} />
-              <Route path="/resource-estimation" element={<NotFound />} />
-              <Route path="/mineral-processing" element={<NotFound />} />
-              <Route path="/help" element={<NotFound />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+    <BrowserRouter>
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <div className="min-h-screen bg-background">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dataset-management" element={<DatasetManagement />} />
+            <Route path="/interactive-map" element={<InteractiveMap />} />
+            <Route path="/analysis" element={<Analysis />} />
+          </Routes>
           <Footer />
         </div>
-      </MinesProvider>
-    </Suspense>
+        <Toaster />
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 

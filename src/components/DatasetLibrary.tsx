@@ -12,6 +12,8 @@ import { FilterTabs } from './dataset-library/FilterTabs';
 import { OfflineAlert } from './dataset-library/OfflineAlert';
 import { DatasetGrid } from './dataset-library/DatasetGrid';
 import { useDatasetFiltering } from './dataset-library/useDatasetFiltering';
+import { Button } from './ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export const DatasetLibrary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -22,6 +24,7 @@ export const DatasetLibrary: React.FC = () => {
   const { toast } = useToast();
   const { isOnline, addToCache, cachedDatasets } = useConnectivity();
   const { getDatasets, loading } = useDatasets();
+  const navigate = useNavigate();
   
   // Fetch datasets from API
   useEffect(() => {
@@ -108,6 +111,19 @@ export const DatasetLibrary: React.FC = () => {
     setShowDocuments(true);
   };
 
+  const handleAnalyzeDataset = (dataset: DatasetInfo) => {
+    // Store the selected dataset in localStorage to share between pages
+    localStorage.setItem('selectedDatasetForAnalysis', JSON.stringify(dataset));
+    
+    // Navigate to analysis page
+    navigate('/analysis');
+    
+    toast({
+      title: "Analysis Initiated",
+      description: `Preparing to analyze ${dataset.name}. Please configure your analysis parameters.`,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <SearchFilter 
@@ -130,13 +146,32 @@ export const DatasetLibrary: React.FC = () => {
         onDownloadDataset={handleDownloadDataset}
         onDeleteDataset={handleDeleteDataset}
         onViewDocuments={handleViewDocuments}
+        onAnalyzeDataset={handleAnalyzeDataset}
       />
       
       {/* Dataset Details Dialog */}
       <DatasetDetailsDialog 
         dataset={selectedDataset} 
         open={!!selectedDataset && !showDocuments}
-        onOpenChange={(open) => !open && setSelectedDataset(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedDataset(null);
+          } else if (selectedDataset) {
+            // Add a button to analyze the dataset
+            return (
+              <div className="flex justify-end mt-4">
+                <Button 
+                  onClick={() => {
+                    if (selectedDataset) handleAnalyzeDataset(selectedDataset);
+                  }}
+                  className="bg-primary"
+                >
+                  Analyze Dataset
+                </Button>
+              </div>
+            );
+          }
+        }}
       />
       
       {/* Related Documents Dialog */}

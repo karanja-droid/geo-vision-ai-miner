@@ -9,6 +9,9 @@ import MapCardContainer from '../components/interactive-map/MapCardContainer';
 import { useMapData, MapLayer } from '@/hooks/useMapData';
 import { handleError } from '@/utils/errorHandler';
 import FloatingFeedbackButton from '@/components/feedback/FloatingFeedbackButton';
+import { AnalysisResult } from '@/types/analysis';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle } from 'lucide-react';
 
 const InteractiveMap: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -17,14 +20,36 @@ const InteractiveMap: React.FC = () => {
   const [mapReady, setMapReady] = useState<boolean>(false);
   const [center, setCenter] = useState<{lat: number, lng: number}>({ lat: 5.7832, lng: 19.4326 }); // Center on Africa
   const [zoom, setZoom] = useState<number>(3);
-  const [selectedMarker, setSelectedMarker] = useState<{lat: number, lng: number, name: string, type: string} | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<{lat: number, lng: number, name: string, type: string, properties?: Record<string, any>} | null>(null);
   const [mapType, setMapType] = useState<string>('satellite');
   const [activeTab, setActiveTab] = useState<string>('layers');
   const [africaPolygons, setAfricaPolygons] = useState<any[]>([]);
   const [activeDatasetId, setActiveDatasetId] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   
   const { layers, loading, toggleLayer, updateOpacity } = useMapData(activeDatasetId);
   const { toast } = useToast();
+
+  // Check for analysis results in localStorage
+  useEffect(() => {
+    const storedResult = localStorage.getItem('latestAnalysisResult');
+    if (storedResult) {
+      const result = JSON.parse(storedResult) as AnalysisResult;
+      setAnalysisResult(result);
+      
+      // If we have hotspots, center the map on the first one
+      if (result.data.hotspots && result.data.hotspots.length > 0) {
+        const firstHotspot = result.data.hotspots[0];
+        setCenter({ lat: firstHotspot.lat, lng: firstHotspot.lng });
+        setZoom(8); // Zoom in to show the hotspot area
+        
+        toast({
+          title: "Analysis Results Loaded",
+          description: "Hotspots from your analysis are now visible on the map."
+        });
+      }
+    }
+  }, [toast]);
 
   useEffect(() => {
     if (apiKeySet && mapReady) {
@@ -157,6 +182,26 @@ const InteractiveMap: React.FC = () => {
     };
   };
 
+  // Add the analysis hotspots to the markers if available
+  const enhancedMarkers = [...sampleMarkers];
+  
+  if (analysisResult && analysisResult.data.hotspots) {
+    const hotspotMarkers = analysisResult.data.hotspots.map(hotspot => ({
+      lat: hotspot.lat,
+      lng: hotspot.lng,
+      name: `Anomaly #${hotspot.id}`,
+      type: 'hotspot',
+      properties: {
+        strength: hotspot.strength,
+        confidence: analysisResult.confidence,
+        mineralType: analysisResult.mineralType,
+        analysisId: analysisResult.id
+      }
+    }));
+    
+    enhancedMarkers.push(...hotspotMarkers);
+  }
+
   return (
     <div className="container mx-auto px-4 py-6">
       <MapHeader mapReady={mapReady} />
@@ -168,38 +213,50 @@ const InteractiveMap: React.FC = () => {
           onSubmit={handleApiKeySubmit} 
         />
       ) : (
-        <div className="grid md:grid-cols-4 gap-4">
-          <MapSidebar 
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            layers={layers}
-            handleLayerToggle={handleLayerToggle}
-            handleOpacityChange={handleOpacityChange}
-            mapType={mapType}
-            toggleFullScreen={toggleFullScreen}
-            flyToLocation={flyToLocation}
-            highlightCountry={highlightCountry}
-            africaPolygons={africaPolygons}
-            loading={loading}
-          />
+        <>
+          {analysisResult && (
+            <Alert className="mb-4 bg-amber-100 border-amber-200">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <AlertTitle>Analysis Results Visible</AlertTitle>
+              <AlertDescription>
+                Showing {analysisResult.data.hotspots?.length || 0} potential mineral anomalies with {(analysisResult.confidence * 100).toFixed(1)}% confidence
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="grid md:grid-cols-4 gap-4">
+            <MapSidebar 
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              layers={layers}
+              handleLayerToggle={handleLayerToggle}
+              handleOpacityChange={handleOpacityChange}
+              mapType={mapType}
+              toggleFullScreen={toggleFullScreen}
+              flyToLocation={flyToLocation}
+              highlightCountry={highlightCountry}
+              africaPolygons={africaPolygons}
+              loading={loading}
+            />
 
-          <MapCardContainer 
-            apiKey={apiKey}
-            mapReady={mapReady}
-            setMapReady={setMapReady}
-            mapContainerRef={mapContainerRef}
-            center={center}
-            zoom={zoom}
-            mapType={mapType}
-            layers={layers}
-            selectedMarker={selectedMarker}
-            setSelectedMarker={setSelectedMarker}
-            sampleMarkers={sampleMarkers}
-            africaPolygons={africaPolygons}
-            handleMapLoad={handleMapLoad}
-            getMapOptions={getMapOptions}
-          />
-        </div>
+            <MapCardContainer 
+              apiKey={apiKey}
+              mapReady={mapReady}
+              setMapReady={setMapReady}
+              mapContainerRef={mapContainerRef}
+              center={center}
+              zoom={zoom}
+              mapType={mapType}
+              layers={layers}
+              selectedMarker={selectedMarker}
+              setSelectedMarker={setSelectedMarker}
+              sampleMarkers={enhancedMarkers}
+              africaPolygons={africaPolygons}
+              handleMapLoad={handleMapLoad}
+              getMapOptions={getMapOptions}
+            />
+          </div>
+        </>
       )}
       
       {/* Floating feedback button */}
