@@ -1,4 +1,3 @@
-
 export interface AnalysisOptions {
   deepLearning?: boolean;
   sensitivity?: number;
@@ -53,7 +52,7 @@ export interface AnomalyAlertData {
   description: string;
   confidence: number;
   location?: string;
-  severity?: 'low' | 'medium' | 'high' | 'critical'; // Updated to include severity property
+  severity: 'low' | 'medium' | 'high' | 'critical'; // Changed from optional to required
   mineralType?: string;
   timestamp?: string;
 }
