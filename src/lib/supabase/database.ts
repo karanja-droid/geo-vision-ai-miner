@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 import { DatasetInfo, GeoPoint, AnalysisResult, ShapefileValidationResult } from '@/types';
 import { AuthUser } from '@/types/auth';
@@ -117,12 +116,13 @@ export const createAnalysisResult = async (
   datasetId: string
 ) => {
   const { data, error } = await supabase.from('analysis_results').insert({
-    name: analysis.name || 'Analysis Result',
-    description: analysis.description || '',
+    name: `Analysis: ${analysis.modelType}`,  // Default name based on model type
+    description: `Analysis result for dataset ${datasetId}`, // Default description
     type: analysis.modelType,
     features: analysis.data,
     confidence: analysis.confidence,
     dataset_id: datasetId,
+    mineral_type: analysis.mineralType || 'unknown',
     owner_id: supabase.auth.getUser().then(res => res.data.user?.id)
   }).select().single();
   
