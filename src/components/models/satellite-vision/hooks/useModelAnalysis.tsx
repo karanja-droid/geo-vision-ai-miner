@@ -58,6 +58,15 @@ export const useModelAnalysis = (
       
       // Process the results
       if (result) {
+        // Add a type guard to safely access the analyzed property
+        const analyzedValue = (() => {
+          const coverage = result.data.coverage;
+          if (typeof coverage === 'object' && coverage !== null) {
+            return coverage.analyzed?.toFixed(1);
+          }
+          return "10.0"; // Default value if coverage is a string or undefined
+        })();
+        
         setAnalysisResults({
           timestamp: result.timestamp,
           options: analysisOptions,
@@ -69,7 +78,7 @@ export const useModelAnalysis = (
             diamondIndicators: Math.round(result.data.spectralAnalysis?.['ultraviolet']?.strength * 100) || 10
           },
           statistics: {
-            areaAnalyzed: result.data.coverage?.analyzed?.toFixed(1) || "10.0",
+            areaAnalyzed: analyzedValue, // Use the safely accessed value
             anomaliesDetected: result.data.anomalies || 5,
             featurePoints: result.data.featureCount || 150,
             confidenceScore: (result.confidence * 100).toFixed(1)

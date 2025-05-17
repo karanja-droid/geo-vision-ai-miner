@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +15,7 @@ import { EnhancedAnalysisResults } from './EnhancedAnalysisResults';
 const initialResults: AnalysisResult[] = [
   {
     id: '1',
+    datasetId: '1', // Added missing required datasetId
     layerId: '1',
     timestamp: '2024-02-15T14:30:00Z',
     modelType: 'prediction',
@@ -30,6 +32,7 @@ const initialResults: AnalysisResult[] = [
   },
   {
     id: '2',
+    datasetId: '2', // Added missing required datasetId
     layerId: '2',
     timestamp: '2024-02-14T09:15:00Z',
     modelType: 'classification',

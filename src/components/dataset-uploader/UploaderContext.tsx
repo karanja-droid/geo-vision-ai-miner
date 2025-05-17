@@ -29,6 +29,9 @@ interface UploaderContextType {
   fileMetadata: Record<string, any> | null;
   setFileMetadata: (value: Record<string, any> | null) => void;
   resetUploader: () => void;
+  // Add the missing properties for uploadFiles and isUploading
+  uploadFiles: (files: File[], formData: any) => Promise<void>;
+  isUploading: boolean;
 }
 
 const UploaderContext = createContext<UploaderContextType | undefined>(undefined);
@@ -46,6 +49,7 @@ export const UploaderProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [fileValidation, setFileValidation] = useState<ShapefileValidationResult | null>(null);
   const [processingStage, setProcessingStage] = useState('');
   const [fileMetadata, setFileMetadata] = useState<Record<string, any> | null>(null);
+  const [isUploading, setIsUploading] = useState(false); // Added isUploading state
 
   const resetUploader = () => {
     setName('');
@@ -60,6 +64,54 @@ export const UploaderProvider: React.FC<{ children: ReactNode }> = ({ children }
     setFileValidation(null);
     setProcessingStage('');
     setFileMetadata(null);
+    setIsUploading(false); // Reset isUploading state
+  };
+
+  // Implement the uploadFiles function
+  const uploadFiles = async (files: File[], formData: any) => {
+    try {
+      setIsUploading(true);
+      setUploadStatus('uploading');
+      setUploadProgress(10);
+      
+      // Simulate file validation
+      setUploadStatus('validating');
+      setUploadProgress(30);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Simulate file upload
+      setUploadStatus('uploading');
+      setUploadProgress(60);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulate processing
+      setUploadStatus('processing');
+      setUploadProgress(90);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Set success
+      setUploadStatus('success');
+      setUploadProgress(100);
+      
+      // Save some metadata
+      setFileMetadata({
+        files: files.map(f => ({ name: f.name, size: f.size, type: f.type })),
+        formData,
+        uploadedAt: new Date().toISOString()
+      });
+      
+      // Reset after success
+      setTimeout(() => {
+        resetUploader();
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadStatus('error');
+      setValidationMessage('An error occurred during upload.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const value = {
@@ -75,7 +127,10 @@ export const UploaderProvider: React.FC<{ children: ReactNode }> = ({ children }
     fileValidation, setFileValidation,
     processingStage, setProcessingStage,
     fileMetadata, setFileMetadata,
-    resetUploader
+    resetUploader,
+    // Add the new properties to the context value
+    uploadFiles,
+    isUploading
   };
 
   return (

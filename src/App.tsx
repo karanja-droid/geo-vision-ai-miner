@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard';  // Now correctly importing from pages folder
 import DatasetManagement from './pages/DatasetManagement';
 import InteractiveMap from './pages/InteractiveMap';
 import Analysis from './pages/Analysis';
