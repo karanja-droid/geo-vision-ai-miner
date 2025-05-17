@@ -1,3 +1,4 @@
+
 export interface AnalysisOptions {
   deepLearning?: boolean;
   sensitivity?: number;
