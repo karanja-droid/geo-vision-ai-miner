@@ -1,15 +1,13 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Download, FileText, MapPin, Database } from "lucide-react";
 import { DatasetInfo } from '@/types';
-import { DatasetVisualization } from './DatasetVisualization';
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 import { cacheDataset } from '@/services/DatasetCacheService';
+import { DatasetHeader } from './details/DatasetHeader';
+import { DetailsContent } from './details/DetailsContent';
+import { DatasetActions } from './details/DatasetActions';
 
 interface DatasetDetailsDialogProps {
   dataset: DatasetInfo | null;
@@ -93,109 +91,25 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
       });
     }
   };
-  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>{dataset.name}</DialogTitle>
-          <DialogDescription>
-            <div className="flex items-center mt-1">
-              <MapPin className="h-4 w-4 mr-1" />
-              <span>{dataset.country || 'Unknown'}</span>
-              <span className="mx-2">•</span>
-              <span>{dataset.format || 'Unknown'}</span>
-              <span className="mx-2">•</span>
-              <span>{dataset.size}</span>
-              {datasetIsCached && (
-                <>
-                  <span className="mx-2">•</span>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                    Available Offline
-                  </Badge>
-                </>
-              )}
-            </div>
-          </DialogDescription>
-        </DialogHeader>
+        <DatasetHeader 
+          dataset={dataset}
+          datasetIsCached={datasetIsCached}
+        />
         
-        <ScrollArea className="flex-grow pr-4 h-[calc(90vh-180px)]">
-          <div className="space-y-4">
-            <div className="aspect-video bg-muted rounded-md overflow-hidden">
-              <DatasetVisualization dataset={dataset} />
-            </div>
-            
-            <div>
-              <h3 className="font-medium mb-2">Description</h3>
-              <p className="text-sm text-muted-foreground">{dataset.description}</p>
-            </div>
-            
-            {dataset.tags && dataset.tags.length > 0 && (
-              <div>
-                <h3 className="font-medium mb-2">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {dataset.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary">{tag}</Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <h3 className="font-medium mb-2">Source</h3>
-                <p className="text-sm text-muted-foreground">{dataset.source || 'Unknown'}</p>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Date</h3>
-                <p className="text-sm text-muted-foreground">{dataset.uploadDate}</p>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="font-medium mb-2">Related Documents</h3>
-              {dataset.relatedDocs && dataset.relatedDocs.length > 0 ? (
-                <ul className="text-sm space-y-1">
-                  {dataset.relatedDocs.map((doc) => (
-                    <li key={doc.id} className="flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {doc.name} ({doc.type}, {doc.size})
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground">No related documents available</p>
-              )}
-            </div>
-          </div>
-        </ScrollArea>
+        <DetailsContent dataset={dataset} />
         
-        <DialogFooter className="flex items-center justify-between flex-row mt-4">
-          <div className="text-xs text-muted-foreground">
-            Dataset ID: {dataset.id}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Close
-            </Button>
-            <Button 
-              variant={datasetIsCached ? "secondary" : "default"}
-              onClick={handleDownloadDataset}
-              disabled={!isOnline && !datasetIsCached}
-            >
-              {datasetIsCached ? (
-                <>
-                  <Database className="h-4 w-4 mr-1" />
-                  Already Cached
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4 mr-1" />
-                  Download & Cache
-                </>
-              )}
-            </Button>
-          </div>
+        <DialogFooter>
+          <DatasetActions 
+            dataset={dataset}
+            datasetIsCached={datasetIsCached}
+            isOnline={isOnline}
+            onClose={() => onOpenChange(false)}
+            onDownload={handleDownloadDataset}
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>
