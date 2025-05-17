@@ -2,10 +2,11 @@
 import React from 'react';
 import SatelliteVisionAnalyzer from './satellite-vision/SatelliteVisionAnalyzer';
 import { ModelInfo } from '@/types/models';
+import { AnalysisOptions } from '@/types/analysis';
 
 interface SatelliteVisionCNNProps {
   modelInfo?: ModelInfo;
-  onAnalyze?: (options: any) => void;
+  onAnalyze?: (options: AnalysisOptions) => void;
   selectedDataset?: string | null;
 }
 

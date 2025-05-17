@@ -21,15 +21,6 @@ interface SatelliteVisionAnalyzerProps {
   selectedDataset?: string | null;
 }
 
-export interface AnalysisOptions {
-  dataSource: string;
-  resolution: string;
-  depth: string;
-  spectralBands: string[];
-  regionFocus?: string;
-  targetMinerals?: string[];
-}
-
 const defaultModelInfo: ModelInfo = {
   id: "satellite-vision-cnn-1",
   name: "SatelliteVision CNN",
@@ -83,22 +74,14 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
       // Call the backend analysis endpoint
       const datasetId = selectedDataset || 'demo-dataset-001';
       
-      // Convert our options to the expected format
-      const backendOptions: import('@/types/analysis').AnalysisOptions = {
-        dataSource: analysisOptions.dataSource,
-        resolution: analysisOptions.resolution,
-        depth: analysisOptions.depth,
-        spectralBands: analysisOptions.spectralBands,
-        regionFocus: analysisOptions.regionFocus,
-        targetMinerals: analysisOptions.targetMinerals,
-        deepLearning: true // Satellite vision always uses deep learning
-      };
+      // The options are already in the correct format
+      // No conversion needed as we're using the same type
       
       // Run the analysis through our backend
       const result = await runModelAnalysis(
         datasetId, 
         modelInfo.id, 
-        backendOptions
+        analysisOptions
       );
       
       // Process the results

@@ -1,18 +1,9 @@
-
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import ModelInfoAlert from './ModelInfo';
 import { ModelInfo } from '@/types/models';
-
-interface AnalysisOptions {
-  dataSource: string;
-  resolution: string;
-  depth: string;
-  spectralBands: string[];
-  regionFocus?: string;
-  targetMinerals?: string[];
-}
+import { AnalysisOptions } from '@/types/analysis';
 
 interface ConfigurationTabProps {
   analysisOptions: AnalysisOptions;
