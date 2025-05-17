@@ -5,6 +5,7 @@ import { useAnalysis } from '@/hooks/database';
 import { ModelInfo } from '@/types/models';
 import { AnalysisOptions } from '@/types/analysis';
 import { generateReport, downloadReport } from '../utils/reportGenerator';
+import { handleError } from '@/utils/errorHandler';
 
 export const useModelAnalysis = (
   modelInfo: ModelInfo,
@@ -88,13 +89,14 @@ export const useModelAnalysis = (
       }, 500);
       
     } catch (error) {
-      console.error("Analysis failed:", error);
       clearInterval(progressInterval);
       setIsAnalyzing(false);
-      toast({
-        title: "Analysis failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        variant: "destructive",
+      
+      handleError(error, "Analysis failed. Please try again with different parameters.", "high", {
+        component: "SatelliteVisionAnalyzer",
+        action: "runModelAnalysis",
+        datasetId: selectedDataset,
+        modelId: modelInfo.id
       });
     }
     
@@ -124,11 +126,9 @@ export const useModelAnalysis = (
         description: "The analysis report has been downloaded successfully.",
       });
     } catch (error) {
-      console.error("Failed to download report:", error);
-      toast({
-        title: "Download failed",
-        description: "There was a problem generating your report. Please try again.",
-        variant: "destructive",
+      handleError(error, "Failed to download report. Please try again later.", "medium", {
+        component: "SatelliteVisionAnalyzer",
+        action: "downloadReport"
       });
     }
   };

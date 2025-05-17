@@ -19,7 +19,10 @@ export const useAnalysis = () => {
       });
       return result;
     } catch (error) {
-      return handleError(error, "Error creating analysis");
+      return handleError(error, "Error creating analysis", "medium", {
+        action: "createAnalysisResult",
+        datasetId
+      });
     } finally {
       setLoading(false);
     }
@@ -30,7 +33,9 @@ export const useAnalysis = () => {
       setLoading(true);
       return await db.getAnalysisResults();
     } catch (error) {
-      handleError(error, "Error fetching analysis results");
+      handleError(error, "Error fetching analysis results", "medium", {
+        action: "getAnalysisResults"
+      });
       return [];
     } finally {
       setLoading(false);
@@ -51,7 +56,11 @@ export const useAnalysis = () => {
       });
       return result;
     } catch (error) {
-      return handleError(error, "Error running model analysis");
+      return handleError(error, "Error running model analysis", "high", {
+        action: "runModelAnalysis",
+        datasetId,
+        modelId
+      });
     } finally {
       setLoading(false);
     }

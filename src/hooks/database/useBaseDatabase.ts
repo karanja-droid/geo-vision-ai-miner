@@ -1,16 +1,21 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { handleError, ErrorSeverity } from '@/utils/errorHandler';
 
 export const useBaseDatabase = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
 
-  const handleError = (error: unknown, title: string): null => {
-    toast({
-      title,
-      description: error instanceof Error ? error.message : "An unknown error occurred",
-      variant: "destructive",
+  const handleDatabaseError = (
+    error: unknown, 
+    title: string, 
+    severity: ErrorSeverity = "medium",
+    context: Record<string, any> = {}
+  ): null => {
+    handleError(error, title, severity, {
+      component: "DatabaseOperation",
+      ...context,
     });
     return null;
   };
@@ -18,7 +23,7 @@ export const useBaseDatabase = () => {
   return {
     loading,
     setLoading,
-    handleError,
+    handleError: handleDatabaseError,
     toast
   };
 };

@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Image } from "lucide-react";
 import { ModelInfo } from '@/types/models';
 import { AnalysisOptions } from '@/types/analysis';
+import ErrorBoundary from '@/components/errors/ErrorBoundary';
+import { BetaBanner } from '@/components/feedback/BetaBanner';
 
 // Import refactored components
 import ConfigurationTab from './ConfigurationTab';
@@ -84,83 +86,87 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
   const handleAnalyzeClick = () => runAnalysis(selectedDataset);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Image className="h-5 w-5 text-primary" />
-              {modelInfo.name}
-              {modelInfo.regionSpecialization === 'africa' && (
-                <Badge className="bg-amber-600 text-white text-xs">Africa Optimized</Badge>
-              )}
-            </CardTitle>
-            <CardDescription>{modelInfo.description}</CardDescription>
+    <ErrorBoundary>
+      <Card className="w-full">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Image className="h-5 w-5 text-primary" />
+                {modelInfo.name}
+                {modelInfo.regionSpecialization === 'africa' && (
+                  <Badge className="bg-amber-600 text-white text-xs">Africa Optimized</Badge>
+                )}
+              </CardTitle>
+              <CardDescription>{modelInfo.description}</CardDescription>
+            </div>
+            <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-200">
+              {modelInfo.accuracy.toFixed(1)}% Accuracy
+            </Badge>
           </div>
-          <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-200">
-            {modelInfo.accuracy.toFixed(1)}% Accuracy
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="configuration">Configuration</TabsTrigger>
-            <TabsTrigger value="progress" disabled={!isAnalyzing && activeTab !== "progress"}>Analysis</TabsTrigger>
-            <TabsTrigger value="results" disabled={isAnalyzing || (activeTab !== "results" && progress < 100)}>Results</TabsTrigger>
-          </TabsList>
           
-          {/* Configuration Tab */}
-          <TabsContent value="configuration">
-            <ConfigurationTab 
-              analysisOptions={analysisOptions}
-              handleOptionChange={handleOptionChange}
-              handleSpectralBandToggle={handleSpectralBandToggle}
-              handleMineralTargetToggle={handleMineralTargetToggle}
-              handleRegionFocusChange={handleRegionFocusChange}
-              modelInfo={modelInfo}
-            />
-          </TabsContent>
+          <BetaBanner show={true} className="mt-4" />
+        </CardHeader>
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-3 mb-4">
+              <TabsTrigger value="configuration">Configuration</TabsTrigger>
+              <TabsTrigger value="progress" disabled={!isAnalyzing && activeTab !== "progress"}>Analysis</TabsTrigger>
+              <TabsTrigger value="results" disabled={isAnalyzing || (activeTab !== "results" && progress < 100)}>Results</TabsTrigger>
+            </TabsList>
+            
+            {/* Configuration Tab */}
+            <TabsContent value="configuration">
+              <ConfigurationTab 
+                analysisOptions={analysisOptions}
+                handleOptionChange={handleOptionChange}
+                handleSpectralBandToggle={handleSpectralBandToggle}
+                handleMineralTargetToggle={handleMineralTargetToggle}
+                handleRegionFocusChange={handleRegionFocusChange}
+                modelInfo={modelInfo}
+              />
+            </TabsContent>
+            
+            {/* Analysis Progress Tab */}
+            <TabsContent value="progress">
+              <ProgressTab progress={progress} />
+            </TabsContent>
+            
+            {/* Results Tab */}
+            <TabsContent value="results">
+              <ResultsTab 
+                analysisResults={analysisResults}
+                handleDownloadReport={handleDownloadReport}
+                handleViewFullAnalysis={handleViewFullAnalysis}
+                showMap={showMap}
+                setShowMap={setShowMap}
+              />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+        <CardFooter>
+          {activeTab === "configuration" && (
+            <Button 
+              onClick={handleAnalyzeClick} 
+              className="w-full"
+              disabled={isAnalyzing || analysisOptions.spectralBands.length === 0}
+            >
+              Run Satellite Vision Analysis
+            </Button>
+          )}
           
-          {/* Analysis Progress Tab */}
-          <TabsContent value="progress">
-            <ProgressTab progress={progress} />
-          </TabsContent>
-          
-          {/* Results Tab */}
-          <TabsContent value="results">
-            <ResultsTab 
-              analysisResults={analysisResults}
-              handleDownloadReport={handleDownloadReport}
-              handleViewFullAnalysis={handleViewFullAnalysis}
-              showMap={showMap}
-              setShowMap={setShowMap}
-            />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-      <CardFooter>
-        {activeTab === "configuration" && (
-          <Button 
-            onClick={handleAnalyzeClick} 
-            className="w-full"
-            disabled={isAnalyzing || analysisOptions.spectralBands.length === 0}
-          >
-            Run Satellite Vision Analysis
-          </Button>
-        )}
-        
-        {activeTab === "results" && (
-          <Button 
-            onClick={() => setActiveTab("configuration")} 
-            variant="outline"
-            className="w-full"
-          >
-            Configure New Analysis
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+          {activeTab === "results" && (
+            <Button 
+              onClick={() => setActiveTab("configuration")} 
+              variant="outline"
+              className="w-full"
+            >
+              Configure New Analysis
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+    </ErrorBoundary>
   );
 };
 
