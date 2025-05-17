@@ -43,7 +43,7 @@ const MapSidebar: React.FC<MapSidebarProps> = ({
         <TabsContent value="regions" className="flex-1 overflow-auto">
           <Card className="p-4">
             <RegionSelector
-              activeRegion={regionFocus}
+              regionFocus={regionFocus}
               onRegionChange={onRegionChange}
             />
           </Card>

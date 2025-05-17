@@ -3,14 +3,7 @@ import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LayersTab } from './sidebar-tabs/LayersTab';
 import { LocationsTab } from './sidebar-tabs/LocationsTab';
-
-interface MapLayer {
-  id: string;
-  name: string;
-  type: string;
-  visible: boolean;
-  opacity: number;
-}
+import { MapLayer } from '@/hooks/useMapData';
 
 interface MapSidebarProps {
   activeTab: string;
@@ -23,6 +16,7 @@ interface MapSidebarProps {
   flyToLocation: (location: string) => void;
   highlightCountry: (country: string) => void;
   africaPolygons: {id: string, name: string, paths: {lat: number, lng: number}[], fillColor: string}[];
+  loading?: boolean;
 }
 
 const MapSidebar: React.FC<MapSidebarProps> = ({
@@ -35,7 +29,8 @@ const MapSidebar: React.FC<MapSidebarProps> = ({
   toggleFullScreen,
   flyToLocation,
   highlightCountry,
-  africaPolygons
+  africaPolygons,
+  loading
 }) => {
   return (
     <div className="md:col-span-1">
@@ -52,6 +47,7 @@ const MapSidebar: React.FC<MapSidebarProps> = ({
             handleLayerToggle={handleLayerToggle}
             handleOpacityChange={handleOpacityChange}
             toggleFullScreen={toggleFullScreen}
+            loading={loading}
           />
         </TabsContent>
         

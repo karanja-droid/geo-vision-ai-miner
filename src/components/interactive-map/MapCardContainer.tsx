@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import { Card } from "@/components/ui/card";
 import { LoadScript } from '@react-google-maps/api';
 import MapContainer from './MapContainer';
+import { MapLayer } from '@/hooks/useMapData';
 
 interface MapCardContainerProps {
   apiKey: string;
@@ -13,9 +14,9 @@ interface MapCardContainerProps {
   zoom: number;
   mapType: string;
   layers: MapLayer[];
-  selectedMarker: {lat: number, lng: number, name: string, type: string} | null;
-  setSelectedMarker: React.Dispatch<React.SetStateAction<{lat: number, lng: number, name: string, type: string} | null>>;
-  sampleMarkers: {lng: number, lat: number, name: string, type: string}[];
+  selectedMarker: {lat: number, lng: number, name: string, type: string, properties?: Record<string, any>} | null;
+  setSelectedMarker: React.Dispatch<React.SetStateAction<{lat: number, lng: number, name: string, type: string, properties?: Record<string, any>} | null>>;
+  sampleMarkers: {lng: number, lat: number, name: string, type: string, properties?: Record<string, any>}[];
   africaPolygons: {id: string, name: string, paths: {lat: number, lng: number}[], fillColor: string}[];
   handleMapLoad: () => void;
   getMapOptions: () => {
@@ -24,14 +25,6 @@ interface MapCardContainerProps {
     fullscreenControl: boolean;
     mapTypeControl: boolean;
   };
-}
-
-interface MapLayer {
-  id: string;
-  name: string;
-  type: string;
-  visible: boolean;
-  opacity: number;
 }
 
 const MapCardContainer: React.FC<MapCardContainerProps> = ({

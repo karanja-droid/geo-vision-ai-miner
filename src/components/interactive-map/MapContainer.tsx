@@ -10,9 +10,9 @@ interface MapContainerProps {
   zoom: number;
   mapType: string;
   layers: MapLayer[];
-  selectedMarker: {lat: number, lng: number, name: string, type: string} | null;
-  setSelectedMarker: React.Dispatch<React.SetStateAction<{lat: number, lng: number, name: string, type: string} | null>>;
-  sampleMarkers: {lng: number, lat: number, name: string, type: string}[];
+  selectedMarker: {lat: number, lng: number, name: string, type: string, properties?: Record<string, any>} | null;
+  setSelectedMarker: React.Dispatch<React.SetStateAction<{lat: number, lng: number, name: string, type: string, properties?: Record<string, any>} | null>>;
+  sampleMarkers: {lng: number, lat: number, name: string, type: string, properties?: Record<string, any>}[];
   africaPolygons: {id: string, name: string, paths: {lat: number, lng: number}[], fillColor: string}[];
   handleMapLoad: () => void;
   getMapOptions: () => {
