@@ -65,6 +65,17 @@ const AccessRequestsManagement: React.FC<AccessRequestsManagementProps> = ({
         
       if (requestError) throw requestError;
       
+      // Log this action
+      await supabase.rpc('record_audit_log', {
+        action: 'update',
+        entity: 'admin_request',
+        entity_id: requestId,
+        details: JSON.stringify({ 
+          status: approved ? 'approved' : 'rejected',
+          user_id: userId
+        })
+      });
+      
       // Update local state
       setAdminRequests(adminRequests.map(request => 
         request.id === requestId 

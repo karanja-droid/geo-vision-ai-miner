@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/users';
 
@@ -16,6 +16,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   allowedRoles = [] 
 }) => {
   const { isAuthenticated, loading, isPremiumUser, isTrialActive, user } = useAuth();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Store the intended URL to redirect the user after login
+    if (!isAuthenticated && !loading) {
+      sessionStorage.setItem('redirectAfterLogin', location.pathname);
+    }
+  }, [isAuthenticated, loading, location.pathname]);
   
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;

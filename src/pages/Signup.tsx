@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -7,9 +8,10 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/components/ui/use-toast';
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -26,8 +28,11 @@ const signupSchema = z.object({
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 const Signup: React.FC = () => {
-  const { signUp, loading } = useAuth();
+  const { signUp } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -42,13 +47,40 @@ const Signup: React.FC = () => {
   const onSubmit = async (values: SignupFormValues) => {
     // Check for insecure connection
     if (process.env.NODE_ENV === "production" && window.location.protocol !== "https:") {
-      alert("Warning: Submitting sensitive information over an insecure connection.");
+      toast({
+        title: "Security Warning",
+        description: "Submitting sensitive information over an insecure connection.",
+        variant: "destructive",
+      });
       return;
     }
     
     setIsSubmitting(true);
+    setSignupError(null);
+    
     try {
       await signUp(values.email, values.password, values.name);
+      
+      toast({
+        title: "Account created",
+        description: "Your 10-day free trial has started!",
+      });
+      
+      navigate('/');
+    } catch (error) {
+      console.error('Signup error:', error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message
+        : 'Failed to create account. Please try again.';
+      
+      setSignupError(errorMessage);
+      
+      toast({
+        title: "Signup failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -67,12 +99,12 @@ const Signup: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert variant="destructive" className="mb-4">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              This is a demo app with mock authentication. Do not enter real passwords.
-            </AlertDescription>
-          </Alert>
+          {signupError && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>{signupError}</AlertDescription>
+            </Alert>
+          )}
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

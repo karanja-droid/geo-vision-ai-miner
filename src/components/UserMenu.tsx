@@ -11,6 +11,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from 'react-i18next';
 import { AuthUser } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { ShieldCheck, User, LogOut } from 'lucide-react';
 
 interface UserMenuProps {
   user: AuthUser;
@@ -19,6 +21,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   const getInitials = (name: string) => {
     return name
@@ -26,6 +29,23 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
       .map(part => part.charAt(0))
       .join('')
       .toUpperCase();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await onLogout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  const navigateToProfile = () => {
+    navigate('/user-profile');
+  };
+
+  const navigateToAdmin = () => {
+    navigate('/admin-dashboard');
   };
 
   return (
@@ -45,20 +65,25 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Button variant="ghost" className="w-full justify-start" asChild>
-            <a href="/user-profile">{t('common.profile')}</a>
-          </Button>
+        <DropdownMenuItem onClick={navigateToProfile}>
+          <User className="mr-2 h-4 w-4" />
+          {t('common.profile')}
         </DropdownMenuItem>
+        
+        {user.role === 'admin' && (
+          <DropdownMenuItem onClick={navigateToAdmin}>
+            <ShieldCheck className="mr-2 h-4 w-4" />
+            Admin Dashboard
+          </DropdownMenuItem>
+        )}
+        
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Button
-            variant="ghost" 
-            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
-            onClick={onLogout}
-          >
-            {t('common.logout')}
-          </Button>
+        <DropdownMenuItem 
+          onClick={handleLogout}
+          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          {t('common.logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

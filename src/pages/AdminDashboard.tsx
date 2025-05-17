@@ -5,13 +5,15 @@ import { supabase } from '@/lib/supabase';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Users, FileText } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
-// Import the new components
+// Import the admin components
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminAccessDenied from '@/components/admin/AdminAccessDenied';
 import UserManagement from '@/components/admin/UserManagement';
 import AccessRequestsManagement from '@/components/admin/AccessRequestsManagement';
 import AuditLogsViewer from '@/components/admin/AuditLogsViewer';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface Profile {
   id: string;
@@ -46,6 +48,7 @@ interface AdminRequest {
 
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [adminRequests, setAdminRequests] = useState<AdminRequest[]>([]);
@@ -55,32 +58,17 @@ const AdminDashboard: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch user profiles with email from auth.users
+        // Fetch user profiles
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
-          .select(`
-            id,
-            name,
-            role,
-            subscription_tier,
-            trial_end_date,
-            created_at
-          `)
+          .select('*')
           .order('created_at', { ascending: false });
           
         if (profilesError) {
           throw profilesError;
         }
 
-        // For each profile, fetch the email from auth.users using admin functions
-        // This would typically be done through a Supabase Edge Function with admin rights
-        // For now, we'll enrich them with a placeholder email
-        const enhancedProfiles = profilesData.map(profile => ({
-          ...profile,
-          email: `user-${profile.id.substring(0, 6)}@example.com`, // This is a placeholder
-        }));
-        
-        setProfiles(enhancedProfiles);
+        setProfiles(profilesData || []);
         
         // Fetch audit logs
         const { data: logsData, error: logsError } = await supabase
@@ -105,7 +93,7 @@ const AdminDashboard: React.FC = () => {
           throw requestsError;
         }
         
-        // Enrich admin requests with user details
+        // Enrich admin requests with user names
         const enrichedRequests = await Promise.all((requestsData || []).map(async (request) => {
           // Get user name from profiles
           const { data: userData } = await supabase
@@ -123,71 +111,74 @@ const AdminDashboard: React.FC = () => {
         setAdminRequests(enrichedRequests);
       } catch (error) {
         console.error('Error fetching admin data:', error);
+        toast({
+          title: "Data loading failed",
+          description: "Could not load administrative data. Please try again.",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
     
     fetchData();
-  }, []);
-  
-  if (!user || user.role !== 'admin') {
-    return <AdminAccessDenied />;
-  }
+  }, [toast]);
   
   const pendingRequestsCount = adminRequests.filter(r => r.status === 'pending').length;
   
   return (
-    <div className="container mx-auto py-6 px-4 md:px-6">
-      <AdminHeader />
-      
-      <Tabs defaultValue="users" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="users" className="flex items-center">
-            <Users className="mr-2 h-4 w-4" />
-            Users
-          </TabsTrigger>
-          <TabsTrigger value="requests" className="flex items-center">
-            <Shield className="mr-2 h-4 w-4" />
-            Access Requests
-            {pendingRequestsCount > 0 && (
-              <Badge className="ml-2 bg-amber-500">
-                {pendingRequestsCount}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="audit" className="flex items-center">
-            <FileText className="mr-2 h-4 w-4" />
-            Audit Logs
-          </TabsTrigger>
-        </TabsList>
+    <ProtectedRoute allowedRoles={['admin']}>
+      <div className="container mx-auto py-6 px-4 md:px-6">
+        <AdminHeader />
         
-        <TabsContent value="users">
-          <UserManagement 
-            profiles={profiles} 
-            loading={loading} 
-            setProfiles={setProfiles}
-          />
-        </TabsContent>
-        
-        <TabsContent value="requests">
-          <AccessRequestsManagement 
-            adminRequests={adminRequests}
-            loading={loading}
-            setAdminRequests={setAdminRequests}
-            setProfiles={setProfiles}
-            currentUserId={user?.id}
-          />
-        </TabsContent>
-        
-        <TabsContent value="audit">
-          <AuditLogsViewer 
-            auditLogs={auditLogs} 
-            loading={loading}
-          />
-        </TabsContent>
-      </Tabs>
-    </div>
+        <Tabs defaultValue="users" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="users" className="flex items-center">
+              <Users className="mr-2 h-4 w-4" />
+              Users
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center">
+              <Shield className="mr-2 h-4 w-4" />
+              Access Requests
+              {pendingRequestsCount > 0 && (
+                <Badge className="ml-2 bg-amber-500">
+                  {pendingRequestsCount}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="audit" className="flex items-center">
+              <FileText className="mr-2 h-4 w-4" />
+              Audit Logs
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="users">
+            <UserManagement 
+              profiles={profiles} 
+              loading={loading} 
+              setProfiles={setProfiles}
+            />
+          </TabsContent>
+          
+          <TabsContent value="requests">
+            <AccessRequestsManagement 
+              adminRequests={adminRequests}
+              loading={loading}
+              setAdminRequests={setAdminRequests}
+              setProfiles={setProfiles}
+              currentUserId={user?.id || ''}
+            />
+          </TabsContent>
+          
+          <TabsContent value="audit">
+            <AuditLogsViewer 
+              auditLogs={auditLogs} 
+              loading={loading}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </ProtectedRoute>
   );
 };
 

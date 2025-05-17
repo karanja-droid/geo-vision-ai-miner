@@ -1,26 +1,15 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase, mapSupabaseUser } from '@/lib/supabase';
+import { AuthUser } from '@/types/auth';
 
 export type SubscriptionTier = 'free' | 'basic' | 'premium';
-
-export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  role?: string;
-  organization?: string;
-  subscription?: {
-    tier: SubscriptionTier;
-    trialEnd: Date | null;
-    isActive: boolean;
-  };
-}
 
 export interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isTrialActive: boolean;
-  daysLeftInTrial: number;
+  daysLeftInTrial: number | null;
   isPremiumUser: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -29,84 +18,184 @@ export interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>({
-    id: '1',
-    email: 'demo@example.com',
-    name: 'Demo User',
-    role: 'User',
-    organization: 'Demo Org',
-    subscription: {
-      tier: 'free',
-      trialEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
-      isActive: true
-    }
-  });
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  const [loading, setLoading] = useState(false);
+  // Check for a user session when the component mounts
+  useEffect(() => {
+    const checkSession = async () => {
+      setLoading(true);
+      
+      try {
+        // Get current session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          throw error;
+        }
+        
+        if (session?.user) {
+          const authUser = await mapSupabaseUser(session.user);
+          setUser(authUser);
+        }
+      } catch (error) {
+        console.error('Error checking authentication session:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkSession();
+    
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const authUser = await mapSupabaseUser(session.user);
+        setUser(authUser);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+    
+    // Clean up subscription when component unmounts
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   
   const isAuthenticated = !!user;
-  const isTrialActive = user?.subscription?.isActive || false;
-  const daysLeftInTrial = 14;
+  
+  const calculateDaysLeftInTrial = (): number | null => {
+    if (!user?.subscription?.trialEnd) return null;
+    
+    const trialEnd = new Date(user.subscription.trialEnd);
+    const now = new Date();
+    const diffTime = trialEnd.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays > 0 ? diffDays : 0;
+  };
+  
+  const daysLeftInTrial = calculateDaysLeftInTrial();
+  const isTrialActive = !!daysLeftInTrial && daysLeftInTrial > 0;
   const isPremiumUser = user?.subscription?.tier === 'premium';
 
+  // Login with email and password
   const login = async (email: string, password: string) => {
-    // Simulate authentication
     setLoading(true);
+    
     try {
-      setUser({
-        id: '1',
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        name: 'Demo User',
-        role: 'User',
-        organization: 'Demo Org',
-        subscription: {
-          tier: 'free',
-          trialEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-          isActive: true
-        }
+        password
       });
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (data?.user) {
+        const authUser = await mapSupabaseUser(data.user);
+        setUser(authUser);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = async () => {
-    // Simulate logout
-    setLoading(true);
-    try {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Sign up with email, password and name
   const signup = async (email: string, password: string, name: string) => {
-    // Simulate signup
     setLoading(true);
+    
     try {
-      setUser({
-        id: '2',
+      // Create auth user
+      const { data, error } = await supabase.auth.signUp({
         email,
-        name,
-        role: 'User',
-        organization: '',
-        subscription: {
-          tier: 'free',
-          trialEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-          isActive: true
-        }
+        password,
       });
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (!data?.user) {
+        throw new Error('Sign up failed. No user returned.');
+      }
+      
+      // Create profile entry
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: data.user.id,
+            name,
+            role: 'geologist',
+            subscription_tier: 'free',
+            trial_end_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days trial
+          }
+        ]);
+      
+      if (profileError) {
+        console.error('Error creating user profile:', profileError);
+        throw profileError;
+      }
+      
+      // Log the user in
+      await login(email, password);
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Aliases for consistent naming with other components
+  // Logout
+  const logout = async () => {
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Password reset
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password',
+      });
+      
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      throw error;
+    }
+  };
+
+  // Aliases for consistent naming
   const signIn = login;
   const signUp = signup;
   const signOut = logout;
@@ -124,7 +213,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       signup,
       signIn,
       signUp,
-      signOut
+      signOut,
+      resetPassword
     }}>
       {children}
     </AuthContext.Provider>

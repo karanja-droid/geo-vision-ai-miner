@@ -55,6 +55,14 @@ const AdminRequestButton: React.FC = () => {
       
       setExistingRequest(data);
       
+      // Log this action
+      await supabase.rpc('record_audit_log', {
+        action: 'create',
+        entity: 'admin_request',
+        entity_id: data.id,
+        details: JSON.stringify({ user_id: user.id })
+      });
+      
       toast({
         title: "Request submitted",
         description: "Your request for admin access has been submitted for review.",

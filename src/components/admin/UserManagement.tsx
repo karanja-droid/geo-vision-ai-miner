@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Table, TableHeader, TableRow, TableHead, 
   TableBody, TableCell 
@@ -33,6 +33,36 @@ const UserManagement: React.FC<UserManagementProps> = ({
   setProfiles
 }) => {
   const { toast } = useToast();
+  const [userEmails, setUserEmails] = useState<Record<string, string>>({});
+
+  // Fetch emails for users when component mounts
+  useEffect(() => {
+    const fetchUserEmails = async () => {
+      try {
+        // In a real implementation with proper RLS policies, you'd use an admin API
+        // or server-side endpoint to fetch user emails
+        const { data, error } = await supabase.auth.admin.listUsers();
+        
+        if (error) {
+          console.error("Error fetching user emails:", error);
+          return;
+        }
+        
+        const emailMap: Record<string, string> = {};
+        data?.users?.forEach(user => {
+          if (user.id && user.email) {
+            emailMap[user.id] = user.email;
+          }
+        });
+        
+        setUserEmails(emailMap);
+      } catch (error) {
+        console.error("Error in fetchUserEmails:", error);
+      }
+    };
+    
+    fetchUserEmails();
+  }, [profiles]);
 
   const changeUserRole = async (userId: string, newRole: string) => {
     try {
@@ -49,6 +79,14 @@ const UserManagement: React.FC<UserManagementProps> = ({
       setProfiles(profiles.map(profile => 
         profile.id === userId ? { ...profile, role: newRole } : profile
       ));
+      
+      // Log this action in audit_logs
+      await supabase.rpc('record_audit_log', {
+        action: 'update',
+        entity: 'profile',
+        entity_id: userId,
+        details: JSON.stringify({ field: 'role', new_value: newRole })
+      });
       
       toast({
         title: "Role updated",
@@ -102,38 +140,46 @@ const UserManagement: React.FC<UserManagementProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {profiles.map((profile) => (
-                  <TableRow key={profile.id}>
-                    <TableCell>{profile.name}</TableCell>
-                    <TableCell>{profile.email}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{profile.role}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      {getSubscriptionBadge(profile.subscription_tier)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => changeUserRole(profile.id, 'admin')}
-                          disabled={profile.role === 'admin'}
-                        >
-                          Make Admin
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => changeUserRole(profile.id, 'geologist')}
-                          disabled={profile.role === 'geologist'}
-                        >
-                          Make Geologist
-                        </Button>
-                      </div>
+                {profiles.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-4">
+                      No users found
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  profiles.map((profile) => (
+                    <TableRow key={profile.id}>
+                      <TableCell>{profile.name}</TableCell>
+                      <TableCell>{userEmails[profile.id] || 'Loading...'}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{profile.role}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        {getSubscriptionBadge(profile.subscription_tier)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => changeUserRole(profile.id, 'admin')}
+                            disabled={profile.role === 'admin'}
+                          >
+                            Make Admin
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => changeUserRole(profile.id, 'geologist')}
+                            disabled={profile.role === 'geologist'}
+                          >
+                            Make Geologist
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>

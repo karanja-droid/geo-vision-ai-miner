@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -7,9 +8,10 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { Shield, Check } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Shield, Check, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -43,7 +45,7 @@ const backgroundImages = [
 ];
 
 const Login: React.FC = () => {
-  const { signIn, loading } = useAuth();
+  const { signIn, resetPassword } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -51,6 +53,7 @@ const Login: React.FC = () => {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const { toast } = useToast();
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     // Rotate background images every 8 seconds
@@ -84,6 +87,12 @@ const Login: React.FC = () => {
     
     try {
       await signIn(values.email, values.password);
+      navigate('/');
+      
+      toast({
+        title: "Login successful",
+        description: "Welcome back to GeoVision AI Miner",
+      });
     } catch (error) {
       console.error('Login error:', error);
       
@@ -114,8 +123,7 @@ const Login: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate sending password reset email
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await resetPassword(forgotEmail);
       
       setResetEmailSent(true);
       toast({
