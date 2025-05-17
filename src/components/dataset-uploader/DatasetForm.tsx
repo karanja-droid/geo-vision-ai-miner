@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,7 +65,7 @@ export const DatasetForm: React.FC = () => {
             toast({
               title: "Validation warning",
               description: validationResult.warnings[0],
-              variant: "warning",
+              variant: "default",
             });
           }
         }
@@ -188,7 +187,11 @@ export const DatasetForm: React.FC = () => {
         );
         
         if (uploadResult.validationResult.warnings?.length) {
-          setValidationMessage(prev => `${prev} Warnings: ${uploadResult.validationResult.warnings.join(', ')}`);
+          const currentMessage = uploadResult.validationResult.isValid 
+            ? `File validated successfully. ${uploadResult.validationResult.features || 'Unknown'} features detected.`
+            : `Validation failed: ${uploadResult.validationResult.errors.join(', ')}`;
+          const warningsText = `${currentMessage} Warnings: ${uploadResult.validationResult.warnings.join(', ')}`;
+          setValidationMessage(warningsText);
         }
       }
       
