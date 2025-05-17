@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabase';
 import { ShapefileValidationResult } from '@/types';
 import { saveShapefileValidation } from './analysis';
+import { ShapefileProcessingService } from '@/services/ShapefileProcessingService';
 
 // File upload to Supabase storage
 export const uploadDatasetFile = async (
@@ -50,30 +51,43 @@ export const getFilePublicUrl = (filePath: string): string => {
   return data.publicUrl;
 };
 
-// Create function to handle file processing and potential validation
+// Enhanced function to handle file processing and validation
 export const processDatasetFile = async (
   file: File,
   datasetId: string
 ): Promise<{filePath: string, validationResult?: ShapefileValidationResult}> => {
-  // Upload file first
-  const filePath = await uploadDatasetFile(file, datasetId);
-  
-  // If shapefile, try to validate
-  if (file.name.endsWith('.shp') || file.name.endsWith('.geojson')) {
-    // This would be handled by a separate function, possibly via edge function
-    // For now, we return a mock validation
-    const mockValidation: ShapefileValidationResult = {
-      isValid: true,
-      errors: [],
-      warnings: [],
-      features: 10,
-      crs: 'EPSG:4326'
-    };
+  try {
+    const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
+    const isGeospatial = ['shp', 'geojson', 'kml', 'zip'].includes(fileExtension);
     
-    await saveShapefileValidation(mockValidation, filePath);
+    // For geospatial files, use the ShapefileProcessingService
+    if (isGeospatial) {
+      const processingResult = await ShapefileProcessingService.processShapefile(file, datasetId);
+      
+      // Update the dataset with extracted metadata if available
+      if (processingResult.metadata) {
+        await supabase
+          .from('datasets')
+          .update({ 
+            validated: processingResult.validationResult.isValid,
+            // Store any additional metadata as needed
+            metadata: processingResult.metadata
+          })
+          .eq('id', datasetId);
+      }
+      
+      return {
+        filePath: processingResult.filePath,
+        validationResult: processingResult.validationResult
+      };
+    } 
     
-    return { filePath, validationResult: mockValidation };
+    // For non-geospatial files, use the standard upload
+    const filePath = await uploadDatasetFile(file, datasetId);
+    
+    return { filePath };
+  } catch (error) {
+    console.error('Error processing dataset file:', error);
+    throw error;
   }
-  
-  return { filePath };
 };

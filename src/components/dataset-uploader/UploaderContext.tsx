@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { StakeholderOrganization } from '@/types';
+import { ShapefileValidationResult } from '@/types';
 
 interface UploaderContextType {
   name: string;
@@ -17,10 +18,17 @@ interface UploaderContextType {
   setFile: (value: File | null) => void;
   uploadProgress: number;
   setUploadProgress: (value: number) => void;
-  uploadStatus: 'idle' | 'uploading' | 'success' | 'error';
-  setUploadStatus: (value: 'idle' | 'uploading' | 'success' | 'error') => void;
+  uploadStatus: 'idle' | 'validating' | 'uploading' | 'processing' | 'success' | 'error';
+  setUploadStatus: (value: 'idle' | 'validating' | 'uploading' | 'processing' | 'success' | 'error') => void;
   validationMessage: string;
   setValidationMessage: (value: string) => void;
+  fileValidation: ShapefileValidationResult | null;
+  setFileValidation: (value: ShapefileValidationResult | null) => void;
+  processingStage: string;
+  setProcessingStage: (value: string) => void;
+  fileMetadata: Record<string, any> | null;
+  setFileMetadata: (value: Record<string, any> | null) => void;
+  resetUploader: () => void;
 }
 
 const UploaderContext = createContext<UploaderContextType | undefined>(undefined);
@@ -33,8 +41,26 @@ export const UploaderProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [organization, setOrganization] = useState<StakeholderOrganization | ''>('');
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'validating' | 'uploading' | 'processing' | 'success' | 'error'>('idle');
   const [validationMessage, setValidationMessage] = useState('');
+  const [fileValidation, setFileValidation] = useState<ShapefileValidationResult | null>(null);
+  const [processingStage, setProcessingStage] = useState('');
+  const [fileMetadata, setFileMetadata] = useState<Record<string, any> | null>(null);
+
+  const resetUploader = () => {
+    setName('');
+    setDescription('');
+    setType('');
+    setSource('');
+    setOrganization('');
+    setFile(null);
+    setUploadProgress(0);
+    setUploadStatus('idle');
+    setValidationMessage('');
+    setFileValidation(null);
+    setProcessingStage('');
+    setFileMetadata(null);
+  };
 
   const value = {
     name, setName,
@@ -45,7 +71,11 @@ export const UploaderProvider: React.FC<{ children: ReactNode }> = ({ children }
     file, setFile,
     uploadProgress, setUploadProgress,
     uploadStatus, setUploadStatus,
-    validationMessage, setValidationMessage
+    validationMessage, setValidationMessage,
+    fileValidation, setFileValidation,
+    processingStage, setProcessingStage,
+    fileMetadata, setFileMetadata,
+    resetUploader
   };
 
   return (

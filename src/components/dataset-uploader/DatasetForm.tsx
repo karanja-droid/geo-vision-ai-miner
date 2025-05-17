@@ -1,15 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileType, Upload } from 'lucide-react';
+import { AlertCircle, FileType, Upload } from 'lucide-react';
 import { StakeholderOrganization } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useUploaderContext } from './UploaderContext';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ShapefileProcessingService } from '@/services/ShapefileProcessingService';
 
 export const DatasetForm: React.FC = () => {
   const { toast } = useToast();
@@ -23,8 +25,13 @@ export const DatasetForm: React.FC = () => {
     file, setFile,
     uploadStatus, setUploadStatus,
     setUploadProgress,
-    setValidationMessage
+    setValidationMessage,
+    setFileValidation,
+    setProcessingStage,
+    setFileMetadata
   } = useUploaderContext();
+  
+  const [isValidating, setIsValidating] = useState(false);
   
   const organizations: StakeholderOrganization[] = [
     'Geological Survey Department',
@@ -33,6 +40,49 @@ export const DatasetForm: React.FC = () => {
     'Environmental Regulator',
     'Academic Institution'
   ];
+  
+  // When file changes, perform initial validation
+  useEffect(() => {
+    const validateFile = async () => {
+      if (!file) return;
+      
+      try {
+        setIsValidating(true);
+        const fileExtension = file.name.split('.').pop()?.toLowerCase();
+        const isGeospatial = ['shp', 'geojson', 'kml', 'zip'].includes(fileExtension || '');
+        
+        if (isGeospatial) {
+          setProcessingStage('Initial validation');
+          const validationResult = await ShapefileProcessingService.validateShapefile(file);
+          setFileValidation(validationResult);
+          
+          if (!validationResult.isValid) {
+            toast({
+              title: "Validation warning",
+              description: validationResult.errors[0] || "File validation failed",
+              variant: "destructive",
+            });
+          } else if (validationResult.warnings.length > 0) {
+            toast({
+              title: "Validation warning",
+              description: validationResult.warnings[0],
+              variant: "warning",
+            });
+          }
+        }
+      } catch (error) {
+        toast({
+          title: "Validation error",
+          description: error instanceof Error ? error.message : "An error occurred during validation",
+          variant: "destructive",
+        });
+      } finally {
+        setIsValidating(false);
+      }
+    };
+    
+    validateFile();
+  }, [file, toast, setFileValidation, setProcessingStage]);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -43,7 +93,7 @@ export const DatasetForm: React.FC = () => {
       const extension = selectedFile.name.split('.').pop()?.toLowerCase();
       let detectedType = '';
       
-      if (['shp', 'geojson', 'kml'].includes(extension || '')) {
+      if (['shp', 'geojson', 'kml', 'zip'].includes(extension || '')) {
         detectedType = 'Geological';
       } else if (['tif', 'tiff', 'jpg', 'png'].includes(extension || '')) {
         detectedType = 'Remote Sensing';
@@ -96,10 +146,15 @@ export const DatasetForm: React.FC = () => {
     }
     
     try {
-      setUploadStatus('uploading');
-      setUploadProgress(10);
+      // Set initial status
+      setUploadStatus('validating');
+      setUploadProgress(5);
+      setProcessingStage('Validating file format');
       
       // Create dataset record first
+      setUploadProgress(15);
+      setProcessingStage('Creating dataset record');
+      
       const dataset = await createDataset({
         name,
         description,
@@ -114,35 +169,47 @@ export const DatasetForm: React.FC = () => {
       }
       
       setUploadProgress(30);
+      setUploadStatus('uploading');
+      setProcessingStage('Uploading file');
       
       // Now upload and process the file
       const uploadResult = await processDatasetFile(file, dataset.id);
       
-      setUploadProgress(90);
+      setUploadProgress(70);
+      setUploadStatus('processing');
+      setProcessingStage('Processing geospatial data');
       
       if (uploadResult?.validationResult) {
+        setFileValidation(uploadResult.validationResult);
         setValidationMessage(
           uploadResult.validationResult.isValid 
-            ? "File validated successfully"
+            ? `File validated successfully. ${uploadResult.validationResult.features || 'Unknown'} features detected.`
             : `Validation failed: ${uploadResult.validationResult.errors.join(', ')}`
         );
+        
+        if (uploadResult.validationResult.warnings?.length) {
+          setValidationMessage(prev => `${prev} Warnings: ${uploadResult.validationResult.warnings.join(', ')}`);
+        }
       }
       
+      setUploadProgress(90);
+      setProcessingStage('Finalizing');
+      
+      // Set metadata for display
+      setFileMetadata({
+        fileName: file.name,
+        fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'Unknown',
+        fileSize: file.size,
+        uploadPath: uploadResult.filePath,
+        datasetId: dataset.id,
+        features: uploadResult.validationResult?.features || 'Unknown',
+        crs: uploadResult.validationResult?.crs || 'Unknown'
+      });
+      
+      // Complete the upload
       setUploadProgress(100);
       setUploadStatus('success');
-      
-      // Reset form after successful upload
-      setTimeout(() => {
-        setName('');
-        setDescription('');
-        setType('');
-        setSource('');
-        setOrganization('');
-        setFile(null);
-        setUploadStatus('idle');
-        setUploadProgress(0);
-        setValidationMessage('');
-      }, 3000);
+      setProcessingStage('Complete');
       
     } catch (error) {
       console.error("Upload error:", error);
@@ -167,7 +234,7 @@ export const DatasetForm: React.FC = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter dataset name"
-              disabled={uploadStatus === 'uploading'}
+              disabled={uploadStatus !== 'idle'}
               required
             />
           </div>
@@ -181,7 +248,7 @@ export const DatasetForm: React.FC = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter dataset description"
-              disabled={uploadStatus === 'uploading'}
+              disabled={uploadStatus !== 'idle'}
               rows={3}
             />
           </div>
@@ -193,7 +260,7 @@ export const DatasetForm: React.FC = () => {
             <Select
               value={type}
               onValueChange={setType}
-              disabled={uploadStatus === 'uploading'}
+              disabled={uploadStatus !== 'idle'}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select type" />
@@ -219,7 +286,7 @@ export const DatasetForm: React.FC = () => {
               value={source}
               onChange={(e) => setSource(e.target.value)}
               placeholder="Data source (e.g., survey name, agency)"
-              disabled={uploadStatus === 'uploading'}
+              disabled={uploadStatus !== 'idle'}
             />
           </div>
           
@@ -230,7 +297,7 @@ export const DatasetForm: React.FC = () => {
             <Select
               value={organization}
               onValueChange={(value) => setOrganization(value as StakeholderOrganization)}
-              disabled={uploadStatus === 'uploading'}
+              disabled={uploadStatus !== 'idle'}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select organization" />
@@ -252,7 +319,7 @@ export const DatasetForm: React.FC = () => {
                 id="file"
                 type="file"
                 onChange={handleFileChange}
-                disabled={uploadStatus === 'uploading'}
+                disabled={uploadStatus !== 'idle' || isValidating}
                 className="flex-1"
               />
               {file && (
@@ -269,13 +336,22 @@ export const DatasetForm: React.FC = () => {
             </p>
           </div>
           
+          {isValidating && (
+            <Alert>
+              <AlertCircle size={16} />
+              <AlertDescription>
+                Validating file format...
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Button 
             type="submit" 
             className="w-full"
-            disabled={uploadStatus === 'uploading' || loading}
+            disabled={uploadStatus !== 'idle' || loading || isValidating}
           >
-            {uploadStatus === 'uploading' ? (
-              <>Uploading...</>
+            {uploadStatus !== 'idle' ? (
+              <>Processing...</>
             ) : (
               <>
                 <Upload size={16} className="mr-1" />
