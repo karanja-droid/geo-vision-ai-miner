@@ -3,16 +3,16 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Download, FileText, MapPin, Database } from "lucide-react";
-import { Dataset } from '@/data/datasetLibraryData';
+import { DatasetInfo } from '@/types';
 import { DatasetVisualization } from './DatasetVisualization';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 import { cacheDataset } from '@/services/DatasetCacheService';
 
 interface DatasetDetailsDialogProps {
-  dataset: Dataset | null;
+  dataset: DatasetInfo | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -43,18 +43,18 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
       // Create text content for the dataset
       const textContent = `
         DATASET: ${dataset.name}
-        FORMAT: ${dataset.format}
+        FORMAT: ${dataset.format || 'Unknown'}
         SIZE: ${dataset.size}
-        SOURCE: ${dataset.source}
-        DATE: ${dataset.date}
-        COUNTRY: ${dataset.country}
-        COORDINATES: ${dataset.coordinates.join(', ')}
+        SOURCE: ${dataset.source || 'Unknown'}
+        DATE: ${dataset.uploadDate}
+        COUNTRY: ${dataset.country || 'Unknown'}
+        COORDINATES: ${dataset.coordinates ? dataset.coordinates.join(', ') : 'Unknown'}
         
         DESCRIPTION:
-        ${dataset.description}
+        ${dataset.description || 'No description available'}
         
         TAGS:
-        ${dataset.tags.join(', ')}
+        ${dataset.tags ? dataset.tags.join(', ') : 'No tags available'}
         
         METADATA:
         Downloaded: ${new Date().toLocaleString()}
@@ -102,9 +102,9 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
           <DialogDescription>
             <div className="flex items-center mt-1">
               <MapPin className="h-4 w-4 mr-1" />
-              <span>{dataset.country}</span>
+              <span>{dataset.country || 'Unknown'}</span>
               <span className="mx-2">•</span>
-              <span>{dataset.format}</span>
+              <span>{dataset.format || 'Unknown'}</span>
               <span className="mx-2">•</span>
               <span>{dataset.size}</span>
               {datasetIsCached && (
@@ -130,23 +130,25 @@ export const DatasetDetailsDialog: React.FC<DatasetDetailsDialogProps> = ({
               <p className="text-sm text-muted-foreground">{dataset.description}</p>
             </div>
             
-            <div>
-              <h3 className="font-medium mb-2">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {dataset.tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary">{tag}</Badge>
-                ))}
+            {dataset.tags && dataset.tags.length > 0 && (
+              <div>
+                <h3 className="font-medium mb-2">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {dataset.tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary">{tag}</Badge>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h3 className="font-medium mb-2">Source</h3>
-                <p className="text-sm text-muted-foreground">{dataset.source}</p>
+                <p className="text-sm text-muted-foreground">{dataset.source || 'Unknown'}</p>
               </div>
               <div>
                 <h3 className="font-medium mb-2">Date</h3>
-                <p className="text-sm text-muted-foreground">{dataset.date}</p>
+                <p className="text-sm text-muted-foreground">{dataset.uploadDate}</p>
               </div>
             </div>
             

@@ -1,26 +1,23 @@
 
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchFilter } from './dataset/SearchFilter';
-import { DatasetCard } from './dataset/DatasetCard';
 import { DatasetDetailsDialog } from './dataset/DatasetDetailsDialog';
 import { RelatedDocsDialog } from './dataset/RelatedDocsDialog';
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 import { cacheDataset, getAllCachedDatasets } from '@/services/DatasetCacheService';
 import { useDatasets } from '@/hooks/database';
 import { DatasetInfo } from '@/types';
-import { Loader2 } from "lucide-react";
-
-// Type declaration to ensure compatibility between Dataset from data/datasetLibraryData.ts and DatasetInfo
-type Dataset = DatasetInfo;
+import { FilterTabs } from './dataset-library/FilterTabs';
+import { OfflineAlert } from './dataset-library/OfflineAlert';
+import { DatasetGrid } from './dataset-library/DatasetGrid';
+import { useDatasetFiltering } from './dataset-library/useDatasetFiltering';
 
 export const DatasetLibrary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [datasets, setDatasets] = useState<DatasetInfo[]>([]);
   const [activeTab, setActiveTab] = useState<string>('zambia');
-  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+  const [selectedDataset, setSelectedDataset] = useState<DatasetInfo | null>(null);
   const [showDocuments, setShowDocuments] = useState<boolean>(false);
   const { toast } = useToast();
   const { isOnline, addToCache, cachedDatasets } = useConnectivity();
@@ -32,7 +29,7 @@ export const DatasetLibrary: React.FC = () => {
       try {
         const fetchedDatasets = await getDatasets();
         if (fetchedDatasets) {
-          setDatasets(fetchedDatasets as Dataset[]);
+          setDatasets(fetchedDatasets as DatasetInfo[]);
         }
       } catch (error) {
         console.error("Failed to fetch datasets:", error);
@@ -50,7 +47,7 @@ export const DatasetLibrary: React.FC = () => {
       // Load cached datasets when offline
       const loadCachedDatasets = async () => {
         try {
-          const cached = await getAllCachedDatasets<Dataset>('library');
+          const cached = await getAllCachedDatasets<DatasetInfo>('library');
           if (cached && cached.length > 0) {
             setDatasets(cached);
           }
@@ -62,36 +59,10 @@ export const DatasetLibrary: React.FC = () => {
     }
   }, [isOnline, cachedDatasets.length, getDatasets, toast]);
   
-  const filteredDatasets = datasets.filter(dataset => {
-    // First filter by tab selection
-    if (activeTab === 'zambia' && dataset.country !== 'Zambia') {
-      return false;
-    } else if (activeTab === 'drc' && dataset.country !== 'Democratic Republic of Congo') {
-      return false;
-    } else if (activeTab === 'other' && dataset.country !== 'South Africa' && dataset.country !== 'Ghana' && 
-               dataset.country !== 'Tanzania' && dataset.country !== 'Nigeria') {
-      return false;
-    } else if (activeTab === 'global' && (dataset.country === 'Zambia' || 
-               dataset.country === 'Democratic Republic of Congo' || 
-               dataset.country === 'South Africa' || 
-               dataset.country === 'Ghana' || 
-               dataset.country === 'Tanzania' || 
-               dataset.country === 'Nigeria')) {
-      return false;
-    } else if (activeTab === 'all') {
-      // Include all datasets for "all" tab
-    }
-    
-    // Then filter by search query
-    return !searchQuery || 
-      dataset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (dataset.description && dataset.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (dataset.tags && dataset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))) ||
-      (dataset.country && dataset.country.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (dataset.source && dataset.source.toLowerCase().includes(searchQuery.toLowerCase()));
-  });
+  // Use the filtering hook
+  const filteredDatasets = useDatasetFiltering(datasets, activeTab, searchQuery);
   
-  const handleViewDataset = (dataset: Dataset) => {
+  const handleViewDataset = (dataset: DatasetInfo) => {
     setSelectedDataset(dataset);
     setShowDocuments(false);
     toast({
@@ -132,7 +103,7 @@ export const DatasetLibrary: React.FC = () => {
     });
   };
 
-  const handleViewDocuments = (dataset: Dataset) => {
+  const handleViewDocuments = (dataset: DatasetInfo) => {
     setSelectedDataset(dataset);
     setShowDocuments(true);
   };
@@ -144,51 +115,22 @@ export const DatasetLibrary: React.FC = () => {
         onSearchChange={setSearchQuery} 
       />
       
-      {!isOnline && (
-        <Alert className="bg-amber-50 border-amber-200">
-          <AlertDescription className="text-amber-800">
-            You are currently offline. Only cached datasets are available.
-          </AlertDescription>
-        </Alert>
-      )}
+      <OfflineAlert isOnline={isOnline} />
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-5 mb-4">
-          <TabsTrigger value="zambia">Zambia</TabsTrigger>
-          <TabsTrigger value="drc">DRC</TabsTrigger>
-          <TabsTrigger value="other">Other African</TabsTrigger>
-          <TabsTrigger value="global">Global</TabsTrigger>
-          <TabsTrigger value="all">All Datasets</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <FilterTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
       
-      {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-2">Loading datasets...</span>
-        </div>
-      ) : filteredDatasets.length === 0 ? (
-        <Alert>
-          <AlertDescription>
-            {!isOnline 
-              ? "No cached datasets available. Connect to the internet to access more datasets." 
-              : "No datasets match your search criteria."}
-          </AlertDescription>
-        </Alert>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredDatasets.map(dataset => (
-            <DatasetCard 
-              key={dataset.id}
-              dataset={dataset}
-              onViewDataset={handleViewDataset}
-              onDownloadDataset={handleDownloadDataset}
-              onDeleteDataset={handleDeleteDataset}
-              onViewDocuments={handleViewDocuments}
-            />
-          ))}
-        </div>
-      )}
+      <DatasetGrid
+        loading={loading}
+        isOnline={isOnline}
+        datasets={filteredDatasets}
+        onViewDataset={handleViewDataset}
+        onDownloadDataset={handleDownloadDataset}
+        onDeleteDataset={handleDeleteDataset}
+        onViewDocuments={handleViewDocuments}
+      />
       
       {/* Dataset Details Dialog */}
       <DatasetDetailsDialog 

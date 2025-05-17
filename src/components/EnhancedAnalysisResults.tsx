@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,12 +15,12 @@ import AnalysisDataView from './analysis/AnalysisDataView';
 
 interface EnhancedAnalysisResultsProps {
   className?: string;
-  results?: AnalysisResult[]; // Added results as optional prop
+  results?: AnalysisResult[]; // Results as optional prop
 }
 
 export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = ({ 
   className,
-  results: propResults // Accept results prop
+  results: propResults 
 }) => {
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const { getAnalysisResults, loading } = useAnalysis();

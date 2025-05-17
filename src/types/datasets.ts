@@ -3,8 +3,8 @@ export interface ShapefileValidationResult {
   isValid: boolean;
   errors: string[];
   warnings: string[];
-  features?: number; // Adding optional features property
-  crs?: string; // Adding optional CRS property
+  features?: number;
+  crs?: string;
 }
 
 export interface GeoAnalysisResult {
@@ -12,7 +12,7 @@ export interface GeoAnalysisResult {
   name: string;
   description: string;
   timestamp: string;
-  type: string; // Adding type property
+  type: string;
   features: {
     id: string;
     name: string;
@@ -23,7 +23,7 @@ export interface GeoAnalysisResult {
     executionTime?: number;
     timestamp: string;
     parameters?: Record<string, any>;
-  }; // Adding metadata property
+  };
   summary: {
     featureCount: number;
     area?: number;
@@ -34,7 +34,7 @@ export interface GeoAnalysisResult {
       average: number;
     };
   };
-  result?: any; // Adding optional result property
+  result?: any;
 }
 
 export interface ShapefileFeature {
@@ -60,11 +60,11 @@ export interface DatasetInfo {
   organization?: StakeholderOrganization;
   validated?: boolean;
   contributors?: string[];
-  // Added these fields to match usage in DatasetLibrary.tsx
+  // Adding these fields to match usage in DatasetLibrary.tsx
   country?: string;
   tags?: string[];
   format?: string;
-  date?: string;
+  date?: string; // For display purposes, may differ from uploadDate
   coordinates?: number[];
   relatedDocs?: {
     id: string;

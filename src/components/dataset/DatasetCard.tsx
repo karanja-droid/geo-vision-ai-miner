@@ -3,17 +3,17 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Database, Download, Eye, Trash2, MapPin, FileText } from "lucide-react";
-import { Dataset } from '@/data/datasetLibraryData';
+import { DatasetInfo } from '@/types';
 import { useConnectivity } from '@/contexts/ConnectivityContext';
 
 interface DatasetCardProps {
-  dataset: Dataset;
-  onViewDataset: (dataset: Dataset) => void;
+  dataset: DatasetInfo;
+  onViewDataset: (dataset: DatasetInfo) => void;
   onDownloadDataset: (id: string) => void;
   onDeleteDataset: (id: string) => void;
-  onViewDocuments: (dataset: Dataset) => void;
+  onViewDocuments: (dataset: DatasetInfo) => void;
 }
 
 export const DatasetCard: React.FC<DatasetCardProps> = ({
@@ -48,10 +48,10 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
               {dataset.name}
             </CardTitle>
             <div className="flex flex-wrap gap-1 mt-1">
-              <Badge>{dataset.format}</Badge>
-              <Badge variant="outline">{dataset.source}</Badge>
+              <Badge>{dataset.format || 'Unknown'}</Badge>
+              <Badge variant="outline">{dataset.source || 'Unknown'}</Badge>
               <Badge variant="secondary" className="flex items-center">
-                <MapPin className="h-3 w-3 mr-1" /> {dataset.country}
+                <MapPin className="h-3 w-3 mr-1" /> {dataset.country || 'Unknown'}
               </Badge>
               {datasetIsCached && (
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -67,15 +67,17 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
         <div className="mt-3">
           <div className="flex items-center text-xs text-muted-foreground">
             <span className="mr-3">Size: {dataset.size}</span>
-            <span>Added: {dataset.date}</span>
+            <span>Added: {dataset.uploadDate}</span>
           </div>
-          <div className="flex flex-wrap gap-1 mt-2">
-            {dataset.tags.map((tag, i) => (
-              <Badge key={i} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+          {dataset.tags && dataset.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {dataset.tags.map((tag, i) => (
+                <Badge key={i} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
           
           {dataset.relatedDocs && dataset.relatedDocs.length > 0 && (
             <div className="mt-2">
