@@ -21,6 +21,11 @@ interface Profile {
   created_at: string;
 }
 
+interface UserData {
+  id: string;
+  email: string;
+}
+
 interface UserManagementProps {
   profiles: Profile[];
   loading: boolean;
@@ -49,11 +54,13 @@ const UserManagement: React.FC<UserManagementProps> = ({
         }
         
         const emailMap: Record<string, string> = {};
-        data?.users?.forEach(user => {
-          if (user.id && user.email) {
-            emailMap[user.id] = user.email;
-          }
-        });
+        if (data?.users && Array.isArray(data.users)) {
+          data.users.forEach((user: any) => {
+            if (user && user.id && user.email) {
+              emailMap[user.id] = user.email;
+            }
+          });
+        }
         
         setUserEmails(emailMap);
       } catch (error) {

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from 'react-i18next';
-import { AuthUser } from '@/contexts/AuthContext';
+import { AuthUser } from '@/types/auth';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, User, LogOut } from 'lucide-react';
 

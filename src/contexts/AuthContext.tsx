@@ -1,25 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase, mapSupabaseUser } from '@/lib/supabase';
-import { AuthUser } from '@/types/auth';
+import { AuthUser, AuthContextType } from '@/types/auth';
 
 export type SubscriptionTier = 'free' | 'basic' | 'premium';
-
-export interface AuthContextType {
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-  isTrialActive: boolean;
-  daysLeftInTrial: number | null;
-  isPremiumUser: boolean;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  signup: (email: string, password: string, name: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
