@@ -14,9 +14,8 @@ export * from './workflow';
 export * from './conflicts';
 export * from './risk';
 
-// Export geo types, avoiding duplicate ShapefileValidationResult
-import { GeoPoint } from './geo';
-export { GeoPoint };
+// Export geo types properly with export type syntax
+export type { GeoPoint } from './geo';
 
 // Re-export ShapefileValidationResult with export type to fix isolatedModules error
 export type { ShapefileValidationResult } from './geo';
