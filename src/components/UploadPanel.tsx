@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -210,7 +209,6 @@ const UploadPanel: React.FC<UploadPanelProps> = ({ className }) => {
               
               <label htmlFor="file-upload">
                 <Button 
-                  as="span" 
                   disabled={isUploading}
                   className="cursor-pointer"
                 >

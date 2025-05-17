@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,15 +14,24 @@ import AnalysisDataView from './analysis/AnalysisDataView';
 
 interface EnhancedAnalysisResultsProps {
   className?: string;
+  results?: AnalysisResult[]; // Added results as optional prop
 }
 
 export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = ({ 
-  className 
+  className,
+  results: propResults // Accept results prop
 }) => {
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const { getAnalysisResults, loading } = useAnalysis();
   
   useEffect(() => {
+    // If results are provided as props, use them
+    if (propResults && propResults.length > 0) {
+      setResults(propResults);
+      return;
+    }
+    
+    // Otherwise fetch from API
     const fetchAnalysisResults = async () => {
       try {
         const fetchedResults = await getAnalysisResults();
@@ -36,7 +44,7 @@ export const EnhancedAnalysisResults: React.FC<EnhancedAnalysisResultsProps> = (
     };
     
     fetchAnalysisResults();
-  }, [getAnalysisResults]);
+  }, [getAnalysisResults, propResults]);
   
   return (
     <Card className={`h-full ${className}`}>

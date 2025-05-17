@@ -13,11 +13,14 @@ import { useDatasets } from '@/hooks/database';
 import { DatasetInfo } from '@/types';
 import { Loader2 } from "lucide-react";
 
+// Type declaration to ensure compatibility between Dataset from data/datasetLibraryData.ts and DatasetInfo
+type Dataset = DatasetInfo;
+
 export const DatasetLibrary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [datasets, setDatasets] = useState<DatasetInfo[]>([]);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [activeTab, setActiveTab] = useState<string>('zambia');
-  const [selectedDataset, setSelectedDataset] = useState<DatasetInfo | null>(null);
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [showDocuments, setShowDocuments] = useState<boolean>(false);
   const { toast } = useToast();
   const { isOnline, addToCache, cachedDatasets } = useConnectivity();
@@ -29,7 +32,7 @@ export const DatasetLibrary: React.FC = () => {
       try {
         const fetchedDatasets = await getDatasets();
         if (fetchedDatasets) {
-          setDatasets(fetchedDatasets);
+          setDatasets(fetchedDatasets as Dataset[]);
         }
       } catch (error) {
         console.error("Failed to fetch datasets:", error);
@@ -47,7 +50,7 @@ export const DatasetLibrary: React.FC = () => {
       // Load cached datasets when offline
       const loadCachedDatasets = async () => {
         try {
-          const cached = await getAllCachedDatasets<DatasetInfo>('library');
+          const cached = await getAllCachedDatasets<Dataset>('library');
           if (cached && cached.length > 0) {
             setDatasets(cached);
           }
@@ -88,7 +91,7 @@ export const DatasetLibrary: React.FC = () => {
       (dataset.source && dataset.source.toLowerCase().includes(searchQuery.toLowerCase()));
   });
   
-  const handleViewDataset = (dataset: DatasetInfo) => {
+  const handleViewDataset = (dataset: Dataset) => {
     setSelectedDataset(dataset);
     setShowDocuments(false);
     toast({
@@ -129,7 +132,7 @@ export const DatasetLibrary: React.FC = () => {
     });
   };
 
-  const handleViewDocuments = (dataset: DatasetInfo) => {
+  const handleViewDocuments = (dataset: Dataset) => {
     setSelectedDataset(dataset);
     setShowDocuments(true);
   };

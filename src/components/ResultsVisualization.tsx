@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -90,7 +89,7 @@ const ResultsVisualization: React.FC<ResultsVisualizationProps> = ({ className }
   const toggleAdvancedOptions = () => {
     setShowAdvancedOptions(!showAdvancedOptions);
   };
-
+  
   return (
     <Card className={`h-full ${className}`}>
       <CardHeader>

@@ -48,7 +48,7 @@ export interface ShapefileFeature {
   };
 }
 
-// Adding missing export types
+// Expanded DatasetInfo to include all required fields
 export interface DatasetInfo {
   id: string;
   name: string;
@@ -60,6 +60,18 @@ export interface DatasetInfo {
   organization?: StakeholderOrganization;
   validated?: boolean;
   contributors?: string[];
+  // Added these fields to match usage in DatasetLibrary.tsx
+  country?: string;
+  tags?: string[];
+  format?: string;
+  date?: string;
+  coordinates?: number[];
+  relatedDocs?: {
+    id: string;
+    name: string;
+    type: string;
+    size: string;
+  }[];
 }
 
 export type StakeholderOrganization = 
