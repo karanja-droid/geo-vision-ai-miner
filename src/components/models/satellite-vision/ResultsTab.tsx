@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Activity, FileText, BarChart } from "lucide-react";
@@ -34,15 +34,17 @@ interface ResultsTabProps {
   } | null;
   handleDownloadReport: () => void;
   handleViewFullAnalysis: () => void;
+  showMap: boolean;
+  setShowMap: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ResultsTab: React.FC<ResultsTabProps> = ({ 
   analysisResults, 
   handleDownloadReport, 
-  handleViewFullAnalysis 
+  handleViewFullAnalysis,
+  showMap,
+  setShowMap
 }) => {
-  const [showMap, setShowMap] = useState(false);
-  
   if (!analysisResults) return null;
   
   // Determine the dominant mineral for the map visualization

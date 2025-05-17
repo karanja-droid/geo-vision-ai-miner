@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Image, MapPin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Image } from "lucide-react";
 import { ModelInfo } from '@/types/models';
-import { useAnalysis } from '@/hooks/database';
-import { AnalysisOptions, AnalysisResult } from '@/types/analysis';
+import { AnalysisOptions } from '@/types/analysis';
 
 // Import refactored components
 import ConfigurationTab from './ConfigurationTab';
 import ProgressTab from './ProgressTab';
 import ResultsTab from './ResultsTab';
 import PlaceholderContent from './PlaceholderContent';
+
+// Import custom hooks
+import { useAnalyzerState } from './hooks/useAnalyzerState';
+import { useModelAnalysis } from './hooks/useModelAnalysis';
 
 interface SatelliteVisionAnalyzerProps {
   modelInfo?: ModelInfo;
@@ -39,229 +42,46 @@ const SatelliteVisionAnalyzer: React.FC<SatelliteVisionAnalyzerProps> = ({
   onAnalyze,
   selectedDataset
 }) => {
-  const { toast } = useToast();
-  const { runModelAnalysis, loading } = useAnalysis();
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState("configuration");
-  const [analysisOptions, setAnalysisOptions] = useState<AnalysisOptions>({
-    dataSource: "landsat-8",
-    resolution: "medium",
-    depth: "shallow",
-    spectralBands: ["visible", "near-ir"],
-    regionFocus: "africa",
-    targetMinerals: ["gold", "copper"]
-  });
-  const [analysisResults, setAnalysisResults] = useState<any>(null);
+  // Use the custom hook for state management
+  const {
+    isAnalyzing,
+    setIsAnalyzing,
+    progress,
+    setProgress,
+    activeTab,
+    setActiveTab,
+    analysisOptions,
+    analysisResults,
+    setAnalysisResults,
+    handleOptionChange,
+    handleSpectralBandToggle,
+    handleMineralTargetToggle,
+    handleRegionFocusChange
+  } = useAnalyzerState();
 
-  const handleAnalyze = async () => {
-    setIsAnalyzing(true);
-    setProgress(0);
-    setActiveTab("progress");
-    
-    // Simulate initial progress while backend prepares
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 95) {
-          clearInterval(progressInterval);
-          return 95;
-        }
-        return prev + Math.random() * 10;
-      });
-    }, 800);
-    
-    try {
-      // Call the backend analysis endpoint
-      const datasetId = selectedDataset || 'demo-dataset-001';
-      
-      // The options are already in the correct format
-      // No conversion needed as we're using the same type
-      
-      // Run the analysis through our backend
-      const result = await runModelAnalysis(
-        datasetId, 
-        modelInfo.id, 
-        analysisOptions
-      );
-      
-      // Process the results
-      if (result) {
-        setAnalysisResults({
-          timestamp: result.timestamp,
-          options: analysisOptions,
-          minerals: {
-            ironOxide: Math.round(result.data.spectralAnalysis?.['visible']?.strength * 100) || 60,
-            copperSulfide: Math.round(result.data.spectralAnalysis?.['near-ir']?.strength * 100) || 40,
-            silicates: Math.round(result.data.spectralAnalysis?.['short-ir']?.strength * 100) || 30,
-            goldIndicators: Math.round(result.data.spectralAnalysis?.['thermal']?.strength * 100) || 20,
-            diamondIndicators: Math.round(result.data.spectralAnalysis?.['ultraviolet']?.strength * 100) || 10
-          },
-          statistics: {
-            areaAnalyzed: result.data.coverage?.analyzed?.toFixed(1) || "10.0",
-            anomaliesDetected: result.data.anomalies || 5,
-            featurePoints: result.data.featureCount || 150,
-            confidenceScore: (result.confidence * 100).toFixed(1)
-          },
-          hotspots: result.data.hotspots || []
-        });
-      }
-      
-      // Clear the interval and complete the progress
-      clearInterval(progressInterval);
-      setProgress(100);
-      
-      // Switch to results tab after completion
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setActiveTab("results");
-      }, 500);
-      
-    } catch (error) {
-      console.error("Analysis failed:", error);
-      clearInterval(progressInterval);
-      setIsAnalyzing(false);
-      toast({
-        title: "Analysis failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        variant: "destructive",
-      });
-    }
-    
-    // Call the onAnalyze callback if provided
-    if (onAnalyze) {
-      onAnalyze(analysisOptions);
-    }
-  };
-
-  const handleOptionChange = (key: keyof AnalysisOptions, value: any) => {
-    setAnalysisOptions(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleSpectralBandToggle = (band: string) => {
-    setAnalysisOptions(prev => {
-      const currentBands = [...prev.spectralBands];
-      if (currentBands.includes(band)) {
-        return { ...prev, spectralBands: currentBands.filter(b => b !== band) };
-      } else {
-        return { ...prev, spectralBands: [...currentBands, band] };
-      }
-    });
-  };
-
-  const handleMineralTargetToggle = (mineral: string) => {
-    setAnalysisOptions(prev => {
-      const currentTargets = prev.targetMinerals || [];
-      if (currentTargets.includes(mineral)) {
-        return { ...prev, targetMinerals: currentTargets.filter(m => m !== mineral) };
-      } else {
-        return { ...prev, targetMinerals: [...currentTargets, mineral] };
-      }
-    });
-  };
-
-  const handleRegionFocusChange = (region: string) => {
-    setAnalysisOptions(prev => ({ ...prev, regionFocus: region }));
-  };
-
-  const handleDownloadReport = () => {
-    if (!analysisResults) {
-      toast({
-        title: "No analysis results available",
-        description: "Run an analysis first to generate a downloadable report.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    try {
-      // Add African deposit specific details to the report
-      const report = `
-SATELLITE VISION CNN ANALYSIS REPORT
-===================================
-Generated: ${new Date().toLocaleString()}
-
-ANALYSIS PARAMETERS
-------------------
-Data Source: ${analysisResults.options.dataSource}
-Resolution: ${analysisResults.options.resolution}
-Analysis Depth: ${analysisResults.options.depth}
-Spectral Bands: ${analysisResults.options.spectralBands.join(', ')}
-Region Focus: ${analysisResults.options.regionFocus || 'Global'}
-Target Minerals: ${analysisResults.options.targetMinerals?.join(', ') || 'All'}
-
-MINERAL DETECTION RESULTS
-------------------------
-Iron Oxide: ${analysisResults.minerals.ironOxide}%
-Copper Sulfide: ${analysisResults.minerals.copperSulfide}%
-Silicates: ${analysisResults.minerals.silicates}%
-Gold Indicators: ${analysisResults.minerals.goldIndicators || '0'}%
-Diamond Indicators: ${analysisResults.minerals.diamondIndicators || '0'}%
-
-STATISTICS
----------
-Area Analyzed: ${analysisResults.statistics.areaAnalyzed} km²
-Anomalies Detected: ${analysisResults.statistics.anomaliesDetected}
-Feature Points: ${analysisResults.statistics.featurePoints}
-Confidence Score: ${analysisResults.statistics.confidenceScore}%
-African Context Confidence: ${analysisResults.statistics.africanConfidence || analysisResults.statistics.confidenceScore}%
-
-HOTSPOTS
--------
-${analysisResults.hotspots.map((hotspot: any) => 
-  `ID: ${hotspot.id}, Location: [${hotspot.lat.toFixed(6)}, ${hotspot.lng.toFixed(6)}], Strength: ${(hotspot.strength * 100).toFixed(1)}%, Likely Mineral: ${hotspot.mineralType || 'Unknown'}`
-).join('\n')}
-
-NOTES
------
-This report was generated using SatelliteVision CNN model (${modelInfo.id}).
-Model accuracy: ${modelInfo.accuracy}%
-Last trained: ${new Date(modelInfo.lastTrained).toLocaleDateString()}
-Regional specialization: ${modelInfo.regionSpecialization || 'Global'}
-`;
-      
-      // Create file and trigger download
-      const blob = new Blob([report], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `satellite-vision-report-${new Date().getTime()}.txt`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "Report downloaded",
-        description: "The analysis report has been downloaded successfully.",
-      });
-    } catch (error) {
-      console.error("Failed to download report:", error);
-      toast({
-        title: "Download failed",
-        description: "There was a problem generating your report. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleViewFullAnalysis = () => {
-    if (!analysisResults) {
-      toast({
-        title: "No analysis results available",
-        description: "Run an analysis first to view the full results.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // This no longer opens an alert - the map visualization is shown in the component
-    console.log("Displaying full analysis with map visualization", analysisResults);
-  };
+  // Use the custom hook for model analysis
+  const {
+    handleAnalyze: runAnalysis,
+    handleDownloadReport,
+    handleViewFullAnalysis,
+    showMap,
+    setShowMap
+  } = useModelAnalysis(
+    modelInfo,
+    analysisOptions,
+    setProgress,
+    setActiveTab,
+    setIsAnalyzing,
+    setAnalysisResults,
+    onAnalyze
+  );
 
   // If no dataset is selected, show the placeholder
   if (!selectedDataset) {
     return <PlaceholderContent />;
   }
+
+  const handleAnalyzeClick = () => runAnalysis(selectedDataset);
 
   return (
     <Card className="w-full">
@@ -313,6 +133,8 @@ Regional specialization: ${modelInfo.regionSpecialization || 'Global'}
               analysisResults={analysisResults}
               handleDownloadReport={handleDownloadReport}
               handleViewFullAnalysis={handleViewFullAnalysis}
+              showMap={showMap}
+              setShowMap={setShowMap}
             />
           </TabsContent>
         </Tabs>
@@ -320,9 +142,9 @@ Regional specialization: ${modelInfo.regionSpecialization || 'Global'}
       <CardFooter>
         {activeTab === "configuration" && (
           <Button 
-            onClick={handleAnalyze} 
+            onClick={handleAnalyzeClick} 
             className="w-full"
-            disabled={isAnalyzing || analysisOptions.spectralBands.length === 0 || loading}
+            disabled={isAnalyzing || analysisOptions.spectralBands.length === 0}
           >
             Run Satellite Vision Analysis
           </Button>
