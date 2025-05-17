@@ -5,7 +5,11 @@ import { AuthUser } from '@/types/auth';
 import AuthContext from './AuthContext';
 import { calculateDaysLeftInTrial, isTrialActive, isPremiumUser } from './authUtils';
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   

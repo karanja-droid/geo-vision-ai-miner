@@ -1,23 +1,20 @@
 
-import { SlackIntegration, Task } from "@/types";
-
 export interface AnomalyAlertData {
   title: string;
   description: string;
   confidence: number;
-  location?: string;
+  location: string;
+  severity: 'low' | 'medium' | 'high'; // Added severity property
+  mineralType: string;
 }
 
-export interface DailySummaryData {
-  date: string;
-  anomalies: number;
-  predictions: any[];
-  insights: string[];
+export interface AnalysisCompletionData {
+  title: string;
+  description: string;
+  runtime: number;
+  location: string;
+  analysisType: string;
+  resultSummary: string;
 }
 
-export interface FileShareData {
-  name: string;
-  url: string;
-  type: string;
-  description?: string;
-}
+export type SlackNotificationType = 'anomaly_alert' | 'analysis_completion' | 'system_issue';
