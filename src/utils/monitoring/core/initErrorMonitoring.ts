@@ -1,94 +1,74 @@
 
+import { handleUnhandledRejection, handleWindowError, handleConsoleWarning } from "../handlers/errorHandlers";
 import { getSlackConfig } from "../../slack/config";
-import { handleWindowError } from "../handlers/errorHandlers";
-import { handleUnhandledRejection } from "../handlers/errorHandlers";
-import { initPerformanceMonitoring } from "./performanceMonitoring";
 
-// Global error monitoring initialization
-export const initErrorMonitoring = () => {
-  // Save original console methods
+// Initialize error monitoring
+export function initErrorMonitoring() {
+  // Set up event listeners for error handling
+  window.addEventListener('error', handleWindowError);
+  window.addEventListener('unhandledrejection', handleUnhandledRejection);
+  
+  // Store original console methods
   const originalConsoleError = console.error;
   const originalConsoleWarn = console.warn;
   
   // Override console.error
-  console.error = (...args: any[]) => {
-    // Call original method
-    originalConsoleError(...args);
+  console.error = (...args) => {
+    // Call the original method
+    originalConsoleError.apply(console, args);
     
-    // Parse the error
-    const errorMessage = args.map(arg => {
-      if (arg instanceof Error) {
-        return arg.message;
+    // Extract error information
+    let errorMessage = 'Console Error';
+    let errorDetails = {};
+    
+    if (args.length > 0) {
+      if (args[0] instanceof Error) {
+        errorMessage = args[0].message;
+        errorDetails = {
+          stack: args[0].stack,
+          timestamp: new Date().toISOString()
+        };
+      } else if (typeof args[0] === 'string') {
+        errorMessage = args[0];
+        errorDetails = {
+          additionalArgs: args.slice(1),
+          timestamp: new Date().toISOString()
+        };
       }
-      return String(arg);
-    }).join(' ');
-    
-    // Check if monitoring is enabled before sending
-    const config = getSlackConfig();
-    if (config.enabled && 
-        config.monitoringSettings?.errorMonitoring && 
-        shouldSendErrorAlert(errorMessage)) {
-      sendErrorAlert(errorMessage, 'error', {
-        stack: args.find(arg => arg instanceof Error)?.stack,
-        timestamp: new Date().toISOString(),
-      });
+      
+      // Send to monitoring
+      const config = getSlackConfig();
+      if (config.enabled && config.monitoringSettings?.errorMonitoring) {
+        // Import and use sendErrorAlert only if monitoring is enabled
+        const { sendErrorAlert } = require('../alerts/errorAlerts');
+        sendErrorAlert(errorMessage, 'error', errorDetails);
+      }
     }
   };
   
-  // Override console.warn
-  console.warn = (...args: any[]) => {
-    // Call original method
-    originalConsoleWarn(...args);
+  // Override console.warn for warning monitoring
+  console.warn = (...args) => {
+    // Call the original method first
+    originalConsoleWarn.apply(console, args);
     
-    // Only monitor warnings if specifically enabled
+    // Check if warning monitoring is enabled
     const config = getSlackConfig();
-    if (config.enabled && 
-        config.monitoringSettings?.errorMonitoring && 
-        config.monitoringSettings?.monitorWarnings === true) { // Check if explicitly true
-      const warningMessage = args.map(arg => String(arg)).join(' ');
-      sendErrorAlert(warningMessage, 'warning');
+    if (config.enabled && config.monitoringSettings?.monitorWarnings) {
+      // Extract warning message
+      const warningMessage = args.length > 0 && typeof args[0] === 'string' 
+        ? args[0] 
+        : 'Console Warning';
+        
+      // Call the warning handler
+      handleConsoleWarning(warningMessage, ...args.slice(1));
     }
   };
   
-  // Set up window error and unhandled promise rejection handlers
-  window.addEventListener('error', handleWindowError);
-  window.addEventListener('unhandledrejection', handleUnhandledRejection);
-  
-  // Set up performance monitoring if enabled
-  const config = getSlackConfig();
-  if (config.enabled && config.monitoringSettings?.performanceMonitoring) {
-    initPerformanceMonitoring();
-  }
-  
-  console.log('Error monitoring initialized');
-};
-
-// Error debouncing - avoid sending too many similar errors
-const errorCache = new Map<string, { count: number, lastSent: number }>();
-
-export function shouldSendErrorAlert(errorMessage: string): boolean {
-  // Simple algorithm to avoid duplicate errors
-  const key = errorMessage.substring(0, 100); // Use start of message as key
-  const now = Date.now();
-  const cached = errorCache.get(key);
-  
-  // If we've never seen this error, or it was a while ago, we should send it
-  if (!cached || (now - cached.lastSent > 60000)) { // 1 minute
-    errorCache.set(key, { count: 1, lastSent: now });
-    return true;
-  }
-  
-  // Increment counter
-  cached.count++;
-  
-  // If we've seen this error a lot, only send occasionally
-  if (cached.count % 10 === 0) { // Send every 10th occurrence
-    cached.lastSent = now;
-    return true;
-  }
-  
-  return false;
+  // Return cleanup function
+  return () => {
+    window.removeEventListener('error', handleWindowError);
+    window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    console.error = originalConsoleError;
+    console.warn = originalConsoleWarn;
+  };
 }
-
-// Importing from our new modules
-import { sendErrorAlert } from "../alerts/errorAlerts";

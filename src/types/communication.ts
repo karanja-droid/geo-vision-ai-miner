@@ -1,3 +1,6 @@
+
+import { MonitoringSettings } from './monitoring';
+
 export interface Notification {
   id: string;
   title: string;
@@ -42,6 +45,7 @@ export interface SlackIntegration {
   enabled: boolean;
   channelMappings: SlackChannelMapping[];
   notificationPreferences: SlackNotificationPreference[];
+  monitoringSettings?: MonitoringSettings;
 }
 
 export interface SlackChannelMapping {

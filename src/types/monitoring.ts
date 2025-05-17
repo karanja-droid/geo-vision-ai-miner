@@ -7,22 +7,30 @@ export interface MonitoringSettings {
   performanceThreshold: number; // in milliseconds
   alertChannel: string;
   alertFrequency: 'immediate' | 'hourly' | 'daily';
-  monitorWarnings?: boolean; // Added the missing property
+  monitorWarnings: boolean;
 }
 
-export interface MonitoringEvent {
-  id: string;
-  timestamp: string;
-  eventType: 'error' | 'performance' | 'api' | 'security';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+export interface ErrorDetails {
   message: string;
-  source: string;
-  metadata?: Record<string, any>;
+  type: 'error' | 'warning';
+  details?: Record<string, any>;
+  timestamp: string;
+  source?: string;
+  userId?: string;
+  userName?: string;
+  sessionId?: string;
+  url?: string;
+  browser?: string;
+  os?: string;
 }
 
-// Update the SlackIntegration type to include monitoring settings
-declare module './communication' {
-  interface SlackIntegration {
-    monitoringSettings?: MonitoringSettings;
-  }
+export interface PerformanceMetrics {
+  pageLoadTime?: number; // milliseconds
+  responseTime?: number; // milliseconds
+  resourceLoadTime?: number; // milliseconds
+  apiLatency?: number; // milliseconds
+  memoryUsage?: number; // bytes
+  cpuUsage?: number; // percentage
+  timestamp: string;
+  path: string;
 }

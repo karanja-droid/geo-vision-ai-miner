@@ -39,3 +39,18 @@ export function handleUnhandledRejection(event: PromiseRejectionEvent) {
     sendErrorAlert(message, 'error', details);
   }
 }
+
+// Console warning handler
+export function handleConsoleWarning(message: string, ...args: any[]) {
+  const config = getSlackConfig();
+  if (config.enabled && config.monitoringSettings?.monitorWarnings) {
+    sendErrorAlert(
+      `Console Warning: ${message}`,
+      'warning',
+      {
+        arguments: JSON.stringify(args),
+        timestamp: new Date().toISOString(),
+      }
+    );
+  }
+}
