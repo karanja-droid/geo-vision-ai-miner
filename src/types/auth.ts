@@ -24,4 +24,9 @@ export interface AuthContextType {
   isTrialActive: boolean;
   isPremiumUser: boolean;
   daysLeftInTrial: number | null;
+  // Also include the alternative naming for backward compatibility
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
