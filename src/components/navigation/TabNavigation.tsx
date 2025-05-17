@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
 
-const tabs = ["Overview", "Integrations", "Activity", "Domains", "Usage", "Monitoring"]
+const tabs = ["Dashboard", "Datasets", "Analysis", "Maps", "Reports", "Settings"]
 
 export function TabNavigation() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
