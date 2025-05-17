@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,8 @@ const MonitoringAlerts: React.FC<MonitoringAlertsProps> = ({ config, onUpdateCon
       errorThreshold: 5,
       performanceThreshold: 3000, // ms
       alertChannel: "monitoring-alerts",
-      alertFrequency: "immediate"
+      alertFrequency: "immediate",
+      monitorWarnings: false // Initialize with default value
     };
   }
 
@@ -39,7 +39,8 @@ const MonitoringAlerts: React.FC<MonitoringAlertsProps> = ({ config, onUpdateCon
       errorThreshold: config.monitoringSettings.errorThreshold,
       performanceThreshold: config.monitoringSettings.performanceThreshold,
       alertChannel: config.monitoringSettings.alertChannel,
-      alertFrequency: config.monitoringSettings.alertFrequency
+      alertFrequency: config.monitoringSettings.alertFrequency,
+      monitorWarnings: config.monitoringSettings.monitorWarnings || false // Add with default
     }
   });
 
@@ -135,6 +136,28 @@ const MonitoringAlerts: React.FC<MonitoringAlertsProps> = ({ config, onUpdateCon
                     <FormLabel className="text-base">API Health Monitoring</FormLabel>
                     <FormDescription>
                       Get alerts when external APIs experience downtime
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
+            {/* Add new switch for monitorWarnings */}
+            <FormField
+              control={form.control}
+              name="monitorWarnings"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Warning Monitoring</FormLabel>
+                    <FormDescription>
+                      Get alerts for console warnings in addition to errors
                     </FormDescription>
                   </div>
                   <FormControl>

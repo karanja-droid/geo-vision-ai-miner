@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 import { getSlackConfig } from "../slack/config";
 import { sendToSlack } from "../slack/sender";
@@ -44,7 +43,7 @@ export const initErrorMonitoring = () => {
     const config = getSlackConfig();
     if (config.enabled && 
         config.monitoringSettings?.errorMonitoring && 
-        config.monitoringSettings?.monitorWarnings) {
+        config.monitoringSettings?.monitorWarnings === true) { // Check if explicitly true
       const warningMessage = args.map(arg => String(arg)).join(' ');
       sendErrorAlert(warningMessage, 'warning');
     }

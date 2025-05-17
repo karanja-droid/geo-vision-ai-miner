@@ -7,6 +7,7 @@ export interface MonitoringSettings {
   performanceThreshold: number; // in milliseconds
   alertChannel: string;
   alertFrequency: 'immediate' | 'hourly' | 'daily';
+  monitorWarnings?: boolean; // Added the missing property
 }
 
 export interface MonitoringEvent {
