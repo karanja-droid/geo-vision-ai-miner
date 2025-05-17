@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import WorkflowSidebar from './WorkflowSidebar';
+import SidebarToggle from './SidebarToggle';
+import CollapsedSidebar from './CollapsedSidebar';
 
 interface SidebarProps {
   className?: string;
@@ -26,30 +27,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className
       )}
     >
-      <div className="p-4">
-        <button 
-          onClick={toggleCollapse} 
-          className="w-full flex items-center justify-center p-2 rounded-md hover:bg-accent"
-        >
-          <div className={`h-5 w-5 transition-transform ${isCollapsed ? "" : "rotate-180"}`}>
-            {isCollapsed ? "→" : "←"}
-          </div>
-        </button>
-      </div>
+      <SidebarToggle isCollapsed={isCollapsed} toggleCollapse={toggleCollapse} />
 
       {isCollapsed ? (
-        <div className="flex flex-col items-center px-2 py-4 space-y-4">
-          {/* Collapsed sidebar with just icons */}
-          <Link to="/" className="p-2 rounded-md hover:bg-accent">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="7" height="9" x="3" y="3" rx="1" />
-              <rect width="7" height="5" x="14" y="3" rx="1" />
-              <rect width="7" height="9" x="14" y="12" rx="1" />
-              <rect width="7" height="5" x="3" y="16" rx="1" />
-            </svg>
-          </Link>
-          {/* Add more collapsed icons here */}
-        </div>
+        <CollapsedSidebar />
       ) : (
         <WorkflowSidebar />
       )}
