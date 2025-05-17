@@ -7,3 +7,4 @@ export * from './modules/geo-points';
 export * from './modules/analysis';
 export * from './modules/organizations';
 export * from './modules/files';
+export * from './modules/ai-models';

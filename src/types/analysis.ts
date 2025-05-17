@@ -9,6 +9,17 @@ export interface AnalysisResult {
   mineralType?: 'copper' | 'cobalt' | 'gold' | 'iron' | 'zinc' | 'unknown';
 }
 
+export interface AnalysisOptions {
+  dataSource?: string;
+  resolution?: string;
+  depth?: string;
+  spectralBands?: string[];
+  regionFocus?: string;
+  targetMinerals?: string[];
+  deepLearning?: boolean;
+  confidenceThreshold?: number;
+}
+
 export interface MineralProspectivityMap {
   id: string;
   name: string;

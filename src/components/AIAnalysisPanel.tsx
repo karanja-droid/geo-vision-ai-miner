@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Brain, TrendingUp, Layers, Loader2 } from "lucide-react";
 import { ModelInfo } from '@/types';
 import { useAnalysis } from '@/hooks/database';
+import { AnalysisOptions } from '@/types/analysis';
+import { useToast } from "@/hooks/use-toast";
 
 const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
   const [models, setModels] = useState<ModelInfo[]>([]);
@@ -14,8 +15,15 @@ const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analysisProgress, setAnalysisProgress] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [analysisOptions, setAnalysisOptions] = useState<AnalysisOptions>({
+    targetMinerals: ['copper'],
+    confidenceThreshold: 0.75,
+    deepLearning: false,
+    resolution: 'medium'
+  });
   
-  const { createAnalysisResult } = useAnalysis();
+  const { runModelAnalysis } = useAnalysis();
+  const { toast } = useToast();
   
   useEffect(() => {
     // Fetch models from the API
@@ -76,55 +84,56 @@ const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
     const selectedModelInfo = models.find(model => model.id === selectedModel);
     if (!selectedModelInfo) {
       setIsAnalyzing(false);
+      toast({
+        title: "Analysis failed",
+        description: "No model selected",
+        variant: "destructive",
+      });
       return;
     }
     
-    // Simulate analysis progress
-    const progressInterval = setInterval(() => {
-      setAnalysisProgress((prev) => {
-        if (prev >= 95) {
-          clearInterval(progressInterval);
-          return 95;
-        }
-        return prev + 5;
-      });
-    }, 300);
-
     try {
-      // After 5 seconds, create an actual analysis result
-      setTimeout(async () => {
-        try {
-          await createAnalysisResult({
-            layerId: 'dataset-123', // This would be the actual dataset ID
-            modelType: selectedModelInfo.type === 'predictive' ? 'prediction' : 'classification',
-            confidence: selectedModelInfo.accuracy,
-            data: {
-              anomalies: Math.floor(Math.random() * 50) + 10,
-              hotspots: Array(Math.floor(Math.random() * 5) + 3).fill(0).map((_, idx) => ({
-                id: idx + 1,
-                lat: (Math.random() * 20) - 10,
-                lng: (Math.random() * 40) - 20,
-                strength: Math.random() * 0.8 + 0.2
-              }))
-            },
-            mineralType: selectedModelInfo.target === 'copper' ? 'copper' : 
-                         selectedModelInfo.target === 'surface anomalies' ? 'iron' : 'gold'
-          }, 'dataset-123');
-          
-          // Complete the progress
-          setAnalysisProgress(100);
-          setTimeout(() => {
-            setIsAnalyzing(false);
-          }, 500);
-          
-        } catch (error) {
-          console.error("Error creating analysis result:", error);
+      // Update options based on selected model
+      const options: AnalysisOptions = {
+        ...analysisOptions,
+        targetMinerals: selectedModelInfo.target === 'copper' ? ['copper'] : 
+                       selectedModelInfo.target === 'surface anomalies' ? ['iron'] : ['gold'],
+        spectralBands: ['visible', 'near-ir'], // Default bands
+        regionFocus: 'africa',
+      };
+
+      // Simulate analysis progress while the analysis runs in the background
+      const progressInterval = setInterval(() => {
+        setAnalysisProgress((prev) => {
+          if (prev >= 95) {
+            clearInterval(progressInterval);
+            return 95;
+          }
+          return prev + 5;
+        });
+      }, 300);
+
+      // Call the backend analysis endpoint
+      const result = await runModelAnalysis('dataset-123', selectedModelInfo.id, options);
+      
+      // Complete the progress
+      clearInterval(progressInterval);
+      setAnalysisProgress(100);
+      
+      if (result) {
+        setTimeout(() => {
           setIsAnalyzing(false);
-        }
-      }, 5000);
+        }, 500);
+      } else {
+        throw new Error("Analysis failed to return results");
+      }
     } catch (error) {
       console.error("Error during analysis:", error);
-      clearInterval(progressInterval);
+      toast({
+        title: "Analysis failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive",
+      });
       setIsAnalyzing(false);
     }
   };
@@ -148,6 +157,10 @@ const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
       default:
         return <Brain size={16} />;
     }
+  };
+
+  const handleOptionChange = (key: keyof AnalysisOptions, value: any) => {
+    setAnalysisOptions(prev => ({ ...prev, [key]: value }));
   };
 
   const selectedModelInfo = models.find(model => model.id === selectedModel);
@@ -210,7 +223,10 @@ const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Target Mineral</label>
-                  <Select defaultValue="copper">
+                  <Select 
+                    defaultValue={analysisOptions.targetMinerals?.[0] || "copper"}
+                    onValueChange={(value) => handleOptionChange('targetMinerals', [value])}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select mineral" />
                     </SelectTrigger>
@@ -226,7 +242,13 @@ const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
                 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Confidence Threshold</label>
-                  <Select defaultValue="medium">
+                  <Select 
+                    defaultValue="medium"
+                    onValueChange={(value) => {
+                      const thresholds = { low: 0.6, medium: 0.75, high: 0.9 };
+                      handleOptionChange('confidenceThreshold', thresholds[value as keyof typeof thresholds]);
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select threshold" />
                     </SelectTrigger>
@@ -240,7 +262,10 @@ const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Analysis Type</label>
-                  <Select defaultValue="full">
+                  <Select 
+                    defaultValue="quick"
+                    onValueChange={(value) => handleOptionChange('deepLearning', value === 'deep')}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select analysis type" />
                     </SelectTrigger>
@@ -281,7 +306,7 @@ const AIAnalysisPanel: React.FC<{ className?: string }> = ({ className }) => {
                   ></div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Analyzing... {analysisProgress}%
+                  Analyzing... {Math.round(analysisProgress)}%
                 </p>
               </div>
             ) : (

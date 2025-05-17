@@ -1,6 +1,6 @@
 
 import * as db from '@/lib/supabase/database';
-import { AnalysisResult } from '@/types';
+import { AnalysisResult, AnalysisOptions } from '@/types/analysis';
 import { useBaseDatabase } from './useBaseDatabase';
 
 export const useAnalysis = () => {
@@ -37,9 +37,30 @@ export const useAnalysis = () => {
     }
   };
 
+  const runModelAnalysis = async (
+    datasetId: string,
+    modelId: string, 
+    options: AnalysisOptions
+  ): Promise<AnalysisResult | null> => {
+    try {
+      setLoading(true);
+      const result = await db.runModelAnalysis(datasetId, modelId, options);
+      toast({
+        title: "Analysis completed",
+        description: `The ${options.deepLearning ? 'deep learning' : 'standard'} analysis has been completed successfully.`,
+      });
+      return result;
+    } catch (error) {
+      return handleError(error, "Error running model analysis");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     createAnalysisResult,
-    getAnalysisResults
+    getAnalysisResults,
+    runModelAnalysis
   };
 };
