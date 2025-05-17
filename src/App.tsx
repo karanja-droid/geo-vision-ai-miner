@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from "@/components/theme-provider"
@@ -96,6 +95,18 @@ function App() {
                 </ProtectedRoute>
               </AppLayout>
             } />
+            <Route path="/mines-explorer" element={
+              <AppLayout>
+                <ProtectedRoute>
+                  {/* MinesExplorer component will be loaded here */}
+                  <div className="container mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-bold mb-6">Mines Explorer</h1>
+                    <p>Explore global mining operations data</p>
+                  </div>
+                </ProtectedRoute>
+              </AppLayout>
+            } />
+            {/* Other routes would be added here */}
           </Routes>
         </AppWrapper>
       </SidebarProvider>
