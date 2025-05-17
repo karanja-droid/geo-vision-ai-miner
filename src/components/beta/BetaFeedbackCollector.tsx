@@ -15,6 +15,7 @@ import { Bug, MessageSquare, Star, Zap } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { SubmitFeedbackToSlack } from '@/utils/beta/feedbackManager';
+import { BetaFeedbackData } from '@/utils/slack/types';
 
 // Types for the feedback form
 type FeedbackType = 'bug' | 'feature' | 'experience' | 'performance';
@@ -73,7 +74,7 @@ const BetaFeedbackCollector: React.FC<BetaFeedbackCollectorProps> = ({
     setIsSubmitting(true);
     
     try {
-      const feedbackData = {
+      const feedbackData: Omit<BetaFeedbackData, "screenshots"> = {
         feedbackId: `feedback_${Date.now()}`,
         type: feedbackType,
         text: feedbackText,

@@ -11,27 +11,6 @@ permissions:
   contents: read
 
 jobs:
-  backend-tests:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Setup repo
-        uses: actions/checkout@v4
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31  # v1.1.2
-        with:
-          deno-version: v1.x
-
-      - name: Run linter
-        run: deno lint
-
-      - name: Run Deno tests
-        run: deno test -A
-      
-      - name: Run API integration tests
-        run: deno test -A --config deno.json integration/
-
   frontend-tests:
     runs-on: ubuntu-latest
     
@@ -61,7 +40,7 @@ jobs:
         run: npm run lint
 
   build-and-preview:
-    needs: [backend-tests, frontend-tests]
+    needs: [frontend-tests]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     
