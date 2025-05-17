@@ -1,144 +1,169 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Bug, MessageSquare, Star, Zap } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { BugAntennaeIcon, Lightbulb, ThumbsUp, ThumbsDown, SendIcon } from "lucide-react";
-import { sendDirectMessage } from "@/utils/slack/communication";
+import { SubmitFeedbackToSlack } from '@/utils/beta/feedbackManager';
 
-export type FeedbackType = 'bug' | 'feature' | 'experience' | 'performance';
+// Types for the feedback form
+type FeedbackType = 'bug' | 'feature' | 'experience' | 'performance';
 
-interface BetaFeedbackCollectorProps {
-  moduleId?: string;
-  moduleName?: string;
-  slackChannel?: string;
+interface FeedbackTypeOption {
+  id: FeedbackType;
+  label: string;
+  description: string;
+  icon: JSX.Element;
 }
 
-export const BetaFeedbackCollector: React.FC<BetaFeedbackCollectorProps> = ({ 
-  moduleId,
-  moduleName = "General",
-  slackChannel = "beta-feedback"
+const feedbackTypes: FeedbackTypeOption[] = [
+  {
+    id: 'bug',
+    label: 'Bug Report',
+    description: 'Something isn\'t working correctly',
+    icon: <Bug className="h-4 w-4" />
+  },
+  {
+    id: 'feature',
+    label: 'Feature Request',
+    description: 'Suggest a new feature or enhancement',
+    icon: <Star className="h-4 w-4" />
+  },
+  {
+    id: 'experience',
+    label: 'User Experience',
+    description: 'Share thoughts on usability',
+    icon: <MessageSquare className="h-4 w-4" />
+  },
+  {
+    id: 'performance',
+    label: 'Performance Issue',
+    description: 'Report slow loading or crashes',
+    icon: <Zap className="h-4 w-4" />
+  }
+];
+
+interface BetaFeedbackCollectorProps {
+  module?: string; // Optional: allow specifying which module the feedback relates to
+  triggerButtonText?: string;
+}
+
+const BetaFeedbackCollector: React.FC<BetaFeedbackCollectorProps> = ({
+  module = 'general',
+  triggerButtonText = 'Share Feedback'
 }) => {
-  const { toast } = useToast();
-  const [feedbackType, setFeedbackType] = useState<FeedbackType>('experience');
   const [feedbackText, setFeedbackText] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<FeedbackType>('feature');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const feedbackTypeOptions: {value: FeedbackType, label: string, icon: React.ReactNode}[] = [
-    { value: 'bug', label: 'Bug Report', icon: <BugAntennaeIcon className="h-4 w-4" /> },
-    { value: 'feature', label: 'Feature Request', icon: <Lightbulb className="h-4 w-4" /> },
-    { value: 'experience', label: 'User Experience', icon: <ThumbsUp className="h-4 w-4" /> },
-    { value: 'performance', label: 'Performance Issue', icon: <ThumbsDown className="h-4 w-4" /> }
-  ];
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (!feedbackText.trim()) return;
     
-    if (!feedbackText.trim()) {
-      toast({
-        title: "Feedback required",
-        description: "Please provide some details about your feedback.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSubmitting(true);
-
+    setIsSubmitting(true);
+    
     try {
-      // Format feedback for slack channel
-      const typeLabel = feedbackTypeOptions.find(opt => opt.value === feedbackType)?.label;
-      const feedbackMessage = `*Beta Feedback - ${typeLabel}*\n*Module:* ${moduleName}${moduleId ? ` (${moduleId})` : ''}\n\n${feedbackText}\n\n_Submitted from the beta application_`;
-      
-      // Send to Slack if integrated
-      await sendDirectMessage(feedbackMessage, slackChannel);
-      
-      // Save to local database or storage
-      // In a real implementation, you would also save to your backend
-      const feedbackItems = JSON.parse(localStorage.getItem('betaFeedback') || '[]');
-      feedbackItems.push({
-        id: Date.now(),
+      const feedbackData = {
+        feedbackId: `feedback_${Date.now()}`,
         type: feedbackType,
         text: feedbackText,
-        moduleId,
-        moduleName,
-        timestamp: new Date().toISOString()
-      });
-      localStorage.setItem('betaFeedback', JSON.stringify(feedbackItems));
+        module,
+        timestamp: new Date().toISOString(),
+        priority: feedbackType === 'bug' ? 'high' : 'medium'
+      };
       
-      toast({
-        title: "Feedback submitted",
-        description: "Thank you for your feedback! The team will review it shortly.",
-      });
+      // Submit to Slack
+      await SubmitFeedbackToSlack(feedbackData);
       
+      // Reset form and close dialog
       setFeedbackText('');
+      setIsSubmitting(false);
+      setIsOpen(false);
+      
+      // Display success message
+      // You could use your toast system here
+      console.log('Feedback submitted successfully');
+      
     } catch (error) {
-      console.error("Error submitting feedback:", error);
-      toast({
-        title: "Submission failed",
-        description: "There was an error submitting your feedback. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setSubmitting(false);
+      console.error('Error submitting feedback:', error);
+      setIsSubmitting(false);
+      // Display error message
+      // You could use your toast system here
     }
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <SendIcon className="h-5 w-5 text-primary" />
-          Beta Feedback
-        </CardTitle>
-        <CardDescription>
-          Share your thoughts on the {moduleName} module to help us improve
-        </CardDescription>
-      </CardHeader>
-      
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Feedback Type</Label>
-            <RadioGroup 
-              value={feedbackType} 
-              onValueChange={(value) => setFeedbackType(value as FeedbackType)}
-              className="flex flex-wrap gap-2"
-            >
-              {feedbackTypeOptions.map(option => (
-                <div key={option.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option.value} id={option.value} />
-                  <Label htmlFor={option.value} className="flex items-center gap-1 cursor-pointer">
-                    {option.icon}
-                    <span>{option.label}</span>
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">{triggerButtonText}</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Beta Program Feedback</DialogTitle>
+          <DialogDescription>
+            Your feedback helps us improve the GeoVision AI platform. Thank you for participating in our beta program!
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="grid gap-4 py-4">
+          <RadioGroup 
+            value={feedbackType} 
+            onValueChange={(value) => setFeedbackType(value as FeedbackType)}
+            className="grid grid-cols-2 gap-3"
+          >
+            {feedbackTypes.map((type) => (
+              <div key={type.id} className="flex items-start space-x-3 space-y-0">
+                <RadioGroupItem value={type.id} id={type.id} />
+                <Label htmlFor={type.id} className="flex flex-col cursor-pointer">
+                  <div className="flex items-center">
+                    {type.icon}
+                    <span className="ml-2 font-medium">{type.label}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground mt-1">{type.description}</span>
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
           
           <div className="space-y-2">
             <Label htmlFor="feedback">Your Feedback</Label>
             <Textarea
               id="feedback"
-              placeholder="Please describe your experience, issue, or suggestion..."
               value={feedbackText}
               onChange={(e) => setFeedbackText(e.target.value)}
-              rows={5}
-              className="resize-none"
+              placeholder="Please provide details about your experience..."
+              className="min-h-[120px]"
             />
           </div>
-        </CardContent>
+        </div>
         
-        <CardFooter>
-          <Button type="submit" disabled={submitting || !feedbackText.trim()}>
-            {submitting ? "Submitting..." : "Submit Feedback"}
+        <DialogFooter>
+          <Button 
+            variant="secondary" 
+            onClick={() => setIsOpen(false)}
+          >
+            Cancel
           </Button>
-        </CardFooter>
-      </form>
-    </Card>
+          <Button 
+            onClick={handleSubmit}
+            disabled={!feedbackText.trim() || isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
+
+export default BetaFeedbackCollector;

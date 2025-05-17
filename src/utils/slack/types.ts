@@ -9,6 +9,7 @@ export interface AnomalyAlertData {
   anomalyId?: string;
   detectedBy?: 'ai' | 'user' | 'system';
   severity?: 'low' | 'medium' | 'high' | 'critical';
+  mineralType?: string; // Added for analysis alerts
 }
 
 export interface DailySummaryData {
@@ -70,3 +71,17 @@ export interface BetaAnnouncementData {
   releaseDate?: string;
   targetGroups?: string[];
 }
+
+// Added for beta communications
+export interface AnalysisCompletionData {
+  analysisId: string;
+  title: string;
+  description: string;
+  duration: number;
+  resultSummary: string;
+  accuracy?: number;
+  anomalies?: number;
+  datasetName: string;
+  mineralType?: string;
+}
+

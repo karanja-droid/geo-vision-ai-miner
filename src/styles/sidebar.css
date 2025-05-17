@@ -1,0 +1,65 @@
+
+/* Sidebar Styling */
+.sidebar-container {
+  height: 100vh;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Collapsed state */
+.sidebar-collapsed {
+  width: 60px;
+}
+
+/* Expanded state */
+.sidebar-expanded {
+  width: 240px;
+}
+
+/* Ensure content doesn't overflow during transition */
+.sidebar-container * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Active menu item styles */
+.sidebar-item-active {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Z-index layers for proper stacking */
+.sidebar-z-index {
+  z-index: 30; /* Higher than header but lower than dropdowns */
+}
+
+/* Mobile sidebar overlay */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 25; /* Just below the sidebar */
+}
+
+@media (max-width: 768px) {
+  .sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 40;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar-hidden {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar-visible {
+    transform: translateX(0);
+  }
+}
