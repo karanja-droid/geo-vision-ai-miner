@@ -24,16 +24,18 @@ interface FeedbackSubmission {
   email?: string;
 }
 
-interface FeedbackDialogProps {
+export interface FeedbackDialogProps {
   buttonVariant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive" | null;
   buttonSize?: "default" | "sm" | "lg" | "icon";
   className?: string;
+  buttonContent?: React.ReactNode;
 }
 
 export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ 
   buttonVariant = "outline", 
   buttonSize = "default", 
-  className = ""
+  className = "",
+  buttonContent
 }) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -81,8 +83,12 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={buttonVariant} size={buttonSize} className={className}>
-          <MessageSquare className="mr-2 h-4 w-4" />
-          Feedback
+          {buttonContent || (
+            <>
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Feedback
+            </>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">

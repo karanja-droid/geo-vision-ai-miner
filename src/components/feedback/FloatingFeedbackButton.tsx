@@ -26,9 +26,8 @@ export const FloatingFeedbackButton: React.FC<FloatingFeedbackButtonProps> = ({
         buttonVariant="default"
         buttonSize="default"
         className="rounded-full shadow-lg p-4 h-14 w-14 flex items-center justify-center"
-      >
-        <MessageSquarePlus className="h-6 w-6" />
-      </FeedbackDialog>
+        buttonContent={<MessageSquarePlus className="h-6 w-6" />}
+      />
     </div>
   );
 };

@@ -9,6 +9,8 @@ export interface ErrorContext {
   component?: string;
   action?: string;
   userId?: string;
+  datasetId?: string;
+  modelId?: string;
   additionalInfo?: Record<string, any>;
 }
 

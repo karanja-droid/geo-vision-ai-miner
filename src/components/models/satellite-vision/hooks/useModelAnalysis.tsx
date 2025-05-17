@@ -95,8 +95,10 @@ export const useModelAnalysis = (
       handleError(error, "Analysis failed. Please try again with different parameters.", "high", {
         component: "SatelliteVisionAnalyzer",
         action: "runModelAnalysis",
-        datasetId: selectedDataset,
-        modelId: modelInfo.id
+        additionalInfo: {
+          datasetId: selectedDataset,
+          modelId: modelInfo.id
+        }
       });
     }
     
