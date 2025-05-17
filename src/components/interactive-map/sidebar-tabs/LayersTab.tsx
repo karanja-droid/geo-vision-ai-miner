@@ -20,6 +20,7 @@ interface LayersTabProps {
   handleLayerToggle: (id: string) => void;
   handleOpacityChange: (id: string, value: number[]) => void;
   toggleFullScreen: () => void;
+  loading?: boolean;
 }
 
 export const LayersTab: React.FC<LayersTabProps> = ({
@@ -27,7 +28,8 @@ export const LayersTab: React.FC<LayersTabProps> = ({
   mapType,
   handleLayerToggle,
   handleOpacityChange,
-  toggleFullScreen
+  toggleFullScreen,
+  loading
 }) => {
   return (
     <>
@@ -36,6 +38,7 @@ export const LayersTab: React.FC<LayersTabProps> = ({
           <CardTitle className="text-sm font-medium flex items-center">
             <Layers className="h-4 w-4 mr-2" />
             Map Layers
+            {loading && <span className="ml-2 text-xs text-muted-foreground">(Loading...)</span>}
           </CardTitle>
         </CardHeader>
         <CardContent className="py-2">
@@ -50,6 +53,7 @@ export const LayersTab: React.FC<LayersTabProps> = ({
                       checked={layer.id === mapType || (layer.id === 'africa-countries' && layer.visible)}
                       onChange={() => handleLayerToggle(layer.id)}
                       className="mr-2 rounded"
+                      disabled={loading}
                     />
                     <label htmlFor={`layer-${layer.id}`} className="text-sm">
                       {layer.name}
@@ -65,7 +69,7 @@ export const LayersTab: React.FC<LayersTabProps> = ({
                   max={1}
                   step={0.01}
                   onValueChange={(value) => handleOpacityChange(layer.id, value)}
-                  disabled={!(layer.id === mapType || (layer.id === 'africa-countries' && layer.visible))}
+                  disabled={loading || !(layer.id === mapType || (layer.id === 'africa-countries' && layer.visible))}
                   className="h-1.5"
                 />
               </div>
@@ -87,6 +91,7 @@ export const LayersTab: React.FC<LayersTabProps> = ({
             size="sm" 
             className="w-full flex items-center justify-center" 
             asChild
+            disabled={loading}
           >
             <Link to="/dataset-management">
               <Database className="h-4 w-4 mr-2" /> Manage Datasets
@@ -108,6 +113,7 @@ export const LayersTab: React.FC<LayersTabProps> = ({
             size="sm" 
             className="w-full flex items-center justify-center" 
             onClick={toggleFullScreen}
+            disabled={loading}
           >
             <ZoomIn className="h-4 w-4 mr-2" /> Fullscreen
           </Button>
