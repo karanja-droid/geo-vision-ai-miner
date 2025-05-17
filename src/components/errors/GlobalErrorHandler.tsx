@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from "react";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
-import { initErrorMonitoring } from "@/utils/monitoring/errorMonitoring";
+import { initErrorMonitoring } from "@/utils/monitoring/core/initErrorMonitoring";
 
 interface GlobalErrorHandlerProps {
   children: React.ReactNode;
