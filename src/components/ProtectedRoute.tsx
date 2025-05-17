@@ -29,6 +29,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       sessionStorage.setItem('redirectAfterLogin', location.pathname);
     }
     
+    // Show authentication toast only after component has mounted
+    if (!isAuthenticated && !loading) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to access this page",
+        variant: "destructive",
+      });
+    }
+    
     // Log access attempts to admin routes
     if (allowedRoles.includes('admin') && user && user.role !== 'admin') {
       console.warn(`Unauthorized access attempt to admin route by user ${user.id}`);
@@ -48,18 +57,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         console.error('Error logging security event', error);
       }
     }
-  }, [isAuthenticated, loading, location.pathname, user, allowedRoles]);
+  }, [isAuthenticated, loading, location.pathname, user, allowedRoles, toast]);
   
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
   
   if (!isAuthenticated) {
-    toast({
-      title: "Authentication required",
-      description: "Please log in to access this page",
-      variant: "destructive",
-    });
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   
