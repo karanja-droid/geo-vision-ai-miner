@@ -1,41 +1,39 @@
 
 import React from 'react';
-import { Search, ZoomIn, ZoomOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Layers } from "lucide-react";
 
 interface MapHeaderProps {
   zoom: number;
   onZoomChange: (value: number[]) => void;
+  loading?: boolean;
 }
 
-const MapHeader: React.FC<MapHeaderProps> = ({ zoom, onZoomChange }) => {
+const MapHeader: React.FC<MapHeaderProps> = ({ zoom, onZoomChange, loading }) => {
   return (
     <CardHeader className="pb-2">
       <div className="flex items-center justify-between">
-        <CardTitle>Exploration Map</CardTitle>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon">
-            <Search size={16} />
-          </Button>
-          <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <ZoomOut size={14} />
-            </Button>
-            <div className="w-24">
-              <Slider 
-                value={[zoom]} 
-                min={0} 
-                max={100} 
-                step={1} 
-                onValueChange={onZoomChange}
-              />
-            </div>
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <ZoomIn size={14} />
-            </Button>
-          </div>
+        <div>
+          <CardTitle className="flex items-center">
+            <Layers className="mr-2 h-5 w-5" /> Geological Map
+          </CardTitle>
+          <CardDescription>
+            {loading 
+              ? "Loading map data..." 
+              : "Explore geological features and datasets"}
+          </CardDescription>
+        </div>
+        <div className="flex items-center space-x-2 w-32">
+          <span className="text-xs text-muted-foreground">Zoom</span>
+          <Slider
+            value={[zoom]}
+            min={0}
+            max={100}
+            step={1}
+            onValueChange={onZoomChange}
+            className="h-4"
+          />
         </div>
       </div>
     </CardHeader>

@@ -1,19 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useToast } from "@/components/ui/use-toast";
-import { sampleMarkers, zambiaPolygon, drcPolygon, defaultLayers } from '../components/interactive-map/constants';
+import { useToast } from "@/hooks/use-toast";
+import { sampleMarkers, zambiaPolygon, drcPolygon } from '../components/interactive-map/constants';
 import ApiKeyForm from '../components/interactive-map/ApiKeyForm';
 import MapHeader from '../components/interactive-map/MapHeader';
 import MapSidebar from '../components/interactive-map/MapSidebar';
 import MapCardContainer from '../components/interactive-map/MapCardContainer';
-
-interface MapLayer {
-  id: string;
-  name: string;
-  type: string;
-  visible: boolean;
-  opacity: number;
-}
+import { useMapData, MapLayer } from '@/hooks/useMapData';
+import { handleError } from '@/utils/errorHandler';
+import FloatingFeedbackButton from '@/components/feedback/FloatingFeedbackButton';
 
 const InteractiveMap: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -23,10 +18,12 @@ const InteractiveMap: React.FC = () => {
   const [center, setCenter] = useState<{lat: number, lng: number}>({ lat: 5.7832, lng: 19.4326 }); // Center on Africa
   const [zoom, setZoom] = useState<number>(3);
   const [selectedMarker, setSelectedMarker] = useState<{lat: number, lng: number, name: string, type: string} | null>(null);
-  const [layers, setLayers] = useState<MapLayer[]>(defaultLayers);
   const [mapType, setMapType] = useState<string>('satellite');
   const [activeTab, setActiveTab] = useState<string>('layers');
   const [africaPolygons, setAfricaPolygons] = useState<any[]>([]);
+  const [activeDatasetId, setActiveDatasetId] = useState<string | null>(null);
+  
+  const { layers, loading, toggleLayer, updateOpacity } = useMapData(activeDatasetId);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -44,29 +41,34 @@ const InteractiveMap: React.FC = () => {
   }, [apiKeySet, mapReady, toast]);
 
   const handleLayerToggle = (id: string) => {
-    if (id === 'terrain' || id === 'satellite' || id === 'roadmap') {
-      // Update map type if it's a base layer
-      const newType = id;
-      setMapType(newType);
+    try {
+      if (id === 'terrain' || id === 'satellite' || id === 'roadmap') {
+        // Update map type if it's a base layer
+        const newType = id;
+        setMapType(newType);
+      }
       
-      // Update layers
-      setLayers(layers.map(layer => 
-        (layer.id === 'terrain' || layer.id === 'satellite' || layer.id === 'roadmap') 
-          ? { ...layer, visible: layer.id === id } 
-          : layer
-      ));
-    } else {
-      // Toggle other layers like Africa Countries
-      setLayers(layers.map(layer => 
-        layer.id === id ? { ...layer, visible: !layer.visible } : layer
-      ));
+      // Toggle the layer in our state
+      toggleLayer(id);
+    } catch (error) {
+      handleError(error, "Failed to toggle map layer", "medium", {
+        component: "InteractiveMap",
+        action: "handleLayerToggle",
+        additionalInfo: { layerId: id }
+      });
     }
   };
 
   const handleOpacityChange = (id: string, value: number[]) => {
-    setLayers(layers.map(layer => 
-      layer.id === id ? { ...layer, opacity: value[0] } : layer
-    ));
+    try {
+      updateOpacity(id, value[0]);
+    } catch (error) {
+      handleError(error, "Failed to update layer opacity", "low", {
+        component: "InteractiveMap",
+        action: "handleOpacityChange",
+        additionalInfo: { layerId: id }
+      });
+    }
   };
 
   const handleApiKeySubmit = (e: React.FormEvent) => {
@@ -178,6 +180,7 @@ const InteractiveMap: React.FC = () => {
             flyToLocation={flyToLocation}
             highlightCountry={highlightCountry}
             africaPolygons={africaPolygons}
+            loading={loading}
           />
 
           <MapCardContainer 
@@ -198,6 +201,9 @@ const InteractiveMap: React.FC = () => {
           />
         </div>
       )}
+      
+      {/* Floating feedback button */}
+      <FloatingFeedbackButton position="bottom-right" />
     </div>
   );
 };
