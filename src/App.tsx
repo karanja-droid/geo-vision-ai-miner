@@ -9,6 +9,11 @@ import InteractiveMap from './pages/InteractiveMap';
 import Analysis from './pages/Analysis';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import AdminDashboard from './pages/AdminDashboard';
+import UserProfile from './pages/UserProfile';
+import Login from './pages/Login';
+import SecurityPolicy from './pages/SecurityPolicy';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -35,6 +40,18 @@ function App() {
           <Route path="/dataset-management" element={<DatasetManagement />} />
           <Route path="/interactive-map" element={<InteractiveMap />} />
           <Route path="/analysis" element={<Analysis />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/security-policy" element={<SecurityPolicy />} />
+          <Route path="/admin-dashboard" element={
+            <ProtectedRoute allowedRoles={['admin']} strictRoleCheck={true}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/user-profile" element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          } />
         </Routes>
         <Footer />
       </div>

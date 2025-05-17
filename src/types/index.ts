@@ -18,6 +18,6 @@ export * from './risk';
 import { GeoPoint } from './geo';
 export { GeoPoint };
 
-// Re-export everything else from geo
+// Re-export everything else from geo using export type to fix isolatedModules error
 import type { ShapefileValidationResult } from './geo';
 export type { ShapefileValidationResult };
