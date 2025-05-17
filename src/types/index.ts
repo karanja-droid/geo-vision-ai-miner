@@ -1,5 +1,4 @@
 
-
 // Re-export all types from domain-specific files
 export * from './layers';
 export * from './analysis';
@@ -19,6 +18,5 @@ export * from './risk';
 import { GeoPoint } from './geo';
 export { GeoPoint };
 
-// Re-export everything else from geo using export type to fix isolatedModules error
+// Re-export ShapefileValidationResult with export type to fix isolatedModules error
 export type { ShapefileValidationResult } from './geo';
-
