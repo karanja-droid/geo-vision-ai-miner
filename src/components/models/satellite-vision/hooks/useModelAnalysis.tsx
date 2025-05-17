@@ -9,7 +9,7 @@ import { generateReport, downloadReport } from '../utils/reportGenerator';
 export const useModelAnalysis = (
   modelInfo: ModelInfo,
   analysisOptions: AnalysisOptions,
-  setProgress: (value: number) => void,
+  setProgress: React.Dispatch<React.SetStateAction<number>>,
   setActiveTab: (value: string) => void,
   setIsAnalyzing: (value: boolean) => void,
   setAnalysisResults: (value: any) => void,
@@ -35,7 +35,7 @@ export const useModelAnalysis = (
     
     // Simulate initial progress while backend prepares
     const progressInterval = setInterval(() => {
-      setProgress(prev => {
+      setProgress((prev) => {
         if (prev >= 95) {
           clearInterval(progressInterval);
           return 95;
