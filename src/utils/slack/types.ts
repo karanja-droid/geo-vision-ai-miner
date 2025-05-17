@@ -1,39 +1,72 @@
 
+// Types for Slack notifications
 
 export interface AnomalyAlertData {
   title: string;
   description: string;
   confidence: number;
-  location: string;
-  severity: 'low' | 'medium' | 'high'; // Added severity property
-  mineralType: string;
+  location?: string;
+  anomalyId?: string;
+  detectedBy?: 'ai' | 'user' | 'system';
+  severity?: 'low' | 'medium' | 'high' | 'critical';
 }
 
-export interface AnalysisCompletionData {
-  title: string;
-  description: string;
-  runtime: number;
-  location: string;
-  analysisType: string;
-  resultSummary: string;
-}
-
-// Add the missing types that were referenced in notifications.ts
 export interface DailySummaryData {
   date: string;
   anomalies: number;
-  predictions: Array<{
-    area: string;
-    probability: number;
-  }>;
   insights: string[];
+  datasets?: {
+    processed: number;
+    new: number;
+  };
+  performance?: {
+    avgResponseTime: number;
+    errorRate: number;
+  };
 }
 
 export interface FileShareData {
   name: string;
-  url: string;
   type: string;
+  url: string;
   description?: string;
+  size?: number;
+  author?: string;
+  relatedDataset?: string;
 }
 
-export type SlackNotificationType = 'anomaly_alert' | 'analysis_completion' | 'system_issue';
+export interface BetaFeedbackData {
+  feedbackId: string;
+  type: 'bug' | 'feature' | 'experience' | 'performance';
+  text: string;
+  module: string;
+  user?: string;
+  timestamp: string;
+  priority?: 'low' | 'medium' | 'high';
+  screenshots?: string[];
+}
+
+export interface BetaMetricsData {
+  activeUsers: number;
+  sessionsToday: number;
+  averageSessionTime: number;
+  topFeatures: {
+    feature: string;
+    usageCount: number;
+  }[];
+  errorRate: number;
+  feedbackCount: {
+    bugs: number;
+    features: number;
+    experience: number;
+    performance: number;
+  };
+}
+
+export interface BetaAnnouncementData {
+  title: string;
+  message: string;
+  features: string[];
+  releaseDate?: string;
+  targetGroups?: string[];
+}
