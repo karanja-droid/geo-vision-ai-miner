@@ -17,4 +17,22 @@ export interface AnalysisCompletionData {
   resultSummary: string;
 }
 
+// Add the missing types that were referenced in notifications.ts
+export interface DailySummaryData {
+  date: string;
+  anomalies: number;
+  predictions: Array<{
+    area: string;
+    probability: number;
+  }>;
+  insights: string[];
+}
+
+export interface FileShareData {
+  name: string;
+  url: string;
+  type: string;
+  description?: string;
+}
+
 export type SlackNotificationType = 'anomaly_alert' | 'analysis_completion' | 'system_issue';

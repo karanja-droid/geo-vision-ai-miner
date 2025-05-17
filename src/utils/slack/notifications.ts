@@ -1,8 +1,27 @@
+
 import { toast } from "@/hooks/use-toast";
 import { Task } from "@/types";
 import { getSlackConfig } from "./config";
 import { sendToSlack } from "./sender";
-import { AnomalyAlertData, DailySummaryData, FileShareData } from "./types";
+import { AnomalyAlertData, AnalysisCompletionData } from "./types";
+
+// Define missing types
+interface DailySummaryData {
+  date: string;
+  anomalies: number;
+  predictions: Array<{
+    area: string;
+    probability: number;
+  }>;
+  insights: string[];
+}
+
+interface FileShareData {
+  name: string;
+  url: string;
+  type: string;
+  description?: string;
+}
 
 // Send anomaly detection alert to Slack
 export const sendAnomalyAlert = async (

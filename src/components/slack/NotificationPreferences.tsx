@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pencil, Save, AlarmClock, CalendarDays, Bell, FilePlus, Slack, SendHorizontal } from "lucide-react";
 import { SlackIntegration, SlackNotificationPreference } from "@/types";
-import { sendAnomalyAlert, sendDailySummary } from "@/utils/slackIntegration";
+import { sendAnomalyAlert } from "@/utils/slack/notifications";
 
 interface NotificationPreferencesProps {
   config: SlackIntegration;
@@ -78,23 +78,19 @@ const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({ confi
             title: "Test Anomaly Alert",
             description: "This is a test anomaly alert from your mineral exploration platform.",
             confidence: 95,
-            location: "Test Location"
+            location: "Test Location",
+            severity: "medium", // Added required property
+            mineralType: "copper" // Added required property
           });
           break;
         case 'daily_summaries':
-          result = await sendDailySummary({
-            date: new Date().toISOString().split('T')[0],
-            anomalies: 3,
-            predictions: [
-              { area: "Test Area 1", probability: 0.85 },
-              { area: "Test Area 2", probability: 0.72 }
-            ],
-            insights: [
-              "This is a test insight 1",
-              "This is a test insight 2"
-            ]
+          toast({
+            title: "Test Not Implemented",
+            description: "Test notification for this type is not implemented yet.",
+            variant: "destructive"
           });
-          break;
+          setIsSending(false);
+          return;
         default:
           toast({
             title: "Test Not Implemented",
