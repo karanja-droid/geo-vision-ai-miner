@@ -18,7 +18,7 @@ import {
   MessageSquare,
   AlertTriangle,
   BookOpen,
-  Timeline,
+  Milestone,
   Info,
   ShieldCheck,
   Users,
@@ -203,7 +203,7 @@ const WorkflowSidebar: React.FC = () => {
           />
           <SidebarItem
             to="/product-roadmap"
-            icon={<Timeline size={iconSize} />}
+            icon={<Milestone size={iconSize} />}
             label={t('navigation.productRoadmap')}
             isActive={isActive('/product-roadmap')}
           />
