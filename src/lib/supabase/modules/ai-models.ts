@@ -42,6 +42,7 @@ export const runModelAnalysis = async (
   
   // Generate analysis result
   const result: Omit<AnalysisResult, 'id'> = {
+    datasetId: datasetId,
     layerId: datasetId,
     timestamp,
     modelType: options.deepLearning ? 'classification' : 'prediction',

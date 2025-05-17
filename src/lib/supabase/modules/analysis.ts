@@ -8,9 +8,9 @@ export const createAnalysisResult = async (
   datasetId: string
 ) => {
   const { data, error } = await supabase.from('analysis_results').insert({
-    name: `Analysis: ${analysis.modelType}`,  // Default name based on model type
+    name: `Analysis: ${analysis.modelType || 'Default'}`,  // Default name
     description: `Analysis result for dataset ${datasetId}`, // Default description
-    type: analysis.modelType,
+    type: analysis.modelType || 'default',
     features: analysis.data,
     confidence: analysis.confidence,
     dataset_id: datasetId,
@@ -39,6 +39,7 @@ export const getAnalysisResults = async (): Promise<AnalysisResult[]> => {
   
   return data.map(item => ({
     id: item.id,
+    datasetId: item.dataset_id,
     layerId: item.dataset_id,
     timestamp: item.timestamp,
     modelType: item.type,

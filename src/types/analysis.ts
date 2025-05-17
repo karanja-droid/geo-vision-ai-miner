@@ -8,6 +8,11 @@ export interface AnalysisOptions {
   spectralBands?: string[];
   targetElements?: string[];
   regionFocus?: string;
+  // Added missing properties used in the code
+  targetMinerals?: string[];
+  confidenceThreshold?: number;
+  dataSource?: string;
+  depth?: string;
 }
 
 export interface AnalysisResult {
@@ -16,9 +21,16 @@ export interface AnalysisResult {
   timestamp: string;
   confidence: number;
   mineralType?: string;
+  // Added missing properties used in the code
+  modelType?: string;
+  layerId?: string;
   data: {
     anomalies: number;
-    coverage?: string;
+    coverage?: string | {
+      total: number;
+      analyzed: number;
+      unit: string;
+    };
     insights?: string[];
     hotspots?: Array<{
       id: number;
@@ -29,6 +41,10 @@ export interface AnalysisResult {
     }>;
     correlations?: Record<string, number>;
     recommendations?: string[];
+    featureCount?: number;
+    spectralAnalysis?: Record<string, any>;
+    processingTime?: number;
+    resolution?: string;
   };
 }
 
@@ -42,7 +58,8 @@ export interface AnomalyAlertData {
   timestamp?: string;
 }
 
-export interface ModelInfo {
+// Renamed to avoid naming conflict with models.ts
+export interface AnalysisModelInfo {
   id: string;
   name: string;
   type: string;
